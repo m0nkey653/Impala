@@ -1,4 +1,5 @@
 add_library(impala_engine STATIC
+    src/entry.cpp
     src/impala.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
