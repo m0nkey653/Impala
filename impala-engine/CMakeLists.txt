@@ -1,8 +1,13 @@
+project(impala_engine VERSION 0.1.0 LANGUAGES CXX)
+
 add_library(impala_engine STATIC
     src/entry.cpp
     src/impala.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
+
+configure_file(src/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_include_directories(impala_engine PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # Public headers live in include/impala/ -> games use #include <impala/...>
 target_include_directories(impala_engine PUBLIC include)
