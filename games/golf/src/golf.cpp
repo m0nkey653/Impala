@@ -3,6 +3,8 @@
 
 class GolfGame : public impala::Game {
 public:
+    impala::GameInfo GetGameInfo() const override { return {"Golf", GOLF_VERSION}; }
+
     void Init() override {
         // Initialization code here
     }

@@ -3,6 +3,8 @@
 
 class DzoneGame : public impala::Game {
 public:
+    impala::GameInfo GetGameInfo() const override { return {"Dzone", DZONE_VERSION}; }
+
     void Init() override {
         // Initialization code here
     }
