@@ -1,0 +1,26 @@
+#!/bin/sh
+# Rejects commits containing C/C++ files that don't match .clang-format.
+# Enable once per clone with:  git config core.hooksPath .githooks
+
+if ! command -v clang-format >/dev/null 2>&1; then
+    echo "pre-commit: clang-format not found, skipping format check" >&2
+    exit 0
+fi
+
+files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.c' '*.cpp' '*.h' '*.hpp' '*.inl')
+[ -z "$files" ] && exit 0
+
+bad=""
+for f in $files; do
+    # Check the staged content, not the working copy
+    if ! git show ":$f" | clang-format --assume-filename="$f" --dry-run --Werror >/dev/null 2>&1; then
+        bad="$bad $f"
+    fi
+done
+
+if [ -n "$bad" ]; then
+    echo "pre-commit: these files need formatting:" >&2
+    for f in $bad; do echo "  $f" >&2; done
+    echo "Fix with:  cmake --build build --target format   (then git add them again)" >&2
+    exit 1
+fi
