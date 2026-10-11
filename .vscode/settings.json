@@ -1,13 +1,21 @@
 {
     "editor.formatOnSave": true,
     "[cpp]": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
     "[c]": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
-    "C_Cpp.formatting": "clangFormat",
-    "C_Cpp.clang_format_style": "file",
-    "C_Cpp.clang_format_fallbackStyle": "none",
-    "clangd.arguments": ["--compile-commands-dir=${workspaceFolder}/build"]
+
+    // clangd provides IntelliSense, clang-tidy warnings and formatting (.clang-format).
+    // Turn off Microsoft C/C++'s IntelliSense so the two don't report duplicate/conflicting errors.
+    "C_Cpp.intelliSenseEngine": "disabled",
+
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--clang-tidy",
+        "--header-insertion=never"
+    ]
 }

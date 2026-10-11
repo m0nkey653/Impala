@@ -24,3 +24,17 @@ FetchContent_MakeAvailable(SDL3)
 add_subdirectory(impala-engine)
 add_subdirectory(games/golf)
 add_subdirectory(games/dzone)
+
+# `cmake --build build --target format` reformats every C/C++ source in the repo
+find_program(CLANG_FORMAT_EXE clang-format)
+if(CLANG_FORMAT_EXE)
+    file(GLOB_RECURSE IMPALA_FORMAT_SOURCES CONFIGURE_DEPENDS
+        ${CMAKE_SOURCE_DIR}/impala-engine/*.cpp ${CMAKE_SOURCE_DIR}/impala-engine/*.h
+        ${CMAKE_SOURCE_DIR}/games/*.cpp ${CMAKE_SOURCE_DIR}/games/*.h
+    )
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT_EXE} -i ${IMPALA_FORMAT_SOURCES}
+        COMMENT "Formatting sources with clang-format"
+        VERBATIM
+    )
+endif()

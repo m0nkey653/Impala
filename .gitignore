@@ -21,3 +21,4 @@ CMakeUserPresets.json
 # Build output
 build/
 cmake-build-*/
+build-*/
