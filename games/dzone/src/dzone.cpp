@@ -17,16 +17,12 @@ public:
         // Render game here
     }
 
-    void OnEvent(const impala::ImpalaGameEvent& event) override {
+    void OnEvent(const impala::GameEvent& event) override {
         // Handle game events here
     }
 
     void Shutdown() override {
         // Cleanup code here
-    }
-
-    void run() override {
-        // Main game loop here
     }
 };
 

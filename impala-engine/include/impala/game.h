@@ -7,9 +7,9 @@ namespace impala {
         virtual ~IGameRender() = default;
     };
 
-    typedef union ImpalaGameEvent {
+    typedef union GameEvent {
 
-    } ImpalaGameEvent;
+    } GameEvent;
 
     typedef struct GameInfo {
         std::string name;
@@ -23,9 +23,8 @@ namespace impala {
         virtual void Init() = 0;
         virtual void Update(float dt) = 0;
         virtual void Render(IGameRender*) = 0;
-        virtual void OnEvent(const ImpalaGameEvent&) = 0;
+        virtual void OnEvent(const GameEvent&) = 0;
         virtual void Shutdown() = 0;
-        virtual void run() = 0;
     };
 
     Game* CreateGame();
