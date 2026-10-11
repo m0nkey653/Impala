@@ -1,0 +1,2 @@
+#pragma once
+#define DZONE_VERSION "@PROJECT_VERSION@"

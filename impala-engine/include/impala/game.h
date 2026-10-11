@@ -7,7 +7,7 @@ namespace impala {
 
     typedef union ImpalaGameEvent {
 
-    };
+    } ImpalaGameEvent;
 
     class Game {
     public:

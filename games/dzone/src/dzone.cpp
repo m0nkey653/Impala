@@ -1,4 +1,5 @@
 #include "impala/game.h"
+#include "version.h"
 
 class DzoneGame : public impala::Game {
 public:
@@ -27,6 +28,6 @@ public:
     }
 };
 
-impala::Game* CreateGame() {
+impala::Game* impala::CreateGame() {
     return new DzoneGame();
 }
