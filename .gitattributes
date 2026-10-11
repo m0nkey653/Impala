@@ -1,0 +1,31 @@
+# Normalize all text files to LF in the repo and in working copies on every OS
+* text=auto eol=lf
+
+# Windows-only scripts need CRLF to run correctly
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binary assets: never touch line endings, never diff/merge as text
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.bmp   binary
+*.tga   binary
+*.psd   binary
+*.ico   binary
+*.icns  binary
+*.wav   binary
+*.ogg   binary
+*.mp3   binary
+*.flac  binary
+*.ttf   binary
+*.otf   binary
+*.zip   binary
+*.dll   binary
+*.dylib binary
+*.so    binary
+*.a     binary
+*.lib   binary
+*.exe   binary
