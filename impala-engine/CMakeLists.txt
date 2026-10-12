@@ -12,4 +12,14 @@ target_include_directories(impala_engine PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # Public headers live in include/impala/ -> games use #include <impala/...>
 target_include_directories(impala_engine PUBLIC include)
 
-target_link_libraries(impala_engine PRIVATE SDL3::SDL3)
+# pugixml: XML parsing for texture atlases (engine-private, games never see it)
+include(FetchContent)
+FetchContent_Declare(
+    pugixml
+    GIT_REPOSITORY https://github.com/zeux/pugixml.git
+    GIT_TAG        v1.16
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(pugixml)
+
+target_link_libraries(impala_engine PRIVATE SDL3::SDL3 pugixml::pugixml)

@@ -2,9 +2,14 @@
 
 namespace impala {
 
-    class IGameRender {
+    class IGameRender2D {
     public:
-        virtual ~IGameRender() = default;
+        virtual ~IGameRender2D() = default;
+    };
+
+    class IGameRender3D {
+    public:
+        virtual ~IGameRender3D() = default;
     };
 
     typedef union GameEvent {
@@ -22,8 +27,8 @@ namespace impala {
         virtual GameInfo GetGameInfo() const = 0;
         virtual void Init() = 0;
         virtual void Update(float dt) = 0;
-        virtual void Render(IGameRender*) = 0;
-        virtual void OnEvent(const GameEvent&) = 0;
+        virtual void Render(IGameRender2D* renderer2D, IGameRender3D* renderer3D) = 0;
+        virtual void OnEvent(const GameEvent& event) = 0;
         virtual void Shutdown() = 0;
     };
 
