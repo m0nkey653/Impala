@@ -12,13 +12,13 @@
 /* We will use this renderer to draw into this window every frame. */
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
-impala::Game* impala_game = NULL;
+impala::Game* impalaGame = NULL;
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
-    impala_game = impala::CreateGame();
-    SDL_SetAppMetadata(impala_game->GetGameInfo().name.c_str(),
-                       impala_game->GetGameInfo().version.c_str(), nullptr);
+    impalaGame = impala::CreateGame();
+    SDL_SetAppMetadata(impalaGame->GetGameInfo().name.c_str(),
+                       impalaGame->GetGameInfo().version.c_str(), nullptr);
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
