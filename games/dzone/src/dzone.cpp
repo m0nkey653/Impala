@@ -1,7 +1,7 @@
 #include "impala/game.h"
 #include "version.h"
 
-class DzoneGame : public impala::Game {
+class DzoneGame : public impala::IGame {
 public:
     impala::GameInfo GetGameInfo() const override { return {"Dzone", DZONE_VERSION}; }
 
@@ -26,6 +26,6 @@ public:
     }
 };
 
-impala::Game* impala::CreateGame() {
+impala::IGame* impala::CreateGame() {
     return new DzoneGame();
 }

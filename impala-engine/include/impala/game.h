@@ -21,9 +21,9 @@ namespace impala {
         std::string version;
     } GameInfo;
 
-    class Game {
+    class IGame {
     public:
-        virtual ~Game() = default;
+        virtual ~IGame() = default;
         virtual GameInfo GetGameInfo() const = 0;
         virtual void Init() = 0;
         virtual void Update(float dt) = 0;
@@ -32,5 +32,11 @@ namespace impala {
         virtual void Shutdown() = 0;
     };
 
-    Game* CreateGame();
+    class IAssetDataBase {
+    public:
+        virtual ~IAssetDataBase() = default;
+        virtual void AddSpriteAtlas(const std::string& atlasPath) = 0;
+    };
+
+    IGame* CreateGame();
 } // namespace impala

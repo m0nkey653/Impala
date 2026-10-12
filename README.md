@@ -60,5 +60,5 @@ To reformat all sources: `cmake --build --preset debug --target format`
 ## Conventions
 
 - Formatting: `.clang-format` (format on save is enabled in VS Code)
-- Naming: `.clang-tidy` — PascalCase types/functions, camelCase locals, `_camelCase` members
+- Naming: `.clang-tidy` — PascalCase types/functions, `I`-prefixed interfaces, camelCase locals, `_camelCase` members
 - Line endings: LF everywhere (`.gitattributes`), UTF-8 source

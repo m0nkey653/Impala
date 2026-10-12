@@ -9,8 +9,11 @@ CheckOptions:
   # namespace impala
   - { key: readability-identifier-naming.NamespaceCase,            value: lower_case }
 
-  # Types: Game, Renderer2D, AppInfo
+  # Types: GolfGame, Sprite, AppInfo
   - { key: readability-identifier-naming.ClassCase,                value: CamelCase }
+  # Interfaces (any class with a pure virtual method): IGame, IAssetDatabase
+  - { key: readability-identifier-naming.AbstractClassCase,        value: CamelCase }
+  - { key: readability-identifier-naming.AbstractClassPrefix,      value: I }
   - { key: readability-identifier-naming.StructCase,               value: CamelCase }
   - { key: readability-identifier-naming.UnionCase,                value: CamelCase }
   - { key: readability-identifier-naming.EnumCase,                 value: CamelCase }
