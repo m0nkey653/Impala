@@ -9,11 +9,11 @@ public:
         // Initialization code here
     }
 
-    void Update(float dt) override {
+    void Update(impala::GameContext* context, float dt) override {
         // Update game state here
     }
 
-    void Render(impala::IGameRender2D* render2D, impala::IGameRender3D* render3D) override {
+    void Render(impala::GameContext* context) override {
         // Render game here
     }
 

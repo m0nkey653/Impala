@@ -3,6 +3,7 @@ project(impala_engine VERSION 0.1.0 LANGUAGES CXX)
 add_library(impala_engine STATIC
     src/entry.cpp
     src/impala.cpp
+    src/assets/asset_database.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 
