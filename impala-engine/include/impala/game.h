@@ -22,8 +22,7 @@ namespace impala {
     class IAssetDataBase {
     public:
         virtual ~IAssetDataBase() = default;
-        virtual void AddSpriteAtlas(const std::string& name, const std::string& sheetPath,
-                                    const std::string& atlasPath) = 0;
+        virtual void AddSpriteAtlas(const std::string& name, const std::string& atlasPath) = 0;
     };
 
     typedef union GameEvent {
