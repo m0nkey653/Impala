@@ -23,4 +23,4 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pugixml)
 
-target_link_libraries(impala_engine PRIVATE SDL3::SDL3 pugixml::pugixml)
+target_link_libraries(impala_engine PRIVATE SDL3::SDL3-static pugixml::pugixml)

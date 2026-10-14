@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(Impala C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # compile_commands.json lets clangd and clang-tidy see the real compiler flags
@@ -10,8 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # MSVC otherwise reads source files in the system code page; we use UTF-8 everywhere
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
 
-# Put all executables and shared libs (incl. SDL3) in one folder so the
-# games can find SDL at runtime without any post-build copying
+# Put all executables (and any shared libs) in one folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -23,8 +22,10 @@ FetchContent_Declare(
     GIT_TAG        release-3.4.18
     GIT_SHALLOW    TRUE
 )
-set(SDL_SHARED ON)
-set(SDL_STATIC OFF)
+# Link SDL statically: no DLL to ship, find at runtime, or get blocked by
+# Windows Smart App Control as an unsigned binary
+set(SDL_SHARED OFF)
+set(SDL_STATIC ON)
 FetchContent_MakeAvailable(SDL3)
 
 add_subdirectory(impala-engine)

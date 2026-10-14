@@ -13,8 +13,11 @@
     // Turn off Microsoft C/C++'s IntelliSense so the two don't report duplicate/conflicting errors.
     "C_Cpp.intelliSenseEngine": "disabled",
 
+    // Each preset builds in build/<preset>; CMake Tools copies the active preset's
+    // compile_commands.json to the repo root, where clangd finds it on its own.
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build",
         "--clang-tidy",
         "--header-insertion=never"
     ]
