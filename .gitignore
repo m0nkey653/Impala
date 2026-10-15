@@ -22,3 +22,9 @@ CMakeUserPresets.json
 build/
 cmake-build-*/
 build-*/
+
+# clangd index (created next to the root compile_commands.json)
+.cache/
+
+# macOS
+.DS_Store

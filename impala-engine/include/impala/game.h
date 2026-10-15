@@ -1,3 +1,6 @@
+#pragma once
+
+#include "impala/asset_database.h"
 #include <string>
 
 namespace impala {
@@ -10,19 +13,6 @@ namespace impala {
     class IGameRender3D {
     public:
         virtual ~IGameRender3D() = default;
-    };
-
-    class IAsset {
-    public:
-        virtual ~IAsset() = default;
-        virtual std::string Name() = 0;
-        virtual void Load() = 0;
-    };
-
-    class IAssetDataBase {
-    public:
-        virtual ~IAssetDataBase() = default;
-        virtual void AddSpriteAtlas(const std::string& name, const std::string& atlasPath) = 0;
     };
 
     typedef union GameEvent {

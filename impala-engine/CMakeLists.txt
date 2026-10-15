@@ -4,6 +4,9 @@ add_library(impala_engine STATIC
     src/entry.cpp
     src/impala.cpp
     src/assets/asset_database.h
+    src/assets/sprite_atlas.h
+    include/impala/sprites.h
+    include/impala/assets.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

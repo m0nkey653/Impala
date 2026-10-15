@@ -52,8 +52,8 @@ cmake --preset debug
 cmake --build --preset debug
 ```
 
-Games are written to `build/bin/` (`golf`, `dzone`, plus the SDL3 library). Use the
-`release` preset for an optimized build in `build-release/`.
+Games are written to `build/<preset>/bin/` (`golf`, `dzone`, plus the SDL3 library), e.g.
+`build/debug/bin/golf`. Use the `release` preset for an optimized build in `build/release/`.
 
 To reformat all sources: `cmake --build --preset debug --target format`
 
