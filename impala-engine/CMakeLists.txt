@@ -3,10 +3,12 @@ project(impala_engine VERSION 0.1.0 LANGUAGES CXX)
 add_library(impala_engine STATIC
     src/entry.cpp
     src/impala.cpp
-    src/assets/asset_database.h
-    src/assets/sprite_atlas.h
+    src/assets/asset_database.cpp
+    src/assets/sprite_atlas.cpp
+    src/assets/sprite.cpp
     include/impala/sprites.h
     include/impala/assets.h
+    include/impala/logging.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 
@@ -27,3 +29,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(pugixml)
 
 target_link_libraries(impala_engine PRIVATE SDL3::SDL3-static pugixml::pugixml)
+
+target_precompile_headers(impala_engine PRIVATE
+    <string>
+    <vector>
+    <unordered_map>
+    <memory>
+    <SDL3/SDL.h>
+)
