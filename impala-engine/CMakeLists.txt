@@ -9,6 +9,7 @@ add_library(impala_engine STATIC
     include/impala/sprites.h
     include/impala/assets.h
     include/impala/logging.h
+    src/logging.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
 
