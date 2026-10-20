@@ -1,6 +1,8 @@
 #include "asset_database.h"
 #include "sprite_atlas.h"
 
+using namespace impala;
+
 void AssetDatabase::AddSpriteAtlas(const std::string& name, const std::string& atlasPath) {
     auto it = _spriteAtlases.find(name);
     if (it != _spriteAtlases.end()) {

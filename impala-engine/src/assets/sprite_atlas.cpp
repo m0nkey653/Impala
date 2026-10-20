@@ -2,6 +2,7 @@
 #include "impala/errors.h"
 #include <pugixml.hpp>
 
+using namespace impala;
 /*
 Sparrow/Starling atlas format
 This format is used by the Sparrow and Starling frameworks for defining sprite atlases.

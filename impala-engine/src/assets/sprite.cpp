@@ -1,5 +1,7 @@
 #include "sprite.h"
 
+using namespace impala;
+
 std::string Sprite::Name() {
     return _name;
 }
