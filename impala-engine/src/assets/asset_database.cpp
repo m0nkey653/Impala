@@ -4,7 +4,8 @@
 void AssetDatabase::AddSpriteAtlas(const std::string& name, const std::string& atlasPath) {
     auto it = _spriteAtlases.find(name);
     if (it != _spriteAtlases.end()) {
-        // TODO: Log that the sprite atlas already exists
+        impala::log::Warn(impala::log::LogCategory::Assets, "Sprite atlas '{}' already exists",
+                          name);
         return;
     }
 
@@ -14,12 +15,13 @@ void AssetDatabase::AddSpriteAtlas(const std::string& name, const std::string& a
 }
 
 impala::ISpriteAtlas* AssetDatabase::GetSpriteAtlas(const std::string& name) {
-    // Implementation for retrieving a sprite atlas
     auto it = _spriteAtlases.find(name);
     if (it != _spriteAtlases.end()) {
         return it->second.get();
     }
 
-    // TODO: Log that the sprite atlas was not found
+    // leave this a null pointer for now
+    // we'll decide later whether to throw or provide a default atlas here
+    impala::log::Error(impala::log::LogCategory::Assets, "Sprite atlas '{}' not found", name);
     return nullptr;
 }

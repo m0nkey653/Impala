@@ -6,10 +6,10 @@ add_library(impala_engine STATIC
     src/assets/asset_database.cpp
     src/assets/sprite_atlas.cpp
     src/assets/sprite.cpp
+    src/logging.cpp
     include/impala/sprites.h
     include/impala/assets.h
     include/impala/logging.h
-    src/logging.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
 
@@ -37,4 +37,6 @@ target_precompile_headers(impala_engine PRIVATE
     <unordered_map>
     <memory>
     <SDL3/SDL.h>
+    <impala/logging.h>
+    <impala/errors.h>
 )
