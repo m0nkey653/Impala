@@ -2,10 +2,17 @@
 #include "entities.h"
 
 namespace impala {
+
+    template <typename T>
+    concept Component =
+        std::is_object_v<T>                                       // not a reference or function
+        && !std::is_pointer_v<T>                                  // no Add<Transform2D*>
+        && !std::is_const_v<T> && std::is_move_constructible_v<T> // storage can move it
+        && std::is_destructible_v<T>;
     namespace detail {
 
         inline std::atomic<uint32_t> componentNextCounter = 0;
-        template <typename T> uint32_t ComponentTypeId() {
+        template <Component T> uint32_t ComponentTypeId() {
             const static uint32_t id = componentNextCounter.fetch_add(1, std::memory_order_relaxed);
             return id;
         }
@@ -16,7 +23,7 @@ namespace impala {
             virtual void* Get() = 0;
         };
 
-        template <typename T> class ComponentHolder : public IComponentHolder {
+        template <Component T> class ComponentHolder : public IComponentHolder {
         public:
             template <typename... Args>
             explicit ComponentHolder<T>(Args&&... args)
@@ -35,11 +42,11 @@ namespace impala {
     public:
         virtual ~IScene() = default;
 
-        template <typename T> T& AddComponent(EntityHandle entity) {
+        template <Component T> T& AddComponent(EntityHandle entity) {
             auto* componentHolder = new detail::ComponentHolder<T>();
             auto* componentPtr =
-                AddComponent(entity, detail::ComponentTypeId<T>(),
-                             std::unique_ptr<detail::IComponentHolder>(componentHolder));
+                AddComponentInternal(entity, detail::ComponentTypeId<T>(),
+                                     std::unique_ptr<detail::IComponentHolder>(componentHolder));
             return *static_cast<T*>(componentPtr);
         }
 
@@ -49,8 +56,9 @@ namespace impala {
         }
 
     protected:
-        virtual void* AddComponent(EntityHandle entity, uint32_t componentTypeId,
-                                   std::unique_ptr<detail::IComponentHolder> component) = 0;
-        virtual void* GetComponent(EntityHandle entity, uint32_t componentTypeId) = 0;
+        virtual void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
+                                           std::unique_ptr<detail::IComponentHolder> component) = 0;
+        virtual void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) = 0;
     };
+
 } // namespace impala

@@ -11,10 +11,10 @@ add_library(impala_engine STATIC
     include/impala/assets.h
     include/impala/logging.h
     include/impala/errors.h
-    include/impala/components.h
     include/impala/transforms.h
     include/impala/scenes.h
     include/impala/math.h
+    include/impala/entities.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

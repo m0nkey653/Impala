@@ -20,6 +20,8 @@ CheckOptions:
   - { key: readability-identifier-naming.TypeAliasCase,            value: CamelCase }
   - { key: readability-identifier-naming.TypedefCase,              value: CamelCase }
   - { key: readability-identifier-naming.TemplateParameterCase,    value: CamelCase }
+  # C++20 concepts: Component, Drawable
+  - { key: readability-identifier-naming.ConceptCase,              value: CamelCase }
 
   # Functions and methods: Init(), CreateGame()
   - { key: readability-identifier-naming.FunctionCase,             value: CamelCase }
