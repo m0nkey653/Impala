@@ -26,16 +26,17 @@ void SpriteAtlas::Initialize() {
 
     pugi::xml_document doc;
     if (!doc.load_file(_atlasPath.c_str())) {
-        throw impala::AssetError("Failed to load atlas file: " + _atlasPath);
+        throw impala::AssetError("Failed to load atlas file: '" + _atlasPath + "'");
     }
     pugi::xml_node xmlTextureAtlas = doc.child("TextureAtlas");
     if (!xmlTextureAtlas) {
-        throw impala::AssetError("Failed to find TextureAtlas node in atlas file: " + _atlasPath);
+        throw impala::AssetError("Failed to find TextureAtlas node in atlas file: '" + _atlasPath +
+                                 "'");
     }
     std::string sheetPath = xmlTextureAtlas.attribute("imagePath").as_string();
     if (sheetPath.empty()) {
-        throw impala::AssetError("Failed to find imagePath attribute in TextureAtlas node: " +
-                                 _atlasPath);
+        throw impala::AssetError("Failed to find imagePath attribute in TextureAtlas node: '" +
+                                 _atlasPath + "'");
     }
 
     for (pugi::xml_node subTexture : xmlTextureAtlas.children("SubTexture")) {
@@ -91,4 +92,8 @@ void SpriteAtlas::Load() {
     if (!sheet) {
         SDL_Log("Failed to load surface '%s': %s", _sheetPath.c_str(), SDL_GetError());
     }
+}
+
+impala::ISprite* SpriteAtlas::GetSprite(const std::string& name) {
+    return nullptr;
 }

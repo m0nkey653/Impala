@@ -1,16 +1,17 @@
 #include "asset_database.h"
+#include "impala/logging.h"
 #include "sprite_atlas.h"
 
 using namespace impala;
 
 void AssetDatabase::AddSpriteAtlas(const std::string& name, const std::string& atlasPath) {
     auto it = _spriteAtlases.find(name);
+
     if (it != _spriteAtlases.end()) {
-        impala::log::Warn(impala::log::LogCategory::Assets, "Sprite atlas '{}' already exists",
-                          name);
+        printf("Sprite atlas '%s' already exists\n", name.c_str());
         return;
     }
-
+    impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite atlas '{}'", name);
     auto atlas = std::make_unique<SpriteAtlas>(name, atlasPath);
     atlas->Initialize();
     _spriteAtlases[name] = std::move(atlas);

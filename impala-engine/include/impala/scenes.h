@@ -61,4 +61,10 @@ namespace impala {
         virtual void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) = 0;
     };
 
+    class ISceneFactory {
+    public:
+        virtual ~ISceneFactory() = default;
+        virtual IScene* CreateScene() = 0;
+    };
+
 } // namespace impala
