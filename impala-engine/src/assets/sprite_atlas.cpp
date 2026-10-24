@@ -1,5 +1,6 @@
 #include "sprite_atlas.h"
 #include "impala/error.h"
+#include "impala/log.h"
 #include <pugixml.hpp>
 
 using namespace impala;
@@ -41,12 +42,14 @@ void SpriteAtlas::Initialize() {
 
     for (pugi::xml_node subTexture : xmlTextureAtlas.children("SubTexture")) {
         if (!subTexture) {
-            SDL_Log("Missing SubTexture node in atlas file: %s", _atlasPath.c_str());
+            impala::log::Debug(impala::log::LogCategory::Assets,
+                               "Missing SubTexture node in atlas file: {}", _atlasPath);
             break;
         }
         if (!subTexture.attribute("name")) {
-            SDL_Log("Missing name attribute in SubTexture node in atlas file: %s",
-                    _atlasPath.c_str());
+            impala::log::Debug(impala::log::LogCategory::Assets,
+                               "Missing name attribute in SubTexture node in atlas file: {}",
+                               _atlasPath);
             continue;
         }
 
@@ -57,8 +60,9 @@ void SpriteAtlas::Initialize() {
         auto heightNode = subTexture.attribute("height");
 
         if (!spriteNameNode || !xNode || !yNode || !widthNode || !heightNode) {
-            SDL_Log("Missing one or more attributes in SubTexture node in atlas file: %s",
-                    _atlasPath.c_str());
+            impala::log::Debug(
+                impala::log::LogCategory::Assets,
+                "Missing one or more attributes in SubTexture node in atlas file: {}", _atlasPath);
             continue;
         }
 
@@ -71,14 +75,17 @@ void SpriteAtlas::Initialize() {
         if (_spriteRects.find(spriteName) == _spriteRects.end()) {
             _spriteRects[spriteName] = SpriteRect{x, y, width, height};
             // TODO: Add trace logging for new sprite rects
-            SDL_Log("Added new sprite rect for '%s' in atlas file: %s", spriteName.c_str(),
-                    _atlasPath.c_str());
+            impala::log::Debug(impala::log::LogCategory::Assets,
+                               "Added new sprite rect for '{}' in atlas file: {}", spriteName,
+                               _atlasPath);
         } else {
             // handle duplicate sprite names if necessary
             // TODO: Add warning logging
         }
     }
 
+    impala::log::Debug(impala::log::LogCategory::Assets,
+                       "Finished initializing sprite atlas '{}' - '{}'", _name, sheetPath);
     _sheetPath = sheetPath;
     _initialized = true;
 }
