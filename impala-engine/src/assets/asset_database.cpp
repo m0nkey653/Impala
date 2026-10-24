@@ -11,8 +11,11 @@ void AssetDatabase::AddSpriteAtlas(const std::string& name, const std::string& a
         printf("Sprite atlas '%s' already exists\n", name.c_str());
         return;
     }
-    impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite atlas '{}'", name);
-    auto atlas = std::make_unique<SpriteAtlas>(name, atlasPath);
+
+    auto fullAtlasPath = SDL_GetBasePath() + atlasPath;
+    impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite atlas '{}' - '{}'", name,
+                      fullAtlasPath);
+    auto atlas = std::make_unique<SpriteAtlas>(name, fullAtlasPath);
     atlas->Initialize();
     _spriteAtlases[name] = std::move(atlas);
 }

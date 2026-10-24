@@ -42,6 +42,13 @@ CheckOptions:
   # Public fields of plain structs (AppInfo::title) get no prefix
   - { key: readability-identifier-naming.PublicMemberCase,         value: camelBack }
 
+  # Constants: constexpr anywhere, namespace-level const, static const members.
+  # Plain local `const` variables stay camelBack: KENNEY_SPACE_SHOOTER, MAX_SPRITES
+  - { key: readability-identifier-naming.ConstexprVariableCase,    value: UPPER_CASE }
+  - { key: readability-identifier-naming.GlobalConstantCase,       value: UPPER_CASE }
+  - { key: readability-identifier-naming.StaticConstantCase,       value: UPPER_CASE }
+  - { key: readability-identifier-naming.ClassConstantCase,        value: UPPER_CASE }
+
   # enum class Key { Space, Escape }
   - { key: readability-identifier-naming.EnumConstantCase,         value: CamelCase }
   - { key: readability-identifier-naming.ScopedEnumConstantCase,   value: CamelCase }
