@@ -1,7 +1,7 @@
 #pragma once
 
 #include "impala/asset_database.h"
-#include "impala/sprites.h"
+#include "impala/sprite.h"
 #include <memory>
 #include <unordered_map>
 

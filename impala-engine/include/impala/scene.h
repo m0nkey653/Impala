@@ -1,5 +1,5 @@
 #pragma once
-#include "entities.h"
+#include "entity.h"
 
 namespace impala {
 

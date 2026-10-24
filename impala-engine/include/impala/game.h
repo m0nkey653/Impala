@@ -1,7 +1,7 @@
 #pragma once
 
 #include "impala/asset_database.h"
-#include "impala/scenes.h"
+#include "impala/scene.h"
 #include <string>
 
 namespace impala {

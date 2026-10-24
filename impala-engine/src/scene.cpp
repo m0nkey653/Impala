@@ -1,4 +1,4 @@
-#include "impala/scenes.h"
+#include "impala/scene.h"
 
 namespace impala {
 

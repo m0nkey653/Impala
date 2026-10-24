@@ -1,6 +1,6 @@
 #pragma once
 
-#include "impala/sprites.h"
+#include "impala/sprite.h"
 
 namespace impala {
     class Sprite : public impala::ISprite {

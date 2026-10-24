@@ -1,4 +1,4 @@
-#include "impala/logging.h"
+#include "impala/log.h"
 
 namespace impala::log::detail {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "impala/assets.h"
+#include "impala/asset.h"
 #include <string>
 
 namespace impala {

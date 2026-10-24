@@ -1,5 +1,5 @@
 #include "asset_database.h"
-#include "impala/logging.h"
+#include "impala/log.h"
 #include "sprite_atlas.h"
 
 using namespace impala;

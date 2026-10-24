@@ -6,16 +6,16 @@ add_library(impala_engine STATIC
     src/assets/asset_database.cpp
     src/assets/sprite_atlas.cpp
     src/assets/sprite.cpp
-    src/logging.cpp
+    src/log.cpp
     src/scene.cpp
-    include/impala/sprites.h
-    include/impala/assets.h
-    include/impala/logging.h
-    include/impala/errors.h
-    include/impala/transforms.h
-    include/impala/scenes.h
+    include/impala/sprite.h
+    include/impala/asset.h
+    include/impala/log.h
+    include/impala/error.h
+    include/impala/transform.h
+    include/impala/scene.h
     include/impala/math.h
-    include/impala/entities.h
+    include/impala/entity.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

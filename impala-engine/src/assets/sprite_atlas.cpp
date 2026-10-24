@@ -1,5 +1,5 @@
 #include "sprite_atlas.h"
-#include "impala/errors.h"
+#include "impala/error.h"
 #include <pugixml.hpp>
 
 using namespace impala;
