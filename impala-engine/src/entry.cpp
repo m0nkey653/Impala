@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include "assets/asset_database.h"
 #include "impala/game.h"
+#include "impala_scene.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -31,8 +32,10 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     // auto sceneFactory = std::make_unique<impala::SceneFactory>();
     auto assetDb = std::make_unique<impala::AssetDatabase>();
+    auto sceneFactory = std::make_unique<impala::SceneFactory>();
     impala::GameContext context;
     context.assetDataBase = assetDb.get();
+    context.sceneFactory = sceneFactory.get();
 
     impalaGame->Init(&context);
 
