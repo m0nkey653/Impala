@@ -17,4 +17,13 @@ namespace impala {
         return nullptr;
     }
 
+    EntityHandle ImpalaScene::CreateEntity(const char* name) {
+
+        return EntityHandle{};
+    }
+
+    void ImpalaScene::DestroyEntity(EntityHandle entity) {
+        // Implement entity destruction logic here
+    }
+
 } // namespace impala

@@ -12,9 +12,7 @@ public:
         auto* assetDataBase = context->assetDataBase;
         assetDataBase->AddSpriteAtlas("kenney-space", dzone::KENNEY_SPACE_SHOOTER);
 
-        impala::log::Debug(impala::log::LogCategory::Assets, "Added sprite atlas 'kenney-space'");
         auto* scene = context->sceneFactory->CreateScene();
-        impala::log::Debug(impala::log::LogCategory::Assets, "Created new scene");
     }
 
     void Update(impala::GameContext* context, float dt) override {

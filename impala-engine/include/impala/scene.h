@@ -55,6 +55,9 @@ namespace impala {
             return static_cast<T*>(componentPtr);
         }
 
+        virtual EntityHandle CreateEntity(const char* name) = 0;
+        virtual void DestroyEntity(EntityHandle entity) = 0;
+
     protected:
         virtual void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
                                            std::unique_ptr<detail::IComponentHolder> component) = 0;
