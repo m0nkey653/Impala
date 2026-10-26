@@ -1,6 +1,8 @@
 #include "dzone_assets.h"
 #include "impala/game.h"
 #include "impala/log.h"
+#include "impala/sprite.h"
+#include "impala/transform.h"
 #include "version.h"
 
 class DzoneGame : public impala::IGame {
@@ -13,6 +15,11 @@ public:
         assetDataBase->AddSpriteAtlas("kenney-space", dzone::KENNEY_SPACE_SHOOTER);
 
         auto* scene = context->sceneFactory->CreateScene();
+        auto player = scene->CreateEntity("Player");
+        scene->AddComponent<impala::Transform2d>(player);
+        auto transform = scene->GetComponent<impala::Transform2d>(player);
+        scene->AddComponent<impala::SpriteRenderer>(player);
+        auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(player);
     }
 
     void Update(impala::GameContext* context, float dt) override {

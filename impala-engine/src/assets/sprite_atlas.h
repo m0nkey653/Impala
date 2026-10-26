@@ -3,14 +3,6 @@
 #include "impala/sprite.h"
 
 namespace impala {
-    struct SpriteRect {
-        uint32_t x;
-        uint32_t y;
-        uint32_t width;
-        uint32_t height;
-    };
-
-    typedef std::unordered_map<std::string, SpriteRect> SpriteRectMap;
 
     class SpriteAtlas : public impala::ISpriteAtlas {
     public:
@@ -20,17 +12,22 @@ namespace impala {
         std::string Name() override;
         void Load() override;
 
-        impala::ISprite* GetSprite(const std::string& name) override;
+        SpriteHandle GetSprite(const std::string& name) override;
+
+        // Internal method to get the sprite rect from a sprite handle
+        ImpalaSprite GetSprite(SpriteHandle spriteHandle);
+        bool IsLoaded() const { return _initialized && _sheet != nullptr; }
 
     private:
         std::string _name;
         std::string _atlasPath;
         bool _initialized = false;
-        bool _loaded = false;
 
         // populated during initialization
         std::string _sheetPath;
-        SpriteRectMap _spriteRects;
+        std::unordered_map<std::string, SpriteRect> _spriteRects;
+
+        SDL_Surface* _sheet = nullptr;
     };
 
 } // namespace impala

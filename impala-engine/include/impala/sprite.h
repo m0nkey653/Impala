@@ -7,7 +7,12 @@ namespace impala {
 
     struct SpriteHandle {
         uint32_t id = 0;
+        constexpr bool IsValid() const { return id != UINT32_MAX; }
     };
+
+    constexpr SpriteHandle InvalidSpriteHandle() {
+        return SpriteHandle{UINT32_MAX};
+    }
 
     class ISprite : public IAsset {
     public:
@@ -17,7 +22,7 @@ namespace impala {
     class ISpriteAtlas : public IAsset {
     public:
         virtual ~ISpriteAtlas() = default;
-        virtual ISprite* GetSprite(const std::string& name) = 0;
+        virtual SpriteHandle GetSprite(const std::string& name) = 0;
     };
 
     struct SpriteRenderer {

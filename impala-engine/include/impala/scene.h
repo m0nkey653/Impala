@@ -51,7 +51,7 @@ namespace impala {
         }
 
         template <typename T> T* GetComponent(EntityHandle entity) {
-            auto* componentPtr = GetComponent(entity, detail::ComponentTypeId<T>());
+            auto* componentPtr = GetComponentInternal(entity, detail::ComponentTypeId<T>());
             return static_cast<T*>(componentPtr);
         }
 

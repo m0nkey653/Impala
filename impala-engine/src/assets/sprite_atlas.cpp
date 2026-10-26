@@ -73,7 +73,8 @@ void SpriteAtlas::Initialize() {
         uint32_t height = heightNode.as_uint();
 
         if (_spriteRects.find(spriteName) == _spriteRects.end()) {
-            _spriteRects[spriteName] = SpriteRect{x, y, width, height};
+            _spriteRects[spriteName] =
+                SpriteRect{static_cast<uint32_t>(_spriteRects.size()), x, y, width, height};
             // TODO: Add trace logging for new sprite rects
             impala::log::Debug(impala::log::LogCategory::Assets,
                                "Added new sprite rect for '{}' in atlas file: {}", spriteName,
@@ -95,12 +96,32 @@ void SpriteAtlas::Load() {
         throw std::runtime_error("SpriteAtlas not successfully initialized: " + _atlasPath);
     }
 
-    SDL_Surface* sheet = SDL_LoadSurface(_sheetPath.c_str());
-    if (!sheet) {
-        SDL_Log("Failed to load surface '%s': %s", _sheetPath.c_str(), SDL_GetError());
+    _sheet = SDL_LoadSurface(_sheetPath.c_str());
+    if (!_sheet) {
+        impala::log::Error(impala::log::LogCategory::Assets, "Failed to load surface '{}': {}",
+                           _sheetPath.c_str(), SDL_GetError());
     }
 }
 
-impala::ISprite* SpriteAtlas::GetSprite(const std::string& name) {
+SpriteHandle SpriteAtlas::GetSprite(const std::string& name) {
+    auto it = _spriteRects.find(name);
+    if (it == _spriteRects.end()) {
+        return InvalidSpriteHandle();
+    }
+    return SpriteHandle{it->second.id};
+}
+
+impala::SpriteRect* SpriteAtlas::GetSprite(SpriteHandle spriteHandle) {
+    if (!spriteHandle.IsValid()) {
+        return nullptr;
+    }
+
+    for (const auto& pair : _spriteRects) {
+        if (pair.second.id == spriteHandle.id) {
+            // Assuming you have a way to get the actual Sprite* from the SpriteRect
+            // This part depends on your implementation details
+            auto rect = pair.second;
+        }
+    }
     return nullptr;
 }
