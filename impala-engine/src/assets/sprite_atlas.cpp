@@ -111,9 +111,9 @@ SpriteHandle SpriteAtlas::GetSprite(const std::string& name) {
     return SpriteHandle{it->second.id};
 }
 
-impala::SpriteRect* SpriteAtlas::GetSprite(SpriteHandle spriteHandle) {
+ImpalaSprite SpriteAtlas::GetSprite(SpriteHandle spriteHandle) {
     if (!spriteHandle.IsValid()) {
-        return nullptr;
+        return ImpalaSprite{};
     }
 
     for (const auto& pair : _spriteRects) {
@@ -121,7 +121,8 @@ impala::SpriteRect* SpriteAtlas::GetSprite(SpriteHandle spriteHandle) {
             // Assuming you have a way to get the actual Sprite* from the SpriteRect
             // This part depends on your implementation details
             auto rect = pair.second;
+            return ImpalaSprite{rect, Texture{}};
         }
     }
-    return nullptr;
+    return ImpalaSprite{};
 }

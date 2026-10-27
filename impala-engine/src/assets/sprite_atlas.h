@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../impala_sprite.h"
 #include "impala/sprite.h"
 
 namespace impala {
