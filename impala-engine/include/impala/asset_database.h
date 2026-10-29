@@ -15,7 +15,7 @@ namespace impala {
         virtual SpriteHandle GetSprite(const std::string& name) = 0;
         virtual SpriteHandle GetSprite(const std::string& spriteAtlas, const std::string& name) = 0;
 
-        virtual TextureHandle GetTexture(const std::string& name) = 0;
+        virtual impala::TextureHandle LoadSpriteTexture(SpriteHandle handle) = 0;
     };
 
 } // namespace impala

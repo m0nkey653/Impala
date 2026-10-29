@@ -91,18 +91,6 @@ void SpriteAtlas::Initialize() {
     _initialized = true;
 }
 
-void SpriteAtlas::Load() {
-    if (!_initialized || _sheetPath.empty()) {
-        throw std::runtime_error("SpriteAtlas not successfully initialized: " + _atlasPath);
-    }
-
-    _sheet = SDL_LoadSurface(_sheetPath.c_str());
-    if (!_sheet) {
-        impala::log::Error(impala::log::LogCategory::Assets, "Failed to load surface '{}': {}",
-                           _sheetPath.c_str(), SDL_GetError());
-    }
-}
-
 SpriteHandle SpriteAtlas::GetSprite(const std::string& name) {
     auto it = _spriteRects.find(name);
     if (it == _spriteRects.end()) {

@@ -1,13 +1,15 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include "assets/asset_database.h"
 #include "impala/game.h"
-#include "impala_scene.h"
+#include "scene_manager.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
 static SDL_Window* window = NULL;
-static SDL_Renderer* renderer = NULL;
-impala::IGame* impalaGame = NULL;
+static SDL_Renderer* sdlRenderer = NULL;
+static impala::IGame* impalaGame = NULL;
+static std::unique_ptr<impala::AssetDatabase> assetDb;
+static std::unique_ptr<impala::SceneManager> sceneManager;
 
 // runs once at startup
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
@@ -23,18 +25,22 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name.c_str(), 640, 480,
-                                     SDL_WINDOW_RESIZABLE, &window, &renderer)) {
-        SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
+    {
+        SDL_Renderer* renderer = NULL;
+        if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name.c_str(), 640, 480,
+                                         SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+            SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
+            return SDL_APP_FAILURE;
+        }
+        sdlRenderer = renderer;
     }
-    SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_SetRenderLogicalPresentation(sdlRenderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    auto assetDb = std::make_unique<impala::AssetDatabase>();
-    auto sceneFactory = std::make_unique<impala::SceneFactory>();
+    assetDb = std::make_unique<impala::AssetDatabase>(sdlRenderer);
+    sceneManager = std::make_unique<impala::SceneManager>();
     impala::GameContext context;
     context.assetDataBase = assetDb.get();
-    context.sceneFactory = sceneFactory.get();
+    context.sceneManager = sceneManager.get();
 
     impalaGame->Init(&context);
 
@@ -51,6 +57,14 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 
 // called once per frame (Update + Render)
 SDL_AppResult SDL_AppIterate(void* appstate) {
+
+    // locked physics update
+
+    // game logic
+
+    // render pass
+    auto activeScene = sceneManager->GetActiveScene();
+
     return SDL_APP_CONTINUE;
 }
 

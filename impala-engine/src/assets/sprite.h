@@ -9,7 +9,6 @@ namespace impala {
     public:
         Sprite(const std::string& name, const std::string& spritePath);
         std::string Name() override;
-        void Load() override;
 
     private:
         std::string _name;

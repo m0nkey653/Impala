@@ -69,3 +69,43 @@ SpriteHandle AssetDatabase::GetSprite(const std::string& spriteAtlas, const std:
                        spriteAtlas);
     return InvalidSpriteHandle();
 }
+
+Sprite* AssetDatabase::GetSprite(SpriteHandle handle) {
+    if (!handle.IsValid()) {
+        return nullptr;
+    }
+    if (handle.id >= 0 && handle.id < static_cast<int>(_sprites.size())) {
+        return _sprites[handle.id].get();
+    }
+    return nullptr;
+}
+
+Texture* AssetDatabase::GetTexture(TextureHandle handle) {
+    if (!handle.IsValid()) {
+        return nullptr;
+    }
+    if (handle.id >= 0 && handle.id < static_cast<int>(_textures.size())) {
+        return _textures[handle.id].get();
+    }
+    return nullptr;
+}
+
+TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
+    auto sprite = GetSprite(handle);
+    if (!sprite) {
+        impala::log::Error(impala::log::LogCategory::Assets, "Sprite handle '{}' not found",
+                           handle.id);
+        return InvalidTextureHandle();
+    }
+
+    // auto texture = sprite->Name()
+    //  if (sprite->()) {
+    //      return _texturesHandleMap[sprite->GetName()];
+    //  }
+
+    // auto texture = std::make_unique<Texture>(sprite->GetPath());
+    auto returnTexture = static_cast<TextureHandle>(_textures.size());
+    // _textures.push_back(std::move(texture));
+    // _texturesHandleMap[sprite->GetName()] = returnTexture;
+    return returnTexture;
+}

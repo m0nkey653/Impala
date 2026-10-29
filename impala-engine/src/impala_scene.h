@@ -10,14 +10,6 @@ namespace impala {
         bool isActive;
     };
 
-    class SceneFactory : public ISceneFactory {
-    public:
-        SceneFactory() = default;
-        ~SceneFactory() override = default;
-
-        IScene* CreateScene() override;
-    };
-
     class ImpalaScene : public IScene {
     public:
         ImpalaScene() = default;

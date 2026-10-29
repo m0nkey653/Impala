@@ -7,7 +7,6 @@ namespace impala {
     public:
         virtual ~IAsset() = default;
         virtual std::string Name() = 0;
-        virtual void Load() = 0;
     };
 
 } // namespace impala

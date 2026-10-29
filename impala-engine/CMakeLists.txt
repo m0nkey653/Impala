@@ -16,6 +16,7 @@ add_library(impala_engine STATIC
     include/impala/scene.h
     include/impala/math.h
     include/impala/entity.h
+    src/scene_manager.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

@@ -10,16 +10,19 @@ namespace impala {
 
     class AssetDatabase : public impala::IAssetDataBase {
     public:
+        AssetDatabase(SDL_Renderer* sdlRenderer) : _sdlRenderer(sdlRenderer) {}
         void AddSpriteAtlas(const std::string& atlasPath) override;
 
         SpriteHandle AddSprite(const std::string& name, const std::string& spritePath) override;
 
         SpriteHandle GetSprite(const std::string& name) override;
         SpriteHandle GetSprite(const std::string& spriteAtlas, const std::string& name) override;
-        TextureHandle GetTexture(const std::string& name) override;
 
         impala::ISpriteAtlas* GetSpriteAtlas(const std::string& name);
         impala::Sprite* GetSprite(SpriteHandle handle);
+        impala::Texture* GetTexture(TextureHandle handle);
+
+        impala::TextureHandle LoadSpriteTexture(SpriteHandle handle) override;
 
     private:
         std::unordered_map<std::string, std::unique_ptr<impala::SpriteAtlas>> _spriteAtlases;
@@ -29,6 +32,9 @@ namespace impala {
 
         std::vector<std::unique_ptr<impala::Sprite>> _sprites;
         std::vector<std::unique_ptr<impala::Texture>> _textures;
+
+    private:
+        SDL_Renderer* _sdlRenderer;
     };
 
 } // namespace impala

@@ -2,10 +2,6 @@
 
 namespace impala {
 
-    IScene* SceneFactory::CreateScene() {
-        return new ImpalaScene();
-    }
-
     void* ImpalaScene::AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
                                             std::unique_ptr<detail::IComponentHolder> component) {
         auto e = &_entities[entity.id];

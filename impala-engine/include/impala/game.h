@@ -1,7 +1,7 @@
 #pragma once
 
 #include "impala/asset_database.h"
-#include "impala/scene.h"
+#include "impala/scene_manager.h"
 #include <string>
 
 namespace impala {
@@ -21,7 +21,7 @@ namespace impala {
     } GameEvent;
 
     struct GameContext {
-        ISceneFactory* sceneFactory;
+        ISceneManager* sceneManager;
         IGameRenderer2D* renderer2D;
         IGameRenderer3D* renderer3D;
         IAssetDataBase* assetDataBase;

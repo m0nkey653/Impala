@@ -11,7 +11,6 @@ namespace impala {
         void Initialize();
 
         std::string Name() override;
-        void Load() override;
 
         SpriteHandle GetSprite(const std::string& name) override;
 

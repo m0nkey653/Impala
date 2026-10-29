@@ -13,13 +13,15 @@ public:
 
         auto* assetDataBase = context->assetDataBase;
         assetDataBase->AddSpriteAtlas(dzone::KENNEY_SPACE_SHOOTER_SPRITE_ATLAS);
+        auto player1sprite = assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_SHIP_1_BLUE);
 
-        auto* scene = context->sceneFactory->CreateScene();
+        auto* scene = context->sceneManager->CreateScene();
         auto player = scene->CreateEntity("Player");
         scene->AddComponent<impala::Transform2d>(player);
         auto transform = scene->GetComponent<impala::Transform2d>(player);
         scene->AddComponent<impala::SpriteRenderer>(player);
         auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(player);
+        spriteRenderer->sprite = player1sprite;
     }
 
     void Update(impala::GameContext* context, float dt) override {
