@@ -1,18 +1,10 @@
 #pragma once
 
 #include "impala/asset.h"
+#include "impala/handles.h"
 #include <string>
 
 namespace impala {
-
-    struct SpriteHandle {
-        uint32_t id = 0;
-        constexpr bool IsValid() const { return id != UINT32_MAX; }
-    };
-
-    constexpr SpriteHandle InvalidSpriteHandle() {
-        return SpriteHandle{UINT32_MAX};
-    }
 
     class ISprite : public IAsset {
     public:

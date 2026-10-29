@@ -30,7 +30,6 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     }
     SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    // auto sceneFactory = std::make_unique<impala::SceneFactory>();
     auto assetDb = std::make_unique<impala::AssetDatabase>();
     auto sceneFactory = std::make_unique<impala::SceneFactory>();
     impala::GameContext context;

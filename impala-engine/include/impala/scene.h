@@ -1,5 +1,9 @@
 #pragma once
 #include "entity.h"
+#include <atomic>
+#include <cstdint>
+#include <memory>
+#include <type_traits>
 
 namespace impala {
 
@@ -13,8 +17,8 @@ namespace impala {
 
         inline std::atomic<uint32_t> componentNextCounter = 0;
         template <Component T> uint32_t ComponentTypeId() {
-            const static uint32_t id = componentNextCounter.fetch_add(1, std::memory_order_relaxed);
-            return id;
+            const static uint32_t ID = componentNextCounter.fetch_add(1, std::memory_order_relaxed);
+            return ID;
         }
 
         class IComponentHolder {

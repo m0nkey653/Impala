@@ -6,9 +6,5 @@ std::string Sprite::Name() {
     return _name;
 }
 
-void Sprite::Load() {
-    auto sheet = SDL_LoadSurface(_spritePath.c_str());
-    if (!sheet) {
-        SDL_Log("Failed to load surface '%s': %s", _spritePath.c_str(), SDL_GetError());
-    }
-}
+Sprite::Sprite(const std::string& name, const std::string& spritePath)
+    : _name(name), _spritePath(spritePath), _texture(InvalidTextureHandle()) {}

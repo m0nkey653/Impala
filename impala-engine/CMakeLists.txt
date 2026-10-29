@@ -8,7 +8,6 @@ add_library(impala_engine STATIC
     src/assets/sprite.cpp
     src/log.cpp
     src/impala_scene.cpp
-    src/surface.cpp
     include/impala/sprite.h
     include/impala/asset.h
     include/impala/log.h
