@@ -9,7 +9,7 @@ namespace impala {
     public:
         virtual ~IAssetDataBase() = default;
 
-        virtual void AddSpriteAtlas(const std::string& name, const std::string& atlasPath) = 0;
+        virtual void AddSpriteAtlas(const std::string& atlasPath) = 0;
 
         virtual SpriteHandle AddSprite(const std::string& name, const std::string& spritePath) = 0;
         virtual SpriteHandle GetSprite(const std::string& name) = 0;

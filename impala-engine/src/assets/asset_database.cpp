@@ -4,19 +4,18 @@
 
 using namespace impala;
 
-void AssetDatabase::AddSpriteAtlas(const std::string& name, const std::string& atlasPath) {
-    auto it = _spriteAtlases.find(name);
+void AssetDatabase::AddSpriteAtlas(const std::string& atlasPath) {
+    auto it = _spriteAtlases.find(atlasPath);
 
     if (it != _spriteAtlases.end()) {
-        printf("Sprite atlas '%s' already exists\n", name.c_str());
+        printf("Sprite atlas '%s' already exists\n", atlasPath.c_str());
     }
 
     auto fullAtlasPath = SDL_GetBasePath() + atlasPath;
-    impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite atlas '{}' - '{}'", name,
-                      fullAtlasPath);
-    auto atlas = std::make_unique<SpriteAtlas>(name, fullAtlasPath);
+    impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite atlas '{}'", atlasPath);
+    auto atlas = std::make_unique<SpriteAtlas>(atlasPath, fullAtlasPath);
     atlas->Initialize();
-    _spriteAtlases[name] = std::move(atlas);
+    _spriteAtlases[atlasPath] = std::move(atlas);
 }
 
 impala::ISpriteAtlas* AssetDatabase::GetSpriteAtlas(const std::string& name) {

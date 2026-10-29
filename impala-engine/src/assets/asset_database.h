@@ -10,7 +10,7 @@ namespace impala {
 
     class AssetDatabase : public impala::IAssetDataBase {
     public:
-        void AddSpriteAtlas(const std::string& name, const std::string& atlasPath) override;
+        void AddSpriteAtlas(const std::string& atlasPath) override;
 
         SpriteHandle AddSprite(const std::string& name, const std::string& spritePath) override;
 

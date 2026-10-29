@@ -12,7 +12,7 @@ public:
     void Init(impala::GameContext* context) override {
 
         auto* assetDataBase = context->assetDataBase;
-        assetDataBase->AddSpriteAtlas("kenney-space", dzone::KENNEY_SPACE_SHOOTER);
+        assetDataBase->AddSpriteAtlas(dzone::KENNEY_SPACE_SHOOTER_SPRITE_ATLAS);
 
         auto* scene = context->sceneFactory->CreateScene();
         auto player = scene->CreateEntity("Player");
