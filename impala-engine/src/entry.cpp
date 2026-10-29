@@ -1,13 +1,14 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include "assets/asset_database.h"
 #include "impala/game.h"
+#include "renderer.h"
 #include "scene_manager.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-static SDL_Window* window = NULL;
-static SDL_Renderer* sdlRenderer = NULL;
-static impala::IGame* impalaGame = NULL;
+static SDL_Window* window = nullptr;
+static std::unique_ptr<impala::Renderer> sdlRenderer;
+static impala::IGame* impalaGame = nullptr;
 static std::unique_ptr<impala::AssetDatabase> assetDb;
 static std::unique_ptr<impala::SceneManager> sceneManager;
 
@@ -26,17 +27,18 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     }
 
     {
-        SDL_Renderer* renderer = NULL;
+        SDL_Renderer* renderer = nullptr;
         if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name.c_str(), 640, 480,
                                          SDL_WINDOW_RESIZABLE, &window, &renderer)) {
             SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
             return SDL_APP_FAILURE;
         }
-        sdlRenderer = renderer;
+        sdlRenderer = std::make_unique<impala::Renderer>(renderer);
     }
-    SDL_SetRenderLogicalPresentation(sdlRenderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_SetRenderLogicalPresentation(sdlRenderer->Get(), 640, 480,
+                                     SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    assetDb = std::make_unique<impala::AssetDatabase>(sdlRenderer);
+    assetDb = std::make_unique<impala::AssetDatabase>(sdlRenderer.get());
     sceneManager = std::make_unique<impala::SceneManager>();
     impala::GameContext context;
     context.assetDataBase = assetDb.get();

@@ -1,4 +1,6 @@
 #include "sprite_atlas.h"
+#include "../impala_sprite.h"
+#include "../texture.h"
 #include "impala/error.h"
 #include "impala/log.h"
 #include <pugixml.hpp>
@@ -99,18 +101,18 @@ SpriteHandle SpriteAtlas::GetSprite(const std::string& name) {
     return SpriteHandle{it->second.id};
 }
 
-ImpalaSprite SpriteAtlas::GetSprite(SpriteHandle spriteHandle) {
-    if (!spriteHandle.IsValid()) {
-        return ImpalaSprite{};
-    }
+// ImpalaSprite SpriteAtlas::GetSprite(SpriteHandle spriteHandle) {
+//     if (!spriteHandle.IsValid()) {
+//         return ImpalaSprite{};
+//     }
 
-    for (const auto& pair : _spriteRects) {
-        if (pair.second.id == spriteHandle.id) {
-            // Assuming you have a way to get the actual Sprite* from the SpriteRect
-            // This part depends on your implementation details
-            auto rect = pair.second;
-            return ImpalaSprite{rect, Texture{}};
-        }
-    }
-    return ImpalaSprite{};
-}
+//     for (const auto& pair : _spriteRects) {
+//         if (pair.second.id == spriteHandle.id) {
+//             // Assuming you have a way to get the actual Sprite* from the SpriteRect
+//             // This part depends on your implementation details
+//             auto rect = pair.second;
+//             return ImpalaSprite{rect, Texture{}};
+//         }
+//     }
+//     return ImpalaSprite{};
+// }

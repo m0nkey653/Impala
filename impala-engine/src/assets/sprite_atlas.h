@@ -16,7 +16,12 @@ namespace impala {
 
         // Internal method to get the sprite rect from a sprite handle
         ImpalaSprite GetSprite(SpriteHandle spriteHandle);
-        bool IsLoaded() const { return _initialized && _sheet != nullptr; }
+        bool IsLoaded() const { return _initialized; }
+
+        std::string GetSheetPath() const { return _sheetPath; }
+        const std::unordered_map<std::string, SpriteRect>& GetSpriteRects() const {
+            return _spriteRects;
+        }
 
     private:
         std::string _name;
@@ -26,8 +31,6 @@ namespace impala {
         // populated during initialization
         std::string _sheetPath;
         std::unordered_map<std::string, SpriteRect> _spriteRects;
-
-        SDL_Surface* _sheet = nullptr;
     };
 
 } // namespace impala

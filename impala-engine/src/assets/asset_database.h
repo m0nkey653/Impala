@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../renderer.h"
 #include "../texture.h"
 #include "impala/asset_database.h"
 #include "impala/sprite.h"
@@ -10,7 +11,7 @@ namespace impala {
 
     class AssetDatabase : public impala::IAssetDataBase {
     public:
-        AssetDatabase(SDL_Renderer* sdlRenderer) : _sdlRenderer(sdlRenderer) {}
+        AssetDatabase(Renderer* renderer) : _renderer(renderer) {}
         void AddSpriteAtlas(const std::string& atlasPath) override;
 
         SpriteHandle AddSprite(const std::string& name, const std::string& spritePath) override;
@@ -34,7 +35,7 @@ namespace impala {
         std::vector<std::unique_ptr<impala::Texture>> _textures;
 
     private:
-        SDL_Renderer* _sdlRenderer;
+        std::unique_ptr<impala::Renderer> _renderer;
     };
 
 } // namespace impala
