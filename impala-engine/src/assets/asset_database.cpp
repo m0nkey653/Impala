@@ -156,6 +156,8 @@ TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
     }
 
     if (texture->IsLoaded()) {
+        impala::log::Info(impala::log::LogCategory::Assets,
+                          "Texture for sprite handle '{}' is already loaded", handle.id);
         return sprite.textureHandle;
     }
 

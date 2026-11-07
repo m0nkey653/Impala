@@ -39,8 +39,9 @@ void SpriteAtlas::Initialize() {
         throw impala::AssetError("Failed to find imagePath attribute in TextureAtlas node: '" +
                                  _atlasPath + "'");
     }
-    // normalize sheet path to atlas folder
-    sheetPath = _atlasPath.substr(0, _atlasPath.find_last_of("/")) + "/" + sheetPath;
+
+    // normalize sheet relateive path using name which is relative atlas path
+    sheetPath = _name.substr(0, _name.find_last_of("/")) + "/" + sheetPath;
 
     for (pugi::xml_node subTexture : xmlTextureAtlas.children("SubTexture")) {
         if (!subTexture) {
@@ -77,13 +78,13 @@ void SpriteAtlas::Initialize() {
         if (_spriteRects.find(spriteName) == _spriteRects.end()) {
             _spriteRects[spriteName] =
                 SpriteRect{static_cast<uint32_t>(_spriteRects.size()), x, y, width, height};
-            // TODO: Add trace logging for new sprite rects
-            impala::log::Debug(impala::log::LogCategory::Assets,
-                               "Added new sprite rect for '{}' in atlas file: {}", spriteName,
-                               _atlasPath);
+            impala::log::Debug(impala::log::LogCategory::Assets, "Sprite parsed '{}' {}",
+                               spriteName, _name);
         } else {
             // handle duplicate sprite names if necessary
             // TODO: Add warning logging
+            impala::log::Warn(log::LogCategory::Assets, "Sprite atlas contains duplicate '{}' - {}",
+                              spriteName, _name);
         }
     }
 
