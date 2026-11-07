@@ -17,29 +17,28 @@ void AssetDatabase::AddSpriteAtlas(const std::string& atlasPath) {
     impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite atlas '{}'", atlasPath);
     auto atlas = std::make_unique<SpriteAtlas>(atlasPath, fullAtlasPath);
     atlas->Initialize();
-    _spriteAtlases[atlasPath] = std::move(atlas);
 
     impala::log::Info(impala::log::LogCategory::Assets, "Sprite atlas '{}' added successfully",
                       atlasPath);
     auto sheetPath = atlas->GetSheetPath();
 
-    // add texture to the collection for the sprite atlas
-    _textures.push_back(std::make_unique<Texture>(sheetPath));
-    TextureHandle textureHandle = static_cast<TextureHandle>(_textures.size() - 1);
-    _texturesHandleMap[sheetPath] = textureHandle;
+    auto textureHandle = AddTexture(sheetPath);
+    auto atlasFolder = atlasPath.substr(0, atlasPath.find_last_of("/")) + "/";
 
+    // we're fast-loading them all on parse, that gives us extra sprite entries on load
+    // we might as well while we're doing XML stuff
     // associate each sprite rect with the texture handle
     for (const auto& pair : atlas->GetSpriteRects()) {
 
         auto spriteName = pair.first;
         auto spriteRect = pair.second;
 
-        _sprites.push_back({spriteRect, textureHandle});
-        auto spriteHandle = static_cast<SpriteHandle>(_sprites.size() - 1);
-
-        auto key = spriteName.append("/").append(spriteName);
-        _spritesHandleMap[key] = spriteHandle;
+        std::string spriteKey = atlasFolder + pair.first;
+        auto spriteHandle = AddSprite(spriteKey, textureHandle);
     }
+
+    // we fast-loaded all the sprites - is this any use?
+    _spriteAtlases[atlasPath] = std::move(atlas);
 }
 
 TextureHandle AssetDatabase::AddTexture(const std::string& texturePath) {
@@ -56,6 +55,7 @@ TextureHandle AssetDatabase::AddTexture(const std::string& texturePath) {
     // Add the texture
     TextureHandle t = static_cast<TextureHandle>(_textures.size() - 1);
     _texturesHandleMap[texturePath] = t;
+    impala::log::Debug(impala::log::LogCategory::Assets, "Texture added '{}'", texturePath);
 
     return t;
 }
