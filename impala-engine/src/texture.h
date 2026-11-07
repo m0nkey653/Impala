@@ -16,22 +16,33 @@ namespace impala {
         ~Texture() = default;
 
         void Load(Renderer* renderer) {
-            auto surface = SDL_LoadSurface(_path.c_str());
+            std::string surfacePath = SDL_GetBasePath();
+            surfacePath.append("/");
+            surfacePath.append(_path);
+
+            auto surface = SDL_LoadSurface(surfacePath.c_str());
             if (!surface) {
-                throw std::runtime_error("Failed to load surface from path: " + _path);
+                auto e = SDL_GetError();
+                throw std::runtime_error("Failed to load surface from path: " + _path + " - " + e);
             }
 
-            _texture = std::unique_ptr<SDL_Texture, detail::TextureDeleter>(
-                SDL_CreateTextureFromSurface(renderer->Get(), surface));
-
+            auto t = SDL_CreateTextureFromSurface(renderer->Get(), surface);
             SDL_DestroySurface(surface);
+            if (!t) {
+                auto e = SDL_GetError();
+                throw std::runtime_error("Failed to load texture from surface: " + _path + " - " +
+                                         e);
+            }
+
+            _texture = std::unique_ptr<SDL_Texture, detail::TextureDeleter>(t);
         };
         bool IsLoaded() const { return _texture != nullptr; }
-        SDL_Texture* Get() const { return _texture.get(); }
+        SDL_Texture* GetTexture() const { return _texture.get(); }
+        uint32_t GetGeneration() const { return _generation; }
 
     private:
         std::unique_ptr<SDL_Texture, detail::TextureDeleter> _texture = nullptr;
         std::string _path;
-        ;
+        uint32_t _generation;
     };
 } // namespace impala

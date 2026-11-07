@@ -19,7 +19,7 @@ namespace impala {
             _surface.reset(surface);
         }
         bool IsLoaded() const { return _surface != nullptr; }
-        SDL_Surface* Get() const;
+        SDL_Surface* GetSurface() const { return _surface.get(); }
 
     private:
         std::unique_ptr<SDL_Surface, SurfaceDeleter> _surface = nullptr;

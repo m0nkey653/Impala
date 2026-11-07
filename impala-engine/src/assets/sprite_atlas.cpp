@@ -1,6 +1,4 @@
 #include "sprite_atlas.h"
-#include "../impala_sprite.h"
-#include "../texture.h"
 #include "impala/error.h"
 #include "impala/log.h"
 #include <pugixml.hpp>
@@ -41,6 +39,8 @@ void SpriteAtlas::Initialize() {
         throw impala::AssetError("Failed to find imagePath attribute in TextureAtlas node: '" +
                                  _atlasPath + "'");
     }
+    // normalize sheet path to atlas folder
+    sheetPath = _atlasPath.substr(0, _atlasPath.find_last_of("/")) + "/" + sheetPath;
 
     for (pugi::xml_node subTexture : xmlTextureAtlas.children("SubTexture")) {
         if (!subTexture) {

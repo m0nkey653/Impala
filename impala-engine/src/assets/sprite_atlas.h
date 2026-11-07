@@ -7,6 +7,7 @@ namespace impala {
 
     class SpriteAtlas : public impala::ISpriteAtlas {
     public:
+        // Constructor takes the name of the atlas and the relative path to the atlas file
         SpriteAtlas(const std::string& name, const std::string& atlasPath);
         void Initialize();
 
@@ -18,6 +19,7 @@ namespace impala {
         ImpalaSprite GetSprite(SpriteHandle spriteHandle);
         bool IsLoaded() const { return _initialized; }
 
+        // relative path to the sprite sheet image
         std::string GetSheetPath() const { return _sheetPath; }
         const std::unordered_map<std::string, SpriteRect>& GetSpriteRects() const {
             return _spriteRects;

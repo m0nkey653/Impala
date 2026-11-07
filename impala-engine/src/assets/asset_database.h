@@ -14,24 +14,26 @@ namespace impala {
         AssetDatabase(Renderer* renderer) : _renderer(renderer) {}
         void AddSpriteAtlas(const std::string& atlasPath) override;
 
-        SpriteHandle AddSprite(const std::string& name, const std::string& spritePath) override;
+        SpriteHandle AddSprite(const std::string& name, TextureHandle textureHandle) override;
+        TextureHandle AddTexture(const std::string& texturePath) override;
 
         SpriteHandle GetSprite(const std::string& name) override;
         SpriteHandle GetSprite(const std::string& spriteAtlas, const std::string& name) override;
 
-        impala::ISpriteAtlas* GetSpriteAtlas(const std::string& name);
-        impala::Sprite* GetSprite(SpriteHandle handle);
-        impala::Texture* GetTexture(TextureHandle handle);
-
         impala::TextureHandle LoadSpriteTexture(SpriteHandle handle) override;
+
+        impala::ISpriteAtlas* GetSpriteAtlas(const std::string& name);
+        impala::ImpalaSprite GetSprite(SpriteHandle handle);
+        impala::Texture* GetTexture(TextureHandle handle);
 
     private:
         std::unordered_map<std::string, std::unique_ptr<impala::SpriteAtlas>> _spriteAtlases;
+
+        // mapped to relative path of the texture file
         std::unordered_map<std::string, TextureHandle> _texturesHandleMap;
-        std::unordered_map<std::string, SpriteHandle> _spritesAtlasHandleMap;
         std::unordered_map<std::string, SpriteHandle> _spritesHandleMap;
 
-        std::vector<std::unique_ptr<impala::Sprite>> _sprites;
+        std::vector<impala::ImpalaSprite> _sprites;
         std::vector<std::unique_ptr<impala::Texture>> _textures;
 
     private:

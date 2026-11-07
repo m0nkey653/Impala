@@ -11,9 +11,10 @@ namespace impala {
 
         virtual void AddSpriteAtlas(const std::string& atlasPath) = 0;
 
-        virtual SpriteHandle AddSprite(const std::string& name, const std::string& spritePath) = 0;
+        virtual SpriteHandle AddSprite(const std::string& name, TextureHandle textureHandle) = 0;
         virtual SpriteHandle GetSprite(const std::string& name) = 0;
         virtual SpriteHandle GetSprite(const std::string& spriteAtlas, const std::string& name) = 0;
+        virtual TextureHandle AddTexture(const std::string& texturePath) = 0;
 
         virtual impala::TextureHandle LoadSpriteTexture(SpriteHandle handle) = 0;
     };

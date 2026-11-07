@@ -6,6 +6,7 @@ namespace impala {
 
     struct SpriteHandle {
         uint32_t id = 0;
+        uint32_t generation = 0;
         constexpr bool IsValid() const { return id != UINT32_MAX; }
     };
 
@@ -15,6 +16,7 @@ namespace impala {
 
     struct TextureHandle {
         uint32_t id = 0;
+        uint32_t generation = 0;
         constexpr bool IsValid() const { return id != UINT32_MAX; }
     };
 

@@ -1,4 +1,6 @@
 #include "asset_database.h"
+#include "../impala_sprite.h"
+#include "../texture.h"
 #include "impala/log.h"
 #include "sprite_atlas.h"
 
@@ -16,6 +18,46 @@ void AssetDatabase::AddSpriteAtlas(const std::string& atlasPath) {
     auto atlas = std::make_unique<SpriteAtlas>(atlasPath, fullAtlasPath);
     atlas->Initialize();
     _spriteAtlases[atlasPath] = std::move(atlas);
+
+    impala::log::Info(impala::log::LogCategory::Assets, "Sprite atlas '{}' added successfully",
+                      atlasPath);
+    auto sheetPath = atlas->GetSheetPath();
+
+    // add texture to the collection for the sprite atlas
+    _textures.push_back(std::make_unique<Texture>(sheetPath));
+    TextureHandle textureHandle = static_cast<TextureHandle>(_textures.size() - 1);
+    _texturesHandleMap[sheetPath] = textureHandle;
+
+    // associate each sprite rect with the texture handle
+    for (const auto& pair : atlas->GetSpriteRects()) {
+
+        auto spriteName = pair.first;
+        auto spriteRect = pair.second;
+
+        _sprites.push_back({spriteRect, textureHandle});
+        auto spriteHandle = static_cast<SpriteHandle>(_sprites.size() - 1);
+
+        auto key = spriteName.append("/").append(spriteName);
+        _spritesHandleMap[key] = spriteHandle;
+    }
+}
+
+TextureHandle AssetDatabase::AddTexture(const std::string& texturePath) {
+    auto it = _texturesHandleMap.find(texturePath);
+    if (it != _texturesHandleMap.end()) {
+        // impala::log::Debug(impala::log::LogCategory::Assets, "Texture add called for existing
+        // path '{}'", texturePath);
+        return it->second;
+    }
+
+    auto texture = std::make_unique<impala::Texture>(texturePath);
+    _textures.push_back(std::move(texture));
+
+    // Add the texture
+    TextureHandle t = static_cast<TextureHandle>(_textures.size() - 1);
+    _texturesHandleMap[texturePath] = t;
+
+    return t;
 }
 
 impala::ISpriteAtlas* AssetDatabase::GetSpriteAtlas(const std::string& name) {
@@ -30,21 +72,32 @@ impala::ISpriteAtlas* AssetDatabase::GetSpriteAtlas(const std::string& name) {
     return nullptr;
 }
 
-SpriteHandle AssetDatabase::AddSprite(const std::string& name, const std::string& spritePath) {
-    auto it = _spritesHandleMap.find(name);
+SpriteHandle AssetDatabase::AddSprite(const std::string& name, TextureHandle textureHandle) {
 
+    auto it = _spritesHandleMap.find(name);
     if (it != _spritesHandleMap.end()) {
-        printf("Sprite '%s' already exists\n", name.c_str());
+        // impala::log::Debug(impala::log::LogCategory::Assets, "Sprite add for existing name '{}'",
+        //                    name);
+        // do more here? compare texture handles?
         return it->second;
     }
 
-    auto fullSpritePath = SDL_GetBasePath() + spritePath;
-    impala::log::Info(impala::log::LogCategory::Assets, "Adding sprite '{}' - '{}'", name,
-                      fullSpritePath);
-    auto sprite = std::make_unique<Sprite>(name, fullSpritePath);
+    TextureHandle t = textureHandle;
+    if (t.IsValid()) {
+        if (t.id >= _textures.size()) {
+            // invalid texture handle - greater than collection
+            t = InvalidTextureHandle();
+        } else if (t.generation != _textures[t.id]->GetGeneration()) {
+            // invalid texture - handle expired
+            t = InvalidTextureHandle();
+        }
+    }
 
-    auto returnSprite = static_cast<SpriteHandle>(_sprites.size());
+    // fill with zero for now
+    // we can populate the rect on load
+    ImpalaSprite sprite = {{0, 0, 0, 0, 0}, t};
     _sprites.push_back(std::move(sprite));
+    auto returnSprite = static_cast<SpriteHandle>(_sprites.size());
     _spritesHandleMap[name] = returnSprite;
     return returnSprite;
 }
@@ -70,14 +123,14 @@ SpriteHandle AssetDatabase::GetSprite(const std::string& spriteAtlas, const std:
     return InvalidSpriteHandle();
 }
 
-Sprite* AssetDatabase::GetSprite(SpriteHandle handle) {
+ImpalaSprite AssetDatabase::GetSprite(SpriteHandle handle) {
     if (!handle.IsValid()) {
-        return nullptr;
+        return InvalidSprite();
     }
     if (handle.id >= 0 && handle.id < static_cast<int>(_sprites.size())) {
-        return _sprites[handle.id].get();
+        return _sprites[handle.id];
     }
-    return nullptr;
+    return InvalidSprite();
 }
 
 Texture* AssetDatabase::GetTexture(TextureHandle handle) {
@@ -92,20 +145,30 @@ Texture* AssetDatabase::GetTexture(TextureHandle handle) {
 
 TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
     auto sprite = GetSprite(handle);
-    if (!sprite) {
-        impala::log::Error(impala::log::LogCategory::Assets, "Sprite handle '{}' not found",
-                           handle.id);
+
+    // auto texture = std::make_unique<Texture>(sprite->GetPath());
+    auto texture = GetTexture(sprite.textureHandle);
+    // we have to check generation here.
+    if (!texture) {
+        impala::log::Error(impala::log::LogCategory::Assets,
+                           "Texture for sprite handle '{}' not found", handle.id);
         return InvalidTextureHandle();
     }
 
-    // auto texture = sprite->Name()
-    //  if (sprite->()) {
-    //      return _texturesHandleMap[sprite->GetName()];
-    //  }
+    if (texture->IsLoaded()) {
+        return sprite.textureHandle;
+    }
 
-    // auto texture = std::make_unique<Texture>(sprite->GetPath());
-    auto returnTexture = static_cast<TextureHandle>(_textures.size());
-    // _textures.push_back(std::move(texture));
-    // _texturesHandleMap[sprite->GetName()] = returnTexture;
-    return returnTexture;
+    try {
+        texture->Load(_renderer.get());
+        impala::log::Info(impala::log::LogCategory::Assets, "Loaded texture {} for sprite '{}'",
+                          sprite.textureHandle.id, handle.id);
+
+    } catch (const std::exception e) {
+        impala::log::Error(impala::log::LogCategory::Assets,
+                           "Texture for sprite handle '{}' not found", handle.id);
+        return InvalidTextureHandle();
+    }
+
+    return sprite.textureHandle;
 }
