@@ -10,7 +10,8 @@ void AssetDatabase::AddSpriteAtlas(const std::string& atlasPath) {
     auto it = _spriteAtlases.find(atlasPath);
 
     if (it != _spriteAtlases.end()) {
-        printf("Sprite atlas '%s' already exists\n", atlasPath.c_str());
+        impala::log::Debug(impala::log::LogCategory::Assets, "Sprite atlas '{}' already exists",
+                           atlasPath);
     }
 
     auto fullAtlasPath = SDL_GetBasePath() + atlasPath;
@@ -163,7 +164,7 @@ TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
 
     try {
         texture->Load(_renderer.get());
-        impala::log::Info(impala::log::LogCategory::Assets, "Loaded texture {} for sprite '{}'",
+        impala::log::Info(impala::log::LogCategory::Assets, "Loaded texture [{}] for sprite [{}]",
                           sprite.textureHandle.id, handle.id);
 
     } catch (const std::exception e) {
