@@ -26,6 +26,9 @@ namespace impala {
         impala::ImpalaSprite GetSprite(SpriteHandle handle);
         impala::Texture* GetTexture(TextureHandle handle);
 
+        SpriteHandle AddSprite(const std::string& name, SpriteRect rect,
+                               TextureHandle textureHandle);
+
     private:
         std::unordered_map<std::string, std::unique_ptr<impala::SpriteAtlas>> _spriteAtlases;
 

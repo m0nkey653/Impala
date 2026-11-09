@@ -18,6 +18,8 @@ namespace impala {
         EntityHandle CreateEntity(const char* name) override;
         void DestroyEntity(EntityHandle entity) override;
 
+        std::vector<Entity>& GetAllEntities() { return _entities; };
+
     protected:
         void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
                                    std::unique_ptr<detail::IComponentHolder> component) override;

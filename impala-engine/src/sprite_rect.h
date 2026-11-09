@@ -11,5 +11,9 @@ namespace impala {
             return SDL_Rect{static_cast<int>(x), static_cast<int>(y), static_cast<int>(width),
                             static_cast<int>(height)};
         }
+        SDL_FRect ToSDLFRect() const {
+            return SDL_FRect{static_cast<float>(x), static_cast<float>(y),
+                             static_cast<float>(width), static_cast<float>(height)};
+        }
     };
 } // namespace impala

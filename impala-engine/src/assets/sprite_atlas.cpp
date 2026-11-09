@@ -78,8 +78,9 @@ void SpriteAtlas::Initialize() {
         if (_spriteRects.find(spriteName) == _spriteRects.end()) {
             _spriteRects[spriteName] =
                 SpriteRect{static_cast<uint32_t>(_spriteRects.size()), x, y, width, height};
-            impala::log::Debug(impala::log::LogCategory::Assets, "Sprite parsed '{}' {}",
-                               spriteName, _name);
+            impala::log::Debug(impala::log::LogCategory::Assets,
+                               "Sprite parsed '{}' {} at ({}, {}, {}, {})", spriteName, _name, x, y,
+                               width, height);
         } else {
             // handle duplicate sprite names if necessary
             // TODO: Add warning logging

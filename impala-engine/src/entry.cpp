@@ -1,6 +1,8 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include "assets/asset_database.h"
 #include "impala/game.h"
+#include "impala/handles.h"
+#include "impala/transform.h"
 #include "renderer.h"
 #include "scene_manager.h"
 #include <SDL3/SDL.h>
@@ -57,6 +59,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     return SDL_APP_CONTINUE;
 }
 
+bool firstFrame = true;
 // called once per frame (Update + Render)
 SDL_AppResult SDL_AppIterate(void* appstate) {
 
@@ -65,7 +68,55 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // game logic
 
     // render pass
-    auto activeScene = sceneManager->GetActiveScene();
+    // SDL_ClearRender(sdlRenderer->Get());
+    SDL_SetRenderDrawColor(sdlRenderer->Get(), 0, 0, 0, 255);
+    SDL_RenderClear(sdlRenderer->Get());
+    SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+    auto activeScene = sceneManager->GetActiveImpalaScene();
+    for (const auto& entity : activeScene->GetAllEntities()) {
+        auto t = activeScene->GetComponent<impala::Transform2d>(
+            impala::EntityHandle{entity.id, entity.generation});
+        if (!t) {
+            continue;
+        }
+        auto r = activeScene->GetComponent<impala::SpriteRenderer>(
+            impala::EntityHandle{entity.id, entity.generation});
+        if (!r) {
+            continue;
+        }
+        auto sprite = assetDb->GetSprite(r->sprite);
+        auto texture = assetDb->GetTexture(sprite.textureHandle);
+
+        SDL_FRect srcRect = sprite.rect.ToSDLFRect();
+
+        // impala::log::Debug(impala::log::LogCategory::Engine,
+        //                    "Rendering sprite from source ({}, {}) size ({}, {})", srcRect.x,
+        //                    srcRect.y, srcRect.w, srcRect.h);
+
+        SDL_FRect dstRect;
+        dstRect.x = t->position.x;
+        dstRect.y = t->position.y;
+        dstRect.w = 50;
+        dstRect.h = 50;
+
+        // impala::log::Debug(impala::log::LogCategory::Engine,
+        //                    "Rendering sprite to destination ({}, {}) size ({}, {})", dstRect.x,
+        //                    dstRect.y, dstRect.w, dstRect.h);
+
+        // impala::log::Debug(impala::log::LogCategory::Engine,
+        //                    "Rendering sprite with texture handle {} {}", sprite.textureHandle.id,
+        //                    (void*)texture->GetTexture());
+
+        auto result =
+            SDL_RenderTexture(sdlRenderer->Get(), texture->GetTexture(), &srcRect, &dstRect);
+        if (!result) {
+            impala::log::Error(impala::log::LogCategory::Engine, "Failed to render texture: {}",
+                               SDL_GetError());
+        }
+
+        SDL_RenderPresent(sdlRenderer->Get());
+    }
 
     return SDL_APP_CONTINUE;
 }

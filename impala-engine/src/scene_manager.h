@@ -1,6 +1,7 @@
 #pragma once
 
 #include "impala/scene_manager.h"
+#include "impala_scene.h"
 
 namespace impala {
 
@@ -13,8 +14,10 @@ namespace impala {
 
         IScene* GetActiveScene() override;
 
+        ImpalaScene* GetActiveImpalaScene() { return _scenes[_activeSceneIndex].get(); };
+
     private:
-        std::vector<std::unique_ptr<IScene>> _scenes;
+        std::vector<std::unique_ptr<ImpalaScene>> _scenes;
         size_t _activeSceneIndex = 0;
     };
 

@@ -35,7 +35,12 @@ void AssetDatabase::AddSpriteAtlas(const std::string& atlasPath) {
         auto spriteRect = pair.second;
 
         std::string spriteKey = atlasFolder + pair.first;
-        auto spriteHandle = AddSprite(spriteKey, textureHandle);
+
+        impala::log::Debug(impala::log::LogCategory::Assets,
+                           "Adding sprite '{}' with rect ({}, {}, {}, {})", spriteName,
+                           spriteRect.x, spriteRect.y, spriteRect.width, spriteRect.height);
+
+        auto spriteHandle = AddSprite(spriteKey, spriteRect, textureHandle);
     }
 
     // we fast-loaded all the sprites - is this any use?
@@ -99,6 +104,37 @@ SpriteHandle AssetDatabase::AddSprite(const std::string& name, TextureHandle tex
     ImpalaSprite sprite = {{0, 0, 0, 0, 0}, t};
     _sprites.push_back(std::move(sprite));
     auto returnSprite = static_cast<SpriteHandle>(_sprites.size());
+    _spritesHandleMap[name] = returnSprite;
+    return returnSprite;
+}
+
+SpriteHandle AssetDatabase::AddSprite(const std::string& name, SpriteRect rect,
+                                      TextureHandle textureHandle) {
+
+    auto it = _spritesHandleMap.find(name);
+    if (it != _spritesHandleMap.end()) {
+        // impala::log::Debug(impala::log::LogCategory::Assets, "Sprite add for existing name '{}'",
+        //                    name);
+        // do more here? compare texture handles?
+        return it->second;
+    }
+
+    TextureHandle t = textureHandle;
+    if (t.IsValid()) {
+        if (t.id >= _textures.size()) {
+            // invalid texture handle - greater than collection
+            t = InvalidTextureHandle();
+        } else if (t.generation != _textures[t.id]->GetGeneration()) {
+            // invalid texture - handle expired
+            t = InvalidTextureHandle();
+        }
+    }
+
+    // fill with zero for now
+    // we can populate the rect on load
+    ImpalaSprite sprite = {rect, t};
+    _sprites.push_back(std::move(sprite));
+    auto returnSprite = static_cast<SpriteHandle>(_sprites.size() - 1);
     _spritesHandleMap[name] = returnSprite;
     return returnSprite;
 }

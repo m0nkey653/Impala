@@ -33,8 +33,8 @@ namespace impala {
                                          e);
             }
 
-            impala::log::Debug(log::LogCategory::Assets, "Loaded texture from path {}",
-                               surfacePath);
+            impala::log::Debug(log::LogCategory::Assets, "Loaded texture from path {} - {}",
+                               surfacePath, static_cast<const void*>(t));
             _texture = std::unique_ptr<SDL_Texture, detail::TextureDeleter>(t);
         };
 
