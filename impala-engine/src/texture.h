@@ -1,5 +1,6 @@
 #pragma once
 #include "renderer.h"
+#include <filesystem>
 
 namespace impala {
 
@@ -15,11 +16,10 @@ namespace impala {
         ~Texture() = default;
 
         void Load(Renderer* renderer) {
-            std::string surfacePath = SDL_GetBasePath();
-            surfacePath.append("/");
-            surfacePath.append(_path);
+            std::filesystem::path surfacePath = SDL_GetBasePath();
+            surfacePath /= _path;
 
-            auto surface = SDL_LoadSurface(surfacePath.c_str());
+            auto surface = SDL_LoadSurface(surfacePath.string().c_str());
             if (!surface) {
                 auto e = SDL_GetError();
                 throw std::runtime_error("Failed to load surface from path: " + _path + " - " + e);
@@ -34,7 +34,7 @@ namespace impala {
             }
 
             impala::log::Debug(log::LogCategory::Assets, "Loaded texture from path {} - {}",
-                               surfacePath, static_cast<const void*>(t));
+                               surfacePath.string(), static_cast<const void*>(t));
             _texture = std::unique_ptr<SDL_Texture, detail::TextureDeleter>(t);
         };
 
@@ -45,6 +45,6 @@ namespace impala {
     private:
         std::unique_ptr<SDL_Texture, detail::TextureDeleter> _texture = nullptr;
         std::string _path;
-        uint32_t _generation;
+        uint32_t _generation = 0;
     };
 } // namespace impala

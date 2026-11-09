@@ -40,7 +40,7 @@ namespace impala {
         std::vector<std::unique_ptr<impala::Texture>> _textures;
 
     private:
-        std::unique_ptr<impala::Renderer> _renderer;
+        impala::Renderer* _renderer;
     };
 
 } // namespace impala
