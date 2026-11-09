@@ -10,7 +10,7 @@
 
 static SDL_Window* window = nullptr;
 static std::unique_ptr<impala::Renderer> sdlRenderer;
-static impala::IGame* impalaGame = nullptr;
+static std::unique_ptr<impala::IGame> impalaGame;
 static std::unique_ptr<impala::AssetDatabase> assetDb;
 static std::unique_ptr<impala::SceneManager> sceneManager;
 
@@ -18,7 +18,7 @@ static std::unique_ptr<impala::SceneManager> sceneManager;
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     SDL_SetHint(SDL_HINT_LOGGING, "*=debug");
 
-    impalaGame = impala::CreateGame();
+    impalaGame = std::unique_ptr<impala::IGame>(impala::CreateGame());
 
     SDL_SetAppMetadata(impalaGame->GetGameInfo().name.c_str(),
                        impalaGame->GetGameInfo().version.c_str(), nullptr);
@@ -111,6 +111,10 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 
 // runs once at shutdown
 void SDL_AppQuit(void* appstate, SDL_AppResult result) {
-    // SDL cleans up the window and renderer
+    // SDL cleans up the window - we manually release the renderer and other resources
     impala::log::Info(impala::log::LogCategory::Engine, "Shutting down application");
+    sceneManager.reset();
+    assetDb.reset();
+    impalaGame.reset();
+    sdlRenderer.reset();
 }

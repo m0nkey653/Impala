@@ -219,3 +219,11 @@ TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
 
     return sprite.textureHandle;
 }
+
+void AssetDatabase::Reset() {
+    _spriteAtlases.clear();
+    _texturesHandleMap.clear();
+    _spritesHandleMap.clear();
+    _sprites.clear();
+    _textures.clear();
+}

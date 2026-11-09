@@ -29,6 +29,8 @@ namespace impala {
         SpriteHandle AddSprite(const std::string& name, SpriteRect rect,
                                TextureHandle textureHandle);
 
+        void Reset();
+
     private:
         std::unordered_map<std::string, std::unique_ptr<impala::SpriteAtlas>> _spriteAtlases;
 
