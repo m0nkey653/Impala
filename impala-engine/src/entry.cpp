@@ -75,48 +75,36 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 
     auto activeScene = sceneManager->GetActiveImpalaScene();
     for (const auto& entity : activeScene->GetAllEntities()) {
-        auto t = activeScene->GetComponent<impala::Transform2d>(
-            impala::EntityHandle{entity.id, entity.generation});
-        if (!t) {
-            continue;
-        }
         auto r = activeScene->GetComponent<impala::SpriteRenderer>(
             impala::EntityHandle{entity.id, entity.generation});
         if (!r) {
+            continue;
+        }
+        auto t = activeScene->GetComponent<impala::Transform2d>(
+            impala::EntityHandle{entity.id, entity.generation});
+        if (!t) {
             continue;
         }
         auto sprite = assetDb->GetSprite(r->sprite);
         auto texture = assetDb->GetTexture(sprite.textureHandle);
 
         SDL_FRect srcRect = sprite.rect.ToSDLFRect();
+        SDL_FRect dstRect = {t->position.x, t->position.y, srcRect.w, srcRect.h};
 
-        // impala::log::Debug(impala::log::LogCategory::Engine,
-        //                    "Rendering sprite from source ({}, {}) size ({}, {})", srcRect.x,
-        //                    srcRect.y, srcRect.w, srcRect.h);
-
-        SDL_FRect dstRect;
-        dstRect.x = t->position.x;
-        dstRect.y = t->position.y;
-        dstRect.w = 50;
-        dstRect.h = 50;
-
-        // impala::log::Debug(impala::log::LogCategory::Engine,
-        //                    "Rendering sprite to destination ({}, {}) size ({}, {})", dstRect.x,
-        //                    dstRect.y, dstRect.w, dstRect.h);
-
-        // impala::log::Debug(impala::log::LogCategory::Engine,
-        //                    "Rendering sprite with texture handle {} {}", sprite.textureHandle.id,
-        //                    (void*)texture->GetTexture());
-
-        auto result =
-            SDL_RenderTexture(sdlRenderer->Get(), texture->GetTexture(), &srcRect, &dstRect);
+        bool result = false;
+        if (t->rotation != 0) {
+            result = SDL_RenderTextureRotated(sdlRenderer->Get(), texture->GetTexture(), &srcRect,
+                                              &dstRect, t->rotation, nullptr, SDL_FLIP_NONE);
+        } else {
+            result =
+                SDL_RenderTexture(sdlRenderer->Get(), texture->GetTexture(), &srcRect, &dstRect);
+        }
         if (!result) {
             impala::log::Error(impala::log::LogCategory::Engine, "Failed to render texture: {}",
                                SDL_GetError());
         }
-
-        SDL_RenderPresent(sdlRenderer->Get());
     }
+    SDL_RenderPresent(sdlRenderer->Get());
 
     return SDL_APP_CONTINUE;
 }

@@ -24,6 +24,7 @@ public:
         scene->AddComponent<impala::Transform2d>(player0);
         auto transform = scene->GetComponent<impala::Transform2d>(player0);
         transform->position = {100.0f, 100.0f}; // Set initial position for the player
+        transform->rotation = 90;
         scene->AddComponent<impala::SpriteRenderer>(player0);
         auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(player0);
         spriteRenderer->sprite = playerSprite0;
@@ -31,7 +32,8 @@ public:
         auto player1 = scene->CreateEntity("Player 2");
         scene->AddComponent<impala::Transform2d>(player1);
         auto transform1 = scene->GetComponent<impala::Transform2d>(player1);
-        transform1->position = {200.0f, 100.0f}; // Set initial position for the player
+        transform1->position = {400.0f, 100.0f}; // Set initial position for the player
+        transform1->rotation = -90;
         scene->AddComponent<impala::SpriteRenderer>(player1);
         auto spriteRenderer1 = scene->GetComponent<impala::SpriteRenderer>(player1);
         spriteRenderer1->sprite = playerSprite1;
