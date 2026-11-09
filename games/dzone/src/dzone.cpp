@@ -14,7 +14,7 @@ public:
         auto* assetDataBase = context->assetDataBase;
         assetDataBase->AddSpriteAtlas(dzone::KENNEY_SPACE_SHOOTER_SPRITE_ATLAS);
         auto playerSprite0 = assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_SHIP_1_BLUE);
-        auto playerSprite1 = assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_SHIP_1_GREEN);
+        auto playerSprite1 = assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_SHIP_2_GREEN);
         assetDataBase->LoadSpriteTexture(playerSprite0);
         assetDataBase->LoadSpriteTexture(playerSprite1);
 
