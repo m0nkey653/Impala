@@ -139,6 +139,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 
     // post-update input states
     gamepadCollection->PostUpdate();
+    keyboard->PostUpdate();
 
     return SDL_APP_CONTINUE;
 }

@@ -48,6 +48,18 @@ namespace impala {
         KeyTab = 43,
         KeySpace = 44,
 
+        KeyMinus = 45,
+        KeyEquals = 46,
+        KeyLeftBracket = 47,
+        KeyRightBracket = 48,
+        KeyBackslash = 49,
+        KeySemicolon = 51,
+        KeyApostrophe = 52,
+        KeyGrave = 53,
+        KeyComma = 54,
+        KeyPeriod = 55,
+        KeySlash = 56,
+
         KeyCapsLock = 57,
 
         KeyF1 = 58,
