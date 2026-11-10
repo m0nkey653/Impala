@@ -1,5 +1,4 @@
 #include "gamepad.h"
-#include <cstdint>
 
 namespace impala {
 

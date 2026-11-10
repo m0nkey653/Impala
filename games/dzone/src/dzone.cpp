@@ -1,7 +1,6 @@
 #include "dzone.h"
 #include "dzone_assets.h"
 #include "impala/game.h"
-#include "impala/log.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
 
