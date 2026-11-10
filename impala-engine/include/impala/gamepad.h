@@ -9,10 +9,10 @@ namespace impala {
         East,
         West,
         North,
-        LeftBump,
-        RightBump,
+        LeftShoulder,
+        RightShoulder,
         Start,
-        Select,
+        Back,
         LeftStick,
         RightStick,
         DPadUp,
@@ -21,7 +21,7 @@ namespace impala {
         DPadRight
     };
 
-    enum class GamepadAxis { LeftX, LeftY, RightX, RightY, TriggerLeft, TriggerRight };
+    enum class GamepadAxis { LeftX, LeftY, RightX, RightY, LeftTrigger, RightTrigger };
 
     class IGamepad {
     public:

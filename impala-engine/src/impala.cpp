@@ -16,6 +16,12 @@ static std::unique_ptr<impala::AssetDatabase> assetDb;
 static std::unique_ptr<impala::SceneManager> sceneManager;
 static std::unique_ptr<impala::GamepadCollection> gamepadCollection;
 
+impala::GameContext context{};
+uint64_t lastTicks = 0;
+bool firstFrame = true;
+
+struct AppState {};
+
 // runs once at startup
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     SDL_SetHint(SDL_HINT_LOGGING, "*=debug");
@@ -46,7 +52,6 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     sceneManager = std::make_unique<impala::SceneManager>();
     gamepadCollection = std::make_unique<impala::GamepadCollection>();
 
-    impala::GameContext context;
     context.assetDataBase = assetDb.get();
     context.sceneManager = sceneManager.get();
     context.gamepads = gamepadCollection.get();
@@ -74,13 +79,20 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     return SDL_APP_CONTINUE;
 }
 
-bool firstFrame = true;
 // called once per frame (Update + Render)
 SDL_AppResult SDL_AppIterate(void* appstate) {
+    auto currentTicks = SDL_GetTicksNS();
+    auto deltaTime = firstFrame ? 0.0f : (currentTicks - lastTicks) / 1e9f;
+    lastTicks = currentTicks;
+    firstFrame = false;
+
+    // get input states
+    gamepadCollection->Update(deltaTime); // Assuming dt is 0 for now
 
     // locked physics update
 
     // game logic
+    impalaGame->Update(&context, deltaTime);
 
     // render pass
     // SDL_ClearRender(sdlRenderer->Get());
@@ -120,6 +132,9 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         }
     }
     SDL_RenderPresent(sdlRenderer->Get());
+
+    // post-update input states
+    gamepadCollection->PostUpdate();
 
     return SDL_APP_CONTINUE;
 }
