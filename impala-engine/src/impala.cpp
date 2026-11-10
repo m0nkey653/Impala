@@ -60,6 +60,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     context.gamepads = gamepadCollection.get();
     context.keyboard = keyboard.get();
 
+    impala::log::Debug(impala::log::LogCategory::Engine, "Calling init on game: {}",
+                       impalaGame->GetGameInfo().name);
     impalaGame->Init(&context);
 
     return SDL_APP_CONTINUE;
