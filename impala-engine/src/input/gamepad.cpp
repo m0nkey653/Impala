@@ -32,7 +32,25 @@ namespace impala {
 
     float Gamepad::GetAxis(GamepadAxis axis) const {
         // Return the value of the specified axis
-        return _current.axisStates[static_cast<int>(axis)];
+
+        // LEFTX, RIGHTX	about 0	-32768 (full left) to 32767 (full right)
+        // LEFTY, RIGHTY	about 0	-32768 (full up) to 32767 (full down)	Positive is down.
+        // LEFT_TRIGGER, RIGHT_TRIGGER	0	0 (released) to 32767 (fully pressed)	Never
+        // negative.
+
+        auto result = _current.axisStates[static_cast<int>(axis)];
+        switch (axis) {
+        case GamepadAxis::LeftX:
+        case GamepadAxis::RightX:
+        case GamepadAxis::LeftY:
+        case GamepadAxis::RightY:
+            return std::max(result /= 32767.0f, -1.0f);
+        case GamepadAxis::LeftTrigger:
+        case GamepadAxis::RightTrigger:
+            return result > 0;
+        }
+
+        return result;
     }
 
     void Gamepad::ClearCurrentState() {
