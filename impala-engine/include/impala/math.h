@@ -1,3 +1,5 @@
+#pragma once
+
 namespace impala::math {
     struct Vec2 {
         float x;

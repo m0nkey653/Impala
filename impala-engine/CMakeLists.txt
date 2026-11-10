@@ -14,8 +14,11 @@ add_library(impala_engine STATIC
     include/impala/transform.h
     include/impala/scene.h
     include/impala/math.h
-    include/impala/entity.h
     src/scene_manager.cpp
+    include/impala/gamepad.h
+    src/input/gamepad.cpp
+    src/input/gamepad_collection.cpp
+    include/impala/gamepad.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

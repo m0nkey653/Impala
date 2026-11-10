@@ -40,6 +40,10 @@ namespace impala {
         virtual void Update(GameContext* context, float dt) = 0;
         virtual void Render(GameContext* context) = 0;
         virtual void OnEvent(const GameEvent& event) = 0;
+
+        virtual void OnGamepadConnected(GamepadHandle handle) {}
+        virtual void OnGamepadDisconnected(GamepadHandle handle) {}
+
         virtual void Shutdown() = 0;
     };
 

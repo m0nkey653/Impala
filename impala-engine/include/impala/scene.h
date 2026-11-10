@@ -1,5 +1,5 @@
 #pragma once
-#include "entity.h"
+#include "handles.h"
 #include <atomic>
 #include <cstdint>
 #include <memory>
