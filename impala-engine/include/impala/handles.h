@@ -30,9 +30,11 @@ template <typename Tag> struct std::hash<impala::Handle<Tag>> {
 };
 
 template <typename Tag> struct std::formatter<impala::Handle<Tag>> {
+    // NOLINTNEXTLINE(readability-identifier-naming)
     constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
 
     // Formats the Point object into the output context
+    // NOLINTNEXTLINE(readability-identifier-naming)
     auto format(const impala::Handle<Tag>& h, std::format_context& ctx) const {
         // You can use std::format_to to send the output directly to the buffer
         return std::format_to(ctx.out(), "Handle({}, {})", h.id, h.generation);
