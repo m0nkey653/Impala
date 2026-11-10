@@ -4,12 +4,9 @@
 
 namespace impala {
 
-    struct KeyboardState {
-        bool keyStates[static_cast<int>(SDL_SCANCODE_COUNT)] = {false};
-    };
-
     class Keyboard : public IKeyboard {
     public:
+        Keyboard() : _current(SDL_GetKeyboardState(nullptr)) {}
         bool IsKeyPressed(ImpalaKey key) const override;
         bool WasKeyPressedThisFrame(ImpalaKey key) const override;
         bool WasKeyReleasedThisFrame(ImpalaKey key) const override;
@@ -17,11 +14,11 @@ namespace impala {
         void Update(float dt);
         void PostUpdate();
 
-        SDL_Scancode GetSdlKey(ImpalaKey key) const;
-
     private:
-        KeyboardState _currentKeyStates;
-        KeyboardState _previousKeyStates;
+        static constexpr int IMPALA_KEY_COUNT = SDL_SCANCODE_COUNT;
+
+        const bool* _current = nullptr;
+        bool _previous[IMPALA_KEY_COUNT] = {false};
     };
 
 } // namespace impala

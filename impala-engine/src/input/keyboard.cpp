@@ -31,32 +31,21 @@ namespace impala {
 
     bool Keyboard::IsKeyPressed(ImpalaKey key) const {
         int index = static_cast<int>(key);
-        return _currentKeyStates.keyStates[index];
+        return _current[index];
     }
 
     bool Keyboard::WasKeyPressedThisFrame(ImpalaKey key) const {
         int index = static_cast<int>(key);
-        return _currentKeyStates.keyStates[index] && !_previousKeyStates.keyStates[index];
+        return _current[index] && !_previous[index];
     }
 
     bool Keyboard::WasKeyReleasedThisFrame(ImpalaKey key) const {
         int index = static_cast<int>(key);
-        return !_currentKeyStates.keyStates[index] && _previousKeyStates.keyStates[index];
+        return !_current[index] && _previous[index];
     }
 
     void Keyboard::PostUpdate() {
-        _previousKeyStates = _currentKeyStates;
-    }
-
-    void Keyboard::Update(float dt) {
-        const bool* state = SDL_GetKeyboardState(nullptr);
-        for (int i = 0; i < static_cast<int>(SDL_SCANCODE_COUNT); ++i) {
-            _currentKeyStates.keyStates[i] = state[i];
-        }
-    }
-
-    SDL_Scancode Keyboard::GetSdlKey(ImpalaKey key) const {
-        return static_cast<SDL_Scancode>(key);
+        std::copy_n(_current, IMPALA_KEY_COUNT, _previous);
     }
 
 } // namespace impala
