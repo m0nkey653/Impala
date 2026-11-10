@@ -1,7 +1,7 @@
 # Formatting rules for all C/C++ in this repo (clang-format 18+)
 BasedOnStyle: LLVM
 Language: Cpp
-Standard: c++17
+Standard: c++20
 
 IndentWidth: 4
 ColumnLimit: 100
