@@ -9,7 +9,7 @@ namespace impala {
     };
 
     constexpr ImpalaSprite InvalidSprite() {
-        return {{0, 0, 0, 0}, InvalidTextureHandle()};
+        return {{0, 0, 0, 0}, TextureHandle()};
     }
 
 } // namespace impala

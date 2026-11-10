@@ -1,46 +1,29 @@
 #pragma once
 
+#include <compare> // IWYU pragma: keep  (needed by defaulted operator<=>)
 #include <cstdint>
+#include <functional>
 
 namespace impala {
+    template <typename Tag> struct Handle {
+        uint32_t id = UINT32_MAX;
+        uint32_t generation = UINT32_MAX;
 
-    struct EntityHandle {
-        uint32_t id = 0;
-        uint32_t generation = 0;
-        bool IsValid() const { return id != UINT32_MAX; }
-    };
-
-    constexpr EntityHandle InvalidEntityHandle() {
-        return EntityHandle{UINT32_MAX, UINT32_MAX};
-    }
-
-    struct GamepadHandle {
-        uint32_t id = 0;
-        uint32_t generation = 0;
-        bool IsValid() const { return id != UINT32_MAX; }
-    };
-
-    constexpr GamepadHandle InvalidGamepadHandle() {
-        return GamepadHandle{UINT32_MAX, UINT32_MAX};
-    }
-
-    struct SpriteHandle {
-        uint32_t id = 0;
-        uint32_t generation = 0;
         constexpr bool IsValid() const { return id != UINT32_MAX; }
+        constexpr auto operator<=>(const Handle&) const = default;
+        static constexpr Handle Invalid() { return {}; }
     };
 
-    constexpr SpriteHandle InvalidSpriteHandle() {
-        return SpriteHandle{UINT32_MAX, UINT32_MAX};
-    }
+    using EntityHandle = Handle<struct EntityTag>;
+    using TextureHandle = Handle<struct TextureTag>;
+    using SpriteHandle = Handle<struct SpriteTag>;
+    using GamepadHandle = Handle<struct GamepadTag>;
 
-    struct TextureHandle {
-        uint32_t id = 0;
-        uint32_t generation = 0;
-        constexpr bool IsValid() const { return id != UINT32_MAX; }
-    };
-
-    constexpr TextureHandle InvalidTextureHandle() {
-        return TextureHandle{UINT32_MAX, UINT32_MAX};
-    }
 } // namespace impala
+
+// keep out of impala namespace for std::hash specialization
+template <typename Tag> struct std::hash<impala::Handle<Tag>> {
+    size_t operator()(const impala::Handle<Tag>& h) const noexcept {
+        return std::hash<uint64_t>{}((uint64_t(h.generation) << 32) | h.id);
+    }
+};
