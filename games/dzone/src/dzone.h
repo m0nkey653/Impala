@@ -20,5 +20,6 @@ namespace dzone {
     private:
         impala::IScene* _activeScene = nullptr;
         std::vector<DzonePlayer> _players;
+        std::unordered_map<impala::GamepadHandle, int> _gamepadToPlayerMap;
     };
 } // namespace dzone
