@@ -19,6 +19,7 @@ add_library(impala_engine STATIC
     src/input/gamepad.cpp
     src/input/gamepad_collection.cpp
     include/impala/gamepad.h
+    include/impala/input.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 
