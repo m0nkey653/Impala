@@ -94,10 +94,10 @@ SpriteHandle AssetDatabase::AddSprite(const std::string& name, TextureHandle tex
     if (t.IsValid()) {
         if (t.id >= _textures.size()) {
             // invalid texture handle - greater than collection
-            t = InvalidTextureHandle();
+            t = TextureHandle();
         } else if (t.generation != _textures[t.id]->GetGeneration()) {
             // invalid texture - handle expired
-            t = InvalidTextureHandle();
+            t = TextureHandle();
         }
     }
 
@@ -127,14 +127,14 @@ SpriteHandle AssetDatabase::AddSprite(const std::string& name, SpriteRect rect,
             // invalid texture handle - greater than collection
             impala::log::Error(impala::log::LogCategory::Assets,
                                "Invalid texture handle - greater than collection handle {}", t.id);
-            t = InvalidTextureHandle();
+            t = TextureHandle();
         } else if (t.generation != _textures[t.id]->GetGeneration()) {
             // invalid texture - handle expired
             impala::log::Error(
                 impala::log::LogCategory::Assets,
                 "Invalid texture handle - handle expired handle {} - generation {} - actual {}",
                 t.id, t.generation, _textures[t.id]->GetGeneration());
-            t = InvalidTextureHandle();
+            t = TextureHandle();
         }
     }
 
@@ -154,7 +154,7 @@ SpriteHandle AssetDatabase::GetSprite(const std::string& name) {
     }
 
     impala::log::Error(impala::log::LogCategory::Assets, "Sprite '{}' not found", name);
-    return InvalidSpriteHandle();
+    return SpriteHandle();
 }
 
 SpriteHandle AssetDatabase::GetSprite(const std::string& spriteAtlas, const std::string& name) {
@@ -165,7 +165,7 @@ SpriteHandle AssetDatabase::GetSprite(const std::string& spriteAtlas, const std:
 
     impala::log::Error(impala::log::LogCategory::Assets, "Sprite atlas '{}' not found",
                        spriteAtlas);
-    return InvalidSpriteHandle();
+    return SpriteHandle();
 }
 
 ImpalaSprite AssetDatabase::GetSprite(SpriteHandle handle) {
@@ -197,7 +197,7 @@ TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
     if (!texture) {
         impala::log::Error(impala::log::LogCategory::Assets,
                            "Texture for sprite handle '{}' not found", handle.id);
-        return InvalidTextureHandle();
+        return TextureHandle();
     }
 
     if (texture->IsLoaded()) {
@@ -214,7 +214,7 @@ TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
     } catch (const std::exception& e) {
         impala::log::Error(impala::log::LogCategory::Assets, "Error loading texture - '{}' - {}",
                            handle.id, e.what());
-        return InvalidTextureHandle();
+        return TextureHandle();
     }
 
     return sprite.textureHandle;

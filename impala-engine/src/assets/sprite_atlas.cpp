@@ -98,7 +98,7 @@ void SpriteAtlas::Initialize() {
 SpriteHandle SpriteAtlas::GetSprite(const std::string& name) {
     auto it = _spriteRects.find(name);
     if (it == _spriteRects.end()) {
-        return InvalidSpriteHandle();
+        return SpriteHandle();
     }
     return SpriteHandle{it->second.id};
 }

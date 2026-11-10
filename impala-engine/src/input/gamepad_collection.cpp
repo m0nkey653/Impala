@@ -70,7 +70,7 @@ namespace impala {
         if (!sdlGamepad) {
             impala::log::Error(impala::log::LogCategory::Input, "Failed to open gamepad: {} - {}",
                                std::to_string(joystickId), SDL_GetError());
-            return InvalidGamepadHandle();
+            return GamepadHandle();
         }
 
         // Find an available slot or create a new one
