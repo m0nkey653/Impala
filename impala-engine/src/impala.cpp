@@ -4,6 +4,7 @@
 #include "impala/handles.h"
 #include "impala/transform.h"
 #include "input/gamepad_collection.h"
+#include "input/keyboard.h"
 #include "renderer.h"
 #include "scene_manager.h"
 #include <SDL3/SDL.h>
@@ -15,6 +16,7 @@ static std::unique_ptr<impala::IGame> impalaGame;
 static std::unique_ptr<impala::AssetDatabase> assetDb;
 static std::unique_ptr<impala::SceneManager> sceneManager;
 static std::unique_ptr<impala::GamepadCollection> gamepadCollection;
+static std::unique_ptr<impala::Keyboard> keyboard;
 
 impala::GameContext context{};
 uint64_t lastTicks = 0;
@@ -51,10 +53,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     assetDb = std::make_unique<impala::AssetDatabase>(sdlRenderer.get());
     sceneManager = std::make_unique<impala::SceneManager>();
     gamepadCollection = std::make_unique<impala::GamepadCollection>();
+    keyboard = std::make_unique<impala::Keyboard>();
 
     context.assetDataBase = assetDb.get();
     context.sceneManager = sceneManager.get();
     context.gamepads = gamepadCollection.get();
+    context.keyboard = keyboard.get();
 
     impalaGame->Init(&context);
 

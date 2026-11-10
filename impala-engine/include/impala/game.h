@@ -2,6 +2,7 @@
 
 #include "impala/asset_database.h"
 #include "impala/gamepad.h"
+#include "impala/keyboard.h"
 #include "impala/scene_manager.h"
 #include <string>
 
@@ -27,6 +28,7 @@ namespace impala {
         IGameRenderer3D* renderer3D;
         IAssetDataBase* assetDataBase;
         IGamepadCollection* gamepads;
+        IKeyboard* keyboard;
     };
 
     struct GameInfo {
