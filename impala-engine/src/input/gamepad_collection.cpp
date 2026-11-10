@@ -22,7 +22,7 @@ namespace impala {
 
         auto sdlGamepad = SDL_OpenGamepad(joystickId);
         if (!sdlGamepad) {
-            impala::log::Error(impala::log::LogCategory::Engine, "Failed to open gamepad: {} - {}",
+            impala::log::Error(impala::log::LogCategory::Input, "Failed to open gamepad: {} - {}",
                                std::to_string(joystickId), SDL_GetError());
             return InvalidGamepadHandle();
         }
@@ -35,6 +35,8 @@ namespace impala {
                 _gamepads[i].sdlGamepad = std::unique_ptr<SDL_Gamepad, detail::GamepadDeleter>(
                     sdlGamepad, detail::GamepadDeleter());
                 _gamepadMap[joystickId] = handle;
+                impala::log::Info(impala::log::LogCategory::Input,
+                                  "Gamepad connected: Handle {} - {}", handle.id, joystickId);
                 return handle;
             }
         }
@@ -46,6 +48,8 @@ namespace impala {
         GamepadHandle handle{static_cast<uint32_t>(_gamepads.size()), newSlot.generation};
         _gamepads.push_back(std::move(newSlot));
         _gamepadMap[joystickId] = handle;
+        impala::log::Info(impala::log::LogCategory::Input, "Gamepad connected: Handle {} - {}",
+                          handle.id, joystickId);
         return handle;
     }
 
@@ -58,8 +62,8 @@ namespace impala {
             _gamepads[handle.id].gamepad.Reset();
             _gamepads[handle.id].generation++;
         } else {
-            impala::log::Warn(impala::log::LogCategory::Engine,
-                              "Gamepad disconnected not found: {}", std::to_string(joystickId));
+            impala::log::Warn(impala::log::LogCategory::Input, "Gamepad disconnected not found: {}",
+                              std::to_string(joystickId));
         }
     }
 
@@ -73,6 +77,11 @@ namespace impala {
         }
 
         return &_gamepads[handle.id].gamepad;
+    }
+
+    std::span<GamepadHandle> GamepadCollection::GetConnectedGamepads() {
+        return std::span<GamepadHandle>(reinterpret_cast<GamepadHandle*>(_gamepads.data()),
+                                        _gamepads.size());
     }
 
 } // namespace impala

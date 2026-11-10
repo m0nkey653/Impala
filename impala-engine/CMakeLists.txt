@@ -45,6 +45,7 @@ target_precompile_headers(impala_engine PRIVATE
     <vector>
     <unordered_map>
     <memory>
+    <span>
     <SDL3/SDL.h>
     <impala/log.h>
     <impala/error.h>

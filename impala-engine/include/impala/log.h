@@ -8,6 +8,7 @@ namespace impala::log {
         Assets,
         Scene,
         Game,
+        Input,
     };
 
     enum class LogLevel : int {

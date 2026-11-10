@@ -1,5 +1,6 @@
 #pragma once
 #include "handles.h"
+#include <span>
 
 namespace impala {
 
@@ -36,7 +37,7 @@ namespace impala {
     public:
         virtual ~IGamepadCollection() = default;
         virtual IGamepad* GetGamepad(GamepadHandle handle) = 0;
-        virtual std::vector<GamepadHandle> GetConnectedGamepads() = 0;
+        virtual std::span<GamepadHandle> GetConnectedGamepads() = 0;
     };
 
 } // namespace impala

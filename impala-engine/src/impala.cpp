@@ -3,6 +3,7 @@
 #include "impala/game.h"
 #include "impala/handles.h"
 #include "impala/transform.h"
+#include "input/gamepad_collection.h"
 #include "renderer.h"
 #include "scene_manager.h"
 #include <SDL3/SDL.h>
@@ -13,6 +14,7 @@ static std::unique_ptr<impala::Renderer> sdlRenderer;
 static std::unique_ptr<impala::IGame> impalaGame;
 static std::unique_ptr<impala::AssetDatabase> assetDb;
 static std::unique_ptr<impala::SceneManager> sceneManager;
+static std::unique_ptr<impala::GamepadCollection> gamepadCollection;
 
 // runs once at startup
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
@@ -23,7 +25,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     SDL_SetAppMetadata(impalaGame->GetGameInfo().name.c_str(),
                        impalaGame->GetGameInfo().version.c_str(), nullptr);
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
@@ -42,9 +44,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     assetDb = std::make_unique<impala::AssetDatabase>(sdlRenderer.get());
     sceneManager = std::make_unique<impala::SceneManager>();
+    gamepadCollection = std::make_unique<impala::GamepadCollection>();
+
     impala::GameContext context;
     context.assetDataBase = assetDb.get();
     context.sceneManager = sceneManager.get();
+    context.gamepads = gamepadCollection.get();
 
     impalaGame->Init(&context);
 
@@ -53,8 +58,18 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
 // callback when an event is received - input/mouse/keyboard/quit
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
-    if (event->type == SDL_EVENT_QUIT) {
+    switch (event->type) {
+    case SDL_EVENT_QUIT:
         return SDL_APP_SUCCESS;
+    case SDL_EVENT_GAMEPAD_ADDED: {
+        auto handle = gamepadCollection->GamepadConnected(event->gdevice.which);
+        if (handle.IsValid()) {
+            impalaGame->OnGamepadConnected(handle);
+        }
+        break;
+    }
+    default:
+        break;
     }
     return SDL_APP_CONTINUE;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "impala/asset_database.h"
+#include "impala/gamepad.h"
 #include "impala/scene_manager.h"
 #include <string>
 
@@ -25,6 +26,7 @@ namespace impala {
         IGameRenderer2D* renderer2D;
         IGameRenderer3D* renderer3D;
         IAssetDataBase* assetDataBase;
+        IGamepadCollection* gamepads;
     };
 
     struct GameInfo {

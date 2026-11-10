@@ -26,7 +26,7 @@ namespace impala {
         void GamepadDisconnected(SDL_JoystickID joystickId);
 
         IGamepad* GetGamepad(GamepadHandle handle) override;
-        std::vector<GamepadHandle> GetConnectedGamepads() override;
+        std::span<GamepadHandle> GetConnectedGamepads() override;
 
     private:
         std::vector<GamepadSlot> _gamepads;
