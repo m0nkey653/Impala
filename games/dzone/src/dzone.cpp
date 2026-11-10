@@ -1,15 +1,13 @@
+#include "dzone.h"
 #include "dzone_assets.h"
 #include "impala/game.h"
 #include "impala/log.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
-#include "version.h"
 
-class DzoneGame : public impala::IGame {
-public:
-    impala::GameInfo GetGameInfo() const override { return {"Dzone", DZONE_VERSION}; }
+namespace dzone {
 
-    void Init(impala::GameContext* context) override {
+    void DzoneGame::Init(impala::GameContext* context) {
 
         auto* assetDataBase = context->assetDataBase;
         assetDataBase->AddSpriteAtlas(dzone::KENNEY_SPACE_SHOOTER_SPRITE_ATLAS);
@@ -39,25 +37,28 @@ public:
         spriteRenderer1->sprite = playerSprite1;
     }
 
-    void Update(impala::GameContext* context, float dt) override {
+    void DzoneGame::Update(impala::GameContext* context, float dt) {
         // Update game state here
     }
 
-    void Render(impala::GameContext* context) override {
+    void DzoneGame::Render(impala::GameContext* context) {
         // Render game here
     }
 
-    void OnEvent(const impala::GameEvent& event) override {
+    void DzoneGame::OnEvent(const impala::GameEvent& event) {
         // Handle game events here
     }
 
-    void Shutdown() override {
+    void DzoneGame::OnGamepadConnected(impala::GamepadHandle handle) {
+        // Handle gamepad connection here
+    }
+
+    void DzoneGame::OnGamepadDisconnected(impala::GamepadHandle handle) {
+        // Handle gamepad disconnection here
+    }
+
+    void DzoneGame::Shutdown() {
         // Cleanup code here
     }
-};
 
-impala::IGame* impala::CreateGame() {
-    auto* game = new DzoneGame();
-    log::Info(log::LogCategory::Game, "Creating Dzone game");
-    return game;
-}
+} // namespace dzone
