@@ -42,13 +42,23 @@ namespace dzone {
         }
     }
 
-    bool PlayerInput::GetFire() const {
+    bool PlayerInput::GetFirePrimary() const {
         // Controller takes precedent over keyboard
         auto gamepad = _gamepads->GetGamepad(_handle);
         if (gamepad) {
-            return gamepad->GetAxis(_gamepadInputMap.fire) > FIRE_THRESHOLD;
+            return gamepad->GetAxis(_gamepadInputMap.firePrimary) > FIRE_THRESHOLD;
         } else {
-            return _keyboard->WasKeyPressedThisFrame(_keyboardInputMap.fire);
+            return _keyboard->WasKeyPressedThisFrame(_keyboardInputMap.firePrimary);
+        }
+    }
+
+    bool PlayerInput::GetFireSecondary() const {
+        // Controller takes precedent over keyboard
+        auto gamepad = _gamepads->GetGamepad(_handle);
+        if (gamepad) {
+            return gamepad->GetAxis(_gamepadInputMap.fireSecondary) > FIRE_THRESHOLD;
+        } else {
+            return _keyboard->WasKeyPressedThisFrame(_keyboardInputMap.fireSecondary);
         }
     }
 
