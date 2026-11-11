@@ -20,7 +20,8 @@ namespace dzone {
         // Controller takes precedent over keyboard
         auto gamepad = _gamepads->GetGamepad(_handle);
         if (gamepad) {
-            return gamepad->GetAxis(_gamepadInputMap.forward);
+            // up on the gamepad is negative, so invert it to match screen coordinates
+            return -1 * gamepad->GetAxis(_gamepadInputMap.forward);
         } else {
             // if both keys are pressed - cancel them out
             float thrust = 0.0f;
