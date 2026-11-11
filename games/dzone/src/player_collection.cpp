@@ -6,6 +6,7 @@
 #include "impala/sprite.h"
 #include "impala/transform.h"
 #include "projectile.h"
+#include "ships.h"
 
 namespace dzone {
 
@@ -18,11 +19,13 @@ namespace dzone {
         auto entity = scene->CreateEntity(name.c_str());
         auto& t = scene->AddComponent<impala::Transform2d>(entity);
 
+        auto ship = DefaultShip();
         scene->AddComponent<Movement>(entity);
-        scene->AddComponent<Health>(entity);
-        scene->AddComponent<Armor>(entity);
-        scene->AddComponent<Shield>(entity);
-        auto& w = scene->AddComponent<Weapons>(entity);
+        scene->AddComponent<Health>(entity, ship.health);
+        scene->AddComponent<Armor>(entity, ship.armor);
+        scene->AddComponent<Shield>(entity, ship.shield);
+        scene->AddComponent<Thrust>(entity, ship.thrust);
+        auto& w = scene->AddComponent<Weapons>(entity, ship.weapons);
         WeaponSlot ws = {.projectile = Laser(), .muzzleOffset = {0.0f, 0.0f}};
         w.slots.push_back(ws);
 
@@ -33,9 +36,8 @@ namespace dzone {
         PlayerInput input0(gameContext->keyboard, dzone::KEYBOARD_MAPS[_players.size()],
                            gameContext->gamepads);
 
-        impala::log::Debug(impala::log::LogCategory::Game,
-                           "Created Player[{}] {} entity with entityID {}", _players.size(), name,
-                           entity.id);
+        impala::log::Debug(impala::log::LogCategory::Game, "Created Player[{}] {} with entityID {}",
+                           _players.size(), name, entity.id);
 
         _players.push_back(DzonePlayer(entity, input0));
         return _players.back();

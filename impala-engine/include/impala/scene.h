@@ -54,6 +54,14 @@ namespace impala {
             return *static_cast<T*>(componentPtr);
         }
 
+        template <Component T> T& AddComponent(EntityHandle entity, T component) {
+            auto* componentHolder = new detail::ComponentHolder<T>(std::move(component));
+            auto* componentPtr =
+                AddComponentInternal(entity, detail::ComponentTypeId<T>(),
+                                     std::unique_ptr<detail::IComponentHolder>(componentHolder));
+            return *static_cast<T*>(componentPtr);
+        }
+
         template <typename T> T* GetComponent(EntityHandle entity) {
             auto* componentPtr = GetComponentInternal(entity, detail::ComponentTypeId<T>());
             return static_cast<T*>(componentPtr);

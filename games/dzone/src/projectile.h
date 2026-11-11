@@ -13,8 +13,9 @@ namespace dzone {
         float shieldPenetration = 0;
         float armorPenetration = 0;
         float cooldown = 0;
-        const char* texturePath = nullptr;
+        const char* spriteName = nullptr;
     };
+
     constexpr ProjectileBluePrint Laser() {
         return ProjectileBluePrint{.name = "Laser",
                                    .speed = 100.0f,
@@ -25,7 +26,7 @@ namespace dzone {
                                    .shieldPenetration = 1.0f,
                                    .armorPenetration = 1.0f,
                                    .cooldown = 0.5f,
-                                   .texturePath = KENNEY_SPACE_SHOOTER_LASER_BLUE_01};
+                                   .spriteName = KENNEY_SPACE_SHOOTER_LASER_BLUE_01};
     }
 
 } // namespace dzone

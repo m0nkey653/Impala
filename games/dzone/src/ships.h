@@ -1,5 +1,6 @@
 #pragma once
 #include "components.h"
+#include "projectile.h"
 
 namespace dzone {
 
@@ -10,6 +11,7 @@ namespace dzone {
         Health health = {100};
         Armor armor = {0};
         Shield shield = {0};
+        Weapons weapons = {};
     };
 
     constexpr PlayerShip DefaultShip() {
@@ -17,7 +19,8 @@ namespace dzone {
             .thrust = {.acceleration = 1, .maxSpeed = 20, .drag = 1, .grip = 1, .turnRate = 20},
             .health = {100},
             .armor = {0},
-            .shield = {0}};
-    };
+            .shield = {0},
+            .weapons = {}};
+    }
 
 } // namespace dzone
