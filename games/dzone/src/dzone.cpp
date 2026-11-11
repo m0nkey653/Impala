@@ -45,8 +45,6 @@ namespace dzone {
     }
 
     void DzoneGame::OnGamepadDisconnected(impala::GamepadHandle handle) {
-        impala::log::Debug(impala::log::LogCategory::Game, "Gamepad connected: {}", handle);
-        // Handle gamepad disconnection here
         _players.RemoveGamepadFromPlayer(handle);
     }
 
