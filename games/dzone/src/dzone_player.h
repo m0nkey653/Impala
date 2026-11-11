@@ -15,9 +15,12 @@ namespace dzone {
         void SetEntity(impala::EntityHandle entity) { _entity = entity; }
         void SetGamepad(impala::GamepadHandle handle) { _input.SetGamepadHandle(handle); }
 
+        void SetRotationSpeed(float rotationSpeed) { _rotationSpeed = rotationSpeed; }
+        void SetThrustSpeed(float thrustSpeed) { _thrustSpeed = thrustSpeed; }
+
     private:
-        float _rotationSpeed = 60.0f;
-        float _thrustSpeed = 60.0f;
+        float _rotationSpeed = 120.0f;
+        float _thrustSpeed = 120.0f;
         impala::EntityHandle _entity;
         dzone::PlayerInput _input;
     };

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dzone_player.h"
 #include "impala/game.h"
 #include "impala/scene.h"
+#include "player_collection.h"
 #include "version.h"
 
 namespace dzone {
@@ -19,7 +19,6 @@ namespace dzone {
 
     private:
         impala::IScene* _activeScene = nullptr;
-        std::vector<DzonePlayer> _players;
-        std::unordered_map<impala::GamepadHandle, int> _gamepadToPlayerMap;
+        PlayerCollection _players;
     };
 } // namespace dzone

@@ -18,39 +18,13 @@ namespace dzone {
         assetDataBase->LoadSpriteTexture(playerSprite1);
 
         _activeScene = context->sceneManager->CreateScene();
-
-        auto entityP0 = _activeScene->CreateEntity("Player 1");
-        _activeScene->AddComponent<impala::Transform2d>(entityP0);
-        auto transform = _activeScene->GetComponent<impala::Transform2d>(entityP0);
-        transform->position = {100.0f, 100.0f}; // Set initial position for the player
-        transform->rotation = 90;
-        _activeScene->AddComponent<impala::SpriteRenderer>(entityP0);
-        auto spriteRenderer = _activeScene->GetComponent<impala::SpriteRenderer>(entityP0);
-        spriteRenderer->sprite = playerSprite0;
-        PlayerInput input0(context->keyboard, dzone::DEFAULT_KEYBOARD_INPUT_MAP_P1,
-                           context->gamepads);
-        impala::log::Debug(impala::log::LogCategory::Game, "Created player 1 entity with ID {}",
-                           entityP0.id);
-        _players.push_back(DzonePlayer(entityP0, input0));
-
-        auto entityP1 = _activeScene->CreateEntity("Player 2");
-        _activeScene->AddComponent<impala::Transform2d>(entityP1);
-        auto transform1 = _activeScene->GetComponent<impala::Transform2d>(entityP1);
-        transform1->position = {400.0f, 100.0f}; // Set initial position for the player
-        transform1->rotation = -90;
-        _activeScene->AddComponent<impala::SpriteRenderer>(entityP1);
-        auto spriteRenderer1 = _activeScene->GetComponent<impala::SpriteRenderer>(entityP1);
-        spriteRenderer1->sprite = playerSprite1;
-        PlayerInput input1(context->keyboard, dzone::DEFAULT_KEYBOARD_INPUT_MAP_P2,
-                           context->gamepads);
-        impala::log::Debug(impala::log::LogCategory::Game, "Created player 2 entity with ID {}",
-                           entityP1.id);
-        _players.push_back(DzonePlayer(entityP1, input1));
+        _players.AddPlayer("Player 1", context, _activeScene, playerSprite0);
+        _players.AddPlayer("Player 2", context, _activeScene, playerSprite1);
     }
 
     void DzoneGame::Update(impala::GameContext* context, float dt) {
-        for (auto& player : _players) {
-            player.Update(dt, _activeScene);
+        for (uint32_t i = 0; i < _players.PlayerCount(); ++i) {
+            _players[i].Update(dt, _activeScene);
         }
     }
 
@@ -63,31 +37,13 @@ namespace dzone {
     }
 
     void DzoneGame::OnGamepadConnected(impala::GamepadHandle handle) {
-        impala::log::Debug(impala::log::LogCategory::Game, "Gamepad connected: {}", handle);
-        if (_gamepadToPlayerMap.find(handle) == _gamepadToPlayerMap.end()) {
-            // Assign the gamepad to the first available player
-            for (int i = 0; i < _players.size(); ++i) {
-                if (std::find_if(_gamepadToPlayerMap.begin(), _gamepadToPlayerMap.end(),
-                                 [i](const auto& pair) { return pair.second == i; }) ==
-                    _gamepadToPlayerMap.end()) {
-                    _gamepadToPlayerMap[handle] = i;
-                    impala::log::Debug(impala::log::LogCategory::Game,
-                                       "Assigned gamepad {} to player {}", handle, i);
-                    _players[i].SetGamepad(handle);
-                    break;
-                }
-            }
-        }
+        _players.AddGamepadToPlayer(handle);
     }
 
     void DzoneGame::OnGamepadDisconnected(impala::GamepadHandle handle) {
         impala::log::Debug(impala::log::LogCategory::Game, "Gamepad connected: {}", handle);
         // Handle gamepad disconnection here
-        auto it = _gamepadToPlayerMap.find(handle);
-        if (it != _gamepadToPlayerMap.end()) {
-            _players[it->second].SetGamepad({});
-            _gamepadToPlayerMap.erase(it);
-        }
+        _players.RemoveGamepadFromPlayer(handle);
     }
 
     void DzoneGame::Shutdown() {

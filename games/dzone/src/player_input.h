@@ -8,10 +8,17 @@
 namespace dzone {
 
     struct KeyboardInputMap {
-        impala::ImpalaKey up;
-        impala::ImpalaKey left;
-        impala::ImpalaKey down;
-        impala::ImpalaKey right;
+        impala::ImpalaKey up = impala::ImpalaKey::KeyCount;
+        impala::ImpalaKey left = impala::ImpalaKey::KeyCount;
+        impala::ImpalaKey down = impala::ImpalaKey::KeyCount;
+        impala::ImpalaKey right = impala::ImpalaKey::KeyCount;
+
+        bool IsActive(impala::IKeyboard* keyboard) const {
+            // just check if the first key is set
+            // players 1,2,3 can use keyboard
+            // players 4-8 need additional gamepads
+            return up != impala::ImpalaKey::KeyCount;
+        }
     };
 
     constexpr KeyboardInputMap DEFAULT_KEYBOARD_INPUT_MAP_P1 =
@@ -25,6 +32,15 @@ namespace dzone {
     constexpr KeyboardInputMap DEFAULT_KEYBOARD_INPUT_MAP_P3 =
         KeyboardInputMap{impala::ImpalaKey::KeyUp, impala::ImpalaKey::KeyLeft,
                          impala::ImpalaKey::KeyDown, impala::ImpalaKey::KeyRight};
+
+    constexpr KeyboardInputMap UNUSED_KEYBOARD_INPUT_MAP =
+        KeyboardInputMap{impala::ImpalaKey::KeyCount, impala::ImpalaKey::KeyCount,
+                         impala::ImpalaKey::KeyCount, impala::ImpalaKey::KeyCount};
+
+    constexpr KeyboardInputMap KEYBOARD_MAPS[8]{
+        DEFAULT_KEYBOARD_INPUT_MAP_P1, DEFAULT_KEYBOARD_INPUT_MAP_P2, DEFAULT_KEYBOARD_INPUT_MAP_P3,
+        UNUSED_KEYBOARD_INPUT_MAP,     UNUSED_KEYBOARD_INPUT_MAP,     UNUSED_KEYBOARD_INPUT_MAP,
+        UNUSED_KEYBOARD_INPUT_MAP,     UNUSED_KEYBOARD_INPUT_MAP};
 
     struct GamepadInputMap {
         impala::GamepadAxis forward;
