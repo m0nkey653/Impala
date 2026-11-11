@@ -18,7 +18,7 @@ namespace dzone {
     constexpr ProjectileBluePrint Laser() {
         return ProjectileBluePrint{.name = "Laser",
                                    .speed = 100.0f,
-                                   .lifetime = -1.0f,
+                                   .lifetime = 5.0f,
                                    .thrust = 0.0f,
                                    .homingTurnRate = 0.0f,
                                    .damage = 10.0f,
