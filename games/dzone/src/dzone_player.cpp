@@ -1,21 +1,16 @@
 #include "dzone_player.h"
+#include "components.h"
 #include "impala/math.h"
 #include "impala/transform.h"
 
 namespace dzone {
     void DzonePlayer::Update(float dt, impala::IScene* scene) {
-        auto rotation = _input.GetRotation();
-        auto thrust = _input.GetThrust();
-
-        auto transform = scene->GetComponent<impala::Transform2d>(_entity);
-
-        if (transform) {
-            transform->rotation += rotation * _rotationSpeed * dt;
-            auto dist = thrust * _thrustSpeed * dt;
-            // kenney ships point up
-            // y points down, so negative y moves up on the screen
-            impala::math::Vec2 velocity = {0.0f, -1 * dist};
-            transform->position += impala::Forward(*transform) * dist;
+        auto controls = scene->GetComponent<ShipControls>(_entity);
+        if (controls) {
+            controls->turn = _input.GetRotation();
+            controls->throttle = _input.GetThrust();
+            controls->firePrimary = _input.GetFirePrimary();
+            controls->fireSecondary = _input.GetFireSecondary();
         }
     }
 
