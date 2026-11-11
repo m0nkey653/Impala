@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas Viewer</title>
+<style>
+  :root {
+    --bg: #f6f6f4; --panel: #ffffff; --text: #1c1c1c; --muted: #6b6b6b;
+    --line: #dddcd8; --accent: #2f6fdb; --hit: #e8a400;
+    --check-a: #e9e9e6; --check-b: #d6d6d2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181a; --panel: #1f2023; --text: #e8e8e6; --muted: #9a9a96;
+      --line: #34353a; --accent: #6ea0ff; --hit: #ffc23d;
+      --check-a: #2a2b2f; --check-b: #222326;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { position: sticky; top: 0; z-index: 10; background: var(--panel);
+           border-bottom: 1px solid var(--line); padding: 10px 16px;
+           display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  h1 { font-size: 15px; margin: 0 8px 0 0; font-weight: 600; }
+  .tabs { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .tabs button { border: 0; background: transparent; color: var(--text); padding: 5px 12px; cursor: pointer; font: inherit; }
+  .tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
+  input[type=search], select { font: inherit; color: var(--text); background: var(--bg);
+           border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  input[type=search] { width: 220px; max-width: 100%; }
+  .count { color: var(--muted); font-size: 13px; }
+  .right { margin-left: auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  #atlasPick { max-width: 420px; }
+  .btn { font: inherit; font-size: 13px; color: var(--text); background: var(--bg); cursor: pointer;
+         border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
+  .btn:hover { border-color: var(--accent); }
+  label.file { font-size: 13px; color: var(--muted); cursor: pointer; }
+  label.file input { display: none; }
+  label.file span { text-decoration: underline; }
+  main { padding: 16px; }
+  .checker { background-color: var(--check-a);
+    background-image: linear-gradient(45deg, var(--check-b) 25%, transparent 25%, transparent 75%, var(--check-b) 75%),
+                      linear-gradient(45deg, var(--check-b) 25%, transparent 25%, transparent 75%, var(--check-b) 75%);
+    background-size: 16px 16px; background-position: 0 0, 8px 8px; }
+  #sheetWrap { overflow: auto; border: 1px solid var(--line); border-radius: 6px; max-height: calc(100vh - 110px); }
+  #stage { position: relative; display: inline-block; }
+  #stage img { display: block; }
+  .box { position: absolute; outline: 1px solid rgba(47,111,219,.55); }
+  .box:hover { outline: 2px solid var(--accent); background: rgba(47,111,219,.15); z-index: 2; }
+  .box.dim { outline-color: transparent; background: rgba(0,0,0,.45); }
+  .box.hit { outline: 2px solid var(--hit); z-index: 1; }
+  .box.flash { animation: flash 1.2s ease-out 2; z-index: 3; }
+  @keyframes flash { 0% { background: rgba(255,194,61,.7); } 100% { background: transparent; } }
+  #tip { position: fixed; pointer-events: none; background: #111; color: #fff; font-size: 12px;
+         padding: 4px 7px; border-radius: 4px; display: none; z-index: 20; white-space: nowrap; }
+  table { border-collapse: collapse; background: var(--panel); border: 1px solid var(--line);
+          border-radius: 6px; overflow: hidden; width: 100%; max-width: 760px; }
+  th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  td.img { width: 120px; }
+  .thumb { border-radius: 4px; overflow: hidden; }
+  .thumb > div { transform-origin: 0 0; background-repeat: no-repeat; }
+  td.size { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+  td.name code { font: 13px ui-monospace, Consolas, monospace; word-break: break-all; }
+  button.copy { margin-left: 8px; font-size: 12px; border: 1px solid var(--line); background: transparent;
+                color: var(--muted); border-radius: 4px; padding: 1px 6px; cursor: pointer; }
+  #empty { border: 2px dashed var(--line); border-radius: 8px; padding: 32px 20px; text-align: center;
+           color: var(--muted); max-width: 640px; margin: 24px auto; }
+  #empty strong { color: var(--text); }
+  #empty .hint { font-size: 13px; }
+  #empty:not([hidden]) ~ section { display: none; }
+  body.dragging #empty, body.dragging #sheetWrap { border-color: var(--accent); }
+  #status { margin: 12px 16px 0; padding: 8px 12px; border-radius: 6px; font-size: 13px;
+            background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  #status.error { background: color-mix(in srgb, #d33 18%, transparent); }
+  [hidden] { display: none !important; }
+  @media (max-width: 600px) { td.img { width: 80px; } .right { margin-left: 0; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Atlas Viewer</h1>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabSheet" aria-selected="true">Sheet</button>
+    <button role="tab" id="tabTable" aria-selected="false">Table</button>
+  </div>
+  <input type="search" id="filter" placeholder="Filter names (e.g. damage)">
+  <select id="zoom" title="Sheet zoom">
+    <option value="0.5">50%</option><option value="1" selected>100%</option><option value="2">200%</option>
+  </select>
+  <span class="count" id="count"></span>
+  <div class="right">
+    <select id="atlasPick" hidden title="Atlases found in the opened folder"></select>
+    <button id="openDir" class="btn" title="Scan a folder (e.g. the repo root) for atlas .xml files with a matching .png">Open folder…</button>
+    <input type="file" id="dirInput" webkitdirectory hidden>
+    <label class="file" title="Load one atlas: pick its .xml and .png together">
+      <input type="file" id="files" multiple accept=".xml,.png"><span>Load files…</span>
+    </label>
+  </div>
+</header>
+<div id="status" role="status" hidden></div>
+<main>
+  <div id="empty">
+    <p><strong>Open folder…</strong> and pick the repo root to list every atlas in it,
+       or drop an atlas's <code>.xml</code> and <code>.png</code> here together.</p>
+    <p class="hint">Folder scans skip <code>.git</code>, <code>build</code>, <code>out</code>, <code>.vs</code> and
+       <code>node_modules</code>. Chrome/Edge scan quickly; other browsers ask to “upload” the folder
+       (nothing leaves your machine).</p>
+    <p class="hint">Reads the Starling/Sparrow <code>&lt;TextureAtlas&gt;&lt;SubTexture name x y width height/&gt;</code>
+       format used by Kenney sprite sheets (e.g. <code>games/dzone/assets/sprites/kenney-space-shooter/sheet.xml</code>).</p>
+  </div>
+  <section id="sheetView">
+    <div id="sheetWrap" class="checker"><div id="stage"><img id="sheet" alt="sprite sheet"><div id="boxes"></div></div></div>
+  </section>
+  <section id="tableView" hidden>
+    <table>
+      <thead><tr><th>Image</th><th>Size</th><th>Name</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
+<div id="tip"></div>
+<script type="text/xml" id="atlasXml">
+</script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const img = $('sheet'), stage = $('stage'), boxes = $('boxes'), rows = $('rows');
+  const tip = $('tip'), filter = $('filter'), zoomSel = $('zoom'), count = $('count');
+  let sprites = [], imgUrl = window.ATLAS_PNG, zoom = 1;
+  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
+  function parse(text) {
+    const doc = new DOMParser().parseFromString(text.trim(), 'application/xml');
+    if (doc.querySelector('parsererror')) throw new Error('Could not parse atlas XML');
+    return [...doc.querySelectorAll('SubTexture')].map(n => ({
+      name: n.getAttribute('name'),
+      x: +n.getAttribute('x'), y: +n.getAttribute('y'),
+      w: +n.getAttribute('width'), h: +n.getAttribute('height'),
+    })).sort((a, b) => collator.compare(a.name, b.name));
+  }
+
+  const matches = s => { const q = filter.value.trim().toLowerCase(); return !q || s.name.toLowerCase().includes(q); };
+
+  function layoutSheet() {
+    if (!img.naturalWidth) return;
+    img.style.width = img.naturalWidth * zoom + 'px';
+    img.style.height = img.naturalHeight * zoom + 'px';
+    for (const el of boxes.children) {
+      const s = sprites[el.dataset.i];
+      Object.assign(el.style, { left: s.x * zoom + 'px', top: s.y * zoom + 'px',
+                                width: s.w * zoom + 'px', height: s.h * zoom + 'px' });
+    }
+  }
+
+  function build() {
+    img.src = imgUrl;
+    boxes.replaceChildren(...sprites.map((s, i) => {
+      const d = document.createElement('div');
+      d.className = 'box'; d.dataset.i = i;
+      return d;
+    }));
+    rows.replaceChildren(...sprites.map((s, i) => {
+      const tr = document.createElement('tr');
+      tr.dataset.i = i;
+      const scale = Math.min(1, 96 / Math.max(s.w, s.h));
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb checker';
+      thumb.style.width = s.w * scale + 'px'; thumb.style.height = s.h * scale + 'px';
+      const inner = document.createElement('div');
+      Object.assign(inner.style, { width: s.w + 'px', height: s.h + 'px', transform: `scale(${scale})`,
+        backgroundImage: `url("${imgUrl}")`, backgroundPosition: `-${s.x}px -${s.y}px` });
+      thumb.append(inner);
+      const tdImg = document.createElement('td'); tdImg.className = 'img'; tdImg.append(thumb);
+      const tdSize = document.createElement('td'); tdSize.className = 'size'; tdSize.textContent = `${s.w} × ${s.h}`;
+      const tdName = document.createElement('td'); tdName.className = 'name';
+      const code = document.createElement('code'); code.textContent = s.name;
+      const copy = document.createElement('button'); copy.className = 'copy'; copy.textContent = 'copy';
+      copy.title = 'Copy name';
+      copy.addEventListener('click', e => {
+        e.stopPropagation();
+        try { navigator.clipboard.writeText(s.name).then(() => { copy.textContent = 'copied'; setTimeout(() => copy.textContent = 'copy', 1000); }); } catch {}
+      });
+      tdName.append(code, copy);
+      tr.append(tdImg, tdSize, tdName);
+      tr.title = `x ${s.x}, y ${s.y} — click to locate on sheet`;
+      tr.addEventListener('click', () => locate(i));
+      return tr;
+    }));
+    applyFilter();
+  }
+
+  function applyFilter() {
+    const q = filter.value.trim();
+    let n = 0;
+    sprites.forEach((s, i) => {
+      const m = matches(s); if (m) n++;
+      boxes.children[i].classList.toggle('dim', !!q && !m);
+      boxes.children[i].classList.toggle('hit', !!q && m);
+      rows.children[i].hidden = !m;
+    });
+    count.textContent = q ? `${n} of ${sprites.length} sprites` : `${sprites.length} sprites`;
+  }
+
+  function showTab(which) {
+    $('tabSheet').setAttribute('aria-selected', which === 'sheet');
+    $('tabTable').setAttribute('aria-selected', which === 'table');
+    $('sheetView').hidden = which !== 'sheet';
+    $('tableView').hidden = which !== 'table';
+    zoomSel.hidden = which !== 'sheet';
+  }
+
+  function locate(i) {
+    showTab('sheet');
+    const el = boxes.children[i];
+    el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  }
+
+  boxes.addEventListener('mousemove', e => {
+    const el = e.target.closest('.box'); if (!el) { tip.style.display = 'none'; return; }
+    const s = sprites[el.dataset.i];
+    tip.textContent = `${s.name}  ·  ${s.w}×${s.h}  @ ${s.x},${s.y}`;
+    tip.style.display = 'block';
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 12, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.min(e.clientY + 14, innerHeight - r.height - 8) + 'px';
+  });
+  boxes.addEventListener('mouseleave', () => tip.style.display = 'none');
+  boxes.addEventListener('click', e => {
+    const el = e.target.closest('.box'); if (!el) return;
+    const name = sprites[el.dataset.i].name;
+    try { navigator.clipboard.writeText(name); tip.textContent = `copied: ${name}`; } catch {}
+  });
+
+  $('tabSheet').addEventListener('click', () => showTab('sheet'));
+  $('tabTable').addEventListener('click', () => showTab('table'));
+  filter.addEventListener('input', applyFilter);
+  zoomSel.addEventListener('change', () => { zoom = +zoomSel.value; layoutSheet(); });
+  img.addEventListener('load', layoutSheet);
+
+  function showAtlas(xmlText, pngBlob, label) {
+    sprites = parse(xmlText);
+    if (imgUrl && imgUrl.startsWith('blob:')) URL.revokeObjectURL(imgUrl);
+    imgUrl = URL.createObjectURL(pngBlob);
+    document.title = `Atlas Viewer — ${label}`;
+    $('empty').hidden = true;
+    note('');
+    build();
+  }
+
+  async function loadFiles(files) {
+    files = [...files];
+    const xml = files.find(f => /\.xml$/i.test(f.name)), png = files.find(f => /\.png$/i.test(f.name));
+    if (!xml || !png) { note('Pick or drop both the .xml and the .png together.', true); return; }
+    try { showAtlas(await xml.text(), png, xml.name); pick.hidden = true; }
+    catch (err) { note(err.message, true); }
+  }
+
+  $('files').addEventListener('change', e => loadFiles(e.target.files));
+
+  // ---- Folder scan -------------------------------------------------------
+  // Entries are a Map of folder-relative path ("a/b/sheet.xml") -> { getFile() }.
+  const pick = $('atlasPick');
+  function note(msg, isError = false) {
+    const s = $('status');
+    s.textContent = msg; s.hidden = !msg; s.classList.toggle('error', isError);
+  }
+  const SKIP_DIRS = new Set(['.git', 'build', 'out', '.vs', '.vscode', '.idea', '.cache', 'node_modules']);
+  const skipDir = name => SKIP_DIRS.has(name) || /^cmake-build/i.test(name);
+  let found = [];
+
+  function resolvePath(dir, rel) {
+    const parts = (dir + rel).split('/'), out = [];
+    for (const p of parts) {
+      if (p === '..') out.pop(); else if (p && p !== '.') out.push(p);
+    }
+    return out.join('/');
+  }
+
+  async function walk(dirHandle, prefix, entries) {
+    for await (const [name, h] of dirHandle.entries()) {
+      if (h.kind === 'directory') {
+        if (!skipDir(name)) await walk(h, `${prefix}${name}/`, entries);
+      } else if (/\.(xml|png)$/i.test(name)) {
+        entries.set(prefix + name, { getFile: () => h.getFile() });
+      }
+    }
+  }
+
+  async function findAtlases(entries) {
+    const result = [];
+    for (const [path, entry] of entries) {
+      if (!/\.xml$/i.test(path)) continue;
+      let text;
+      try {
+        const file = await entry.getFile();
+        if (file.size > 5e6) continue;
+        text = await file.text();
+      } catch { continue; }
+      if (!/<TextureAtlas[\s>]/.test(text)) continue;
+      const dir = path.includes('/') ? path.slice(0, path.lastIndexOf('/') + 1) : '';
+      const imagePath = (text.match(/imagePath\s*=\s*"([^"]+)"/) || [])[1];
+      const pngPath = [imagePath && resolvePath(dir, imagePath), path.replace(/\.xml$/i, '.png')]
+        .find(p => p && entries.has(p));
+      if (pngPath) result.push({ path, text, png: entries.get(pngPath) });
+    }
+    return result.sort((a, b) => collator.compare(a.path, b.path));
+  }
+
+  async function choose(i) {
+    const a = found[i];
+    try { showAtlas(a.text, await a.png.getFile(), a.path); }
+    catch (err) { note(`Could not load ${a.path}: ${err.message}`, true); }
+  }
+
+  async function handleScan(entries, rootName) {
+    count.textContent = `Scanning ${rootName}…`;
+    found = await findAtlases(entries);
+    if (!found.length) {
+      count.textContent = sprites.length ? `${sprites.length} sprites` : '';
+      note(`No atlas .xml with a matching .png found in "${rootName}".`, true);
+      return;
+    }
+    pick.replaceChildren(...found.map((a, i) => new Option(`${rootName}/${a.path}`, i)));
+    pick.hidden = false;
+    await choose(0);
+  }
+
+  pick.addEventListener('change', () => choose(+pick.value));
+
+  // showDirectoryPicker is blocked inside iframes (VS Code's browser, embedded previews), and a
+  // fallback .click() after an await has lost the user gesture and silently does nothing — so
+  // decide synchronously, while still inside the click.
+  const embedded = (() => { try { return window.self !== window.top; } catch { return true; } })();
+  const canPickDir = 'showDirectoryPicker' in window && !embedded;
+
+  $('openDir').addEventListener('click', async () => {
+    note('');
+    if (!canPickDir) {
+      $('dirInput').click();
+      note(embedded
+        ? 'Embedded browser: if no folder dialog opened, it blocks file pickers. Open this file in Chrome/Edge, or drag the .xml + .png onto the page.'
+        : '');
+      return;
+    }
+    let dir;
+    try { dir = await window.showDirectoryPicker({ id: 'atlas-root', mode: 'read' }); }
+    catch (err) {
+      if (err.name !== 'AbortError') note(`Folder picker unavailable here (${err.name}). Use “Load files…” or drag the .xml + .png onto the page.`, true);
+      return;
+    }
+    const entries = new Map();
+    count.textContent = `Scanning ${dir.name}…`;
+    try { await walk(dir, '', entries); await handleScan(entries, dir.name); }
+    catch (err) { note(err.message, true); }
+  });
+
+  // Fallback for browsers without showDirectoryPicker (<input webkitdirectory>).
+  $('dirInput').addEventListener('change', async e => {
+    const files = [...e.target.files];
+    if (!files.length) return;
+    const rootName = files[0].webkitRelativePath.split('/')[0];
+    const entries = new Map();
+    for (const f of files) {
+      const segs = f.webkitRelativePath.split('/').slice(1);
+      if (!/\.(xml|png)$/i.test(f.name) || segs.slice(0, -1).some(skipDir)) continue;
+      entries.set(segs.join('/'), { getFile: async () => f });
+    }
+    await handleScan(entries, rootName);
+    e.target.value = '';
+  });
+
+  // Console/test hook: atlasViewer.scan(new Map([[path, {getFile}]]), 'name')
+  window.atlasViewer = { scan: handleScan };
+  addEventListener('dragover', e => { e.preventDefault(); document.body.classList.add('dragging'); });
+  addEventListener('dragleave', e => { if (!e.relatedTarget) document.body.classList.remove('dragging'); });
+  addEventListener('drop', e => {
+    e.preventDefault(); document.body.classList.remove('dragging');
+    loadFiles(e.dataTransfer.files);
+  });
+
+  const embeddedXml = $('atlasXml').textContent.trim();
+  if (embeddedXml && imgUrl) {
+    try { sprites = parse(embeddedXml); $('empty').hidden = true; build(); }
+    catch (err) { count.textContent = err.message; }
+  }
+})();
+</script>
+</body>
+</html>
