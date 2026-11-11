@@ -1,9 +1,11 @@
 #pragma once
 
 #include "player_collection.h"
+#include "components.h"
 #include "impala/log.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
+#include "projectile.h"
 
 namespace dzone {
 
@@ -15,11 +17,16 @@ namespace dzone {
         }
         auto entity = scene->CreateEntity(name.c_str());
         auto& t = scene->AddComponent<impala::Transform2d>(entity);
-        t.position = {100.0f, 100.0f}; // Set initial position for the player
-        t.rotation = 90;
+
+        scene->AddComponent<Movement>(entity);
+        scene->AddComponent<Health>(entity);
+        scene->AddComponent<Armor>(entity);
+        scene->AddComponent<Shield>(entity);
+        auto& w = scene->AddComponent<Weapons>(entity);
+        WeaponSlot ws = {.projectile = Laser(), .muzzleOffset = {0.0f, 0.0f}};
+        w.slots.push_back(ws);
 
         scene->AddComponent<impala::SpriteRenderer>(entity);
-
         auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(entity);
         spriteRenderer->sprite = sprite;
 
