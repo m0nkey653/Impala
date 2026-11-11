@@ -95,10 +95,21 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // get input states
     gamepadCollection->Update(deltaTime); // Assuming dt is 0 for now
 
+    auto activeScene = sceneManager->GetActiveImpalaScene();
+
     // locked physics update
+    // add a flush for destroyed during the fixed update
+    // activeScene->FlushDestroyedEntities();
 
     // game logic
     impalaGame->Update(&context, deltaTime);
+
+    // flush anything destroyed in this frame
+    activeScene->FlushDestroyedEntities();
+
+    // post-update input states
+    gamepadCollection->PostUpdate();
+    keyboard->PostUpdate();
 
     // render pass
     // SDL_ClearRender(sdlRenderer->Get());
@@ -106,7 +117,6 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_RenderClear(sdlRenderer->Get());
     SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-    auto activeScene = sceneManager->GetActiveImpalaScene();
     for (const auto& entity : activeScene->GetAllEntities()) {
         auto r = activeScene->GetComponent<impala::SpriteRenderer>(
             impala::EntityHandle{entity.id, entity.generation});
@@ -137,11 +147,8 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
                                SDL_GetError());
         }
     }
-    SDL_RenderPresent(sdlRenderer->Get());
 
-    // post-update input states
-    gamepadCollection->PostUpdate();
-    keyboard->PostUpdate();
+    SDL_RenderPresent(sdlRenderer->Get());
 
     return SDL_APP_CONTINUE;
 }

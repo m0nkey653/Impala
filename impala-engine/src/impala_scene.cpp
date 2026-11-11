@@ -10,6 +10,7 @@ namespace impala {
 
         uint32_t key = (entity.id << 16) | componentTypeId;
         _components[key] = std::move(component);
+        e->componentMask.set(componentTypeId);
         return _components[key]->Get();
     }
 
@@ -26,6 +27,13 @@ namespace impala {
     }
 
     EntityHandle ImpalaScene::CreateEntity(const char* name) {
+        for (size_t i = 0; i < _entities.size(); ++i) {
+            auto e = &_entities[i];
+            if (!e->isActive) {
+                e->isActive = true;
+                return EntityHandle{e->id, e->generation};
+            }
+        }
         auto entity = new Entity();
         entity->id = static_cast<uint32_t>(_entities.size());
         entity->generation = 0;
@@ -35,7 +43,26 @@ namespace impala {
     }
 
     void ImpalaScene::DestroyEntity(EntityHandle entity) {
-        // Implement entity destruction logic here
+        _destroyedEntities.push_back(entity);
+    }
+
+    void ImpalaScene::FlushDestroyedEntities() {
+        for (auto entity : _destroyedEntities) {
+            auto e = &_entities[entity.id];
+            if (e->generation != entity.generation || !e->isActive)
+                continue;
+            e->isActive = false;
+            e->generation++;
+
+            for (uint32_t i = 0; i < 64; ++i) {
+                if (e->componentMask.test(i)) {
+                    uint32_t key = (entity.id << 16) | i;
+                    _components.erase(key);
+                }
+            }
+            e->componentMask.reset();
+        }
+        _destroyedEntities.clear();
     }
 
 } // namespace impala

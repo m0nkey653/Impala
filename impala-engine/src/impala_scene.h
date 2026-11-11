@@ -1,6 +1,7 @@
 #pragma once
 
 #include "impala/scene.h"
+#include <bitset>
 
 namespace impala {
 
@@ -8,6 +9,7 @@ namespace impala {
         uint32_t id;
         uint32_t generation;
         bool isActive;
+        std::bitset<64> componentMask;
     };
 
     class ImpalaScene : public IScene {
@@ -19,6 +21,7 @@ namespace impala {
         void DestroyEntity(EntityHandle entity) override;
 
         std::vector<Entity>& GetAllEntities() { return _entities; };
+        void FlushDestroyedEntities();
 
     protected:
         void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
@@ -27,6 +30,7 @@ namespace impala {
 
     private:
         std::vector<Entity> _entities;
+        std::vector<EntityHandle> _destroyedEntities;
         std::unordered_map<uint32_t, std::unique_ptr<detail::IComponentHolder>> _components;
     };
 
