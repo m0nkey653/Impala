@@ -1,6 +1,5 @@
 #pragma once
 #include "components.h"
-#include "projectile.h"
 
 namespace dzone {
 
