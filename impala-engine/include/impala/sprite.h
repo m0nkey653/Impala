@@ -6,11 +6,6 @@
 
 namespace impala {
 
-    // class ISprite : public IAsset {
-    // public:
-    //     virtual ~ISprite() = default;
-    // };
-
     class ISpriteAtlas : public IAsset {
     public:
         virtual ~ISpriteAtlas() = default;
