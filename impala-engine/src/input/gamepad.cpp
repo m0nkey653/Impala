@@ -2,6 +2,8 @@
 
 namespace impala {
 
+    constexpr float AXIS_MAX = 32767.0f;
+
     void Gamepad::Update(GamepadState state) {
         _current = state;
     }
@@ -44,7 +46,23 @@ namespace impala {
         case GamepadAxis::RightX:
         case GamepadAxis::LeftY:
         case GamepadAxis::RightY:
-            return std::max(result /= 32767.0f, -1.0f);
+            return std::max(result /= AXIS_MAX, -1.0f);
+        case GamepadAxis::LeftTrigger:
+        case GamepadAxis::RightTrigger:
+            return result > 0;
+        }
+
+        return result;
+    }
+
+    float Gamepad::GetAxisLastFrame(GamepadAxis axis) const {
+        auto result = _previous.axisStates[static_cast<int>(axis)];
+        switch (axis) {
+        case GamepadAxis::LeftX:
+        case GamepadAxis::RightX:
+        case GamepadAxis::LeftY:
+        case GamepadAxis::RightY:
+            return std::max(result /= AXIS_MAX, -1.0f);
         case GamepadAxis::LeftTrigger:
         case GamepadAxis::RightTrigger:
             return result > 0;
