@@ -466,47 +466,47 @@ namespace dzone {
         "assets/sprites/kenney-space-shooter/playerLife3_red.png";
 
     // playerShip
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_BLUE =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_BLUE =
         "assets/sprites/kenney-space-shooter/playerShip1_blue.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_DAMAGE_1 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_DAMAGE_1 =
         "assets/sprites/kenney-space-shooter/playerShip1_damage1.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_DAMAGE_2 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_DAMAGE_2 =
         "assets/sprites/kenney-space-shooter/playerShip1_damage2.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_DAMAGE_3 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_DAMAGE_3 =
         "assets/sprites/kenney-space-shooter/playerShip1_damage3.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_GREEN =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_GREEN =
         "assets/sprites/kenney-space-shooter/playerShip1_green.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_ORANGE =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_ORANGE =
         "assets/sprites/kenney-space-shooter/playerShip1_orange.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_1_RED =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_RED =
         "assets/sprites/kenney-space-shooter/playerShip1_red.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_BLUE =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_BLUE =
         "assets/sprites/kenney-space-shooter/playerShip2_blue.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_DAMAGE_1 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_DAMAGE_1 =
         "assets/sprites/kenney-space-shooter/playerShip2_damage1.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_DAMAGE_2 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_DAMAGE_2 =
         "assets/sprites/kenney-space-shooter/playerShip2_damage2.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_DAMAGE_3 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_DAMAGE_3 =
         "assets/sprites/kenney-space-shooter/playerShip2_damage3.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_GREEN =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_GREEN =
         "assets/sprites/kenney-space-shooter/playerShip2_green.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_ORANGE =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_ORANGE =
         "assets/sprites/kenney-space-shooter/playerShip2_orange.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_2_RED =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_2_RED =
         "assets/sprites/kenney-space-shooter/playerShip2_red.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_BLUE =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_BLUE =
         "assets/sprites/kenney-space-shooter/playerShip3_blue.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_DAMAGE_1 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_DAMAGE_1 =
         "assets/sprites/kenney-space-shooter/playerShip3_damage1.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_DAMAGE_2 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_DAMAGE_2 =
         "assets/sprites/kenney-space-shooter/playerShip3_damage2.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_DAMAGE_3 =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_DAMAGE_3 =
         "assets/sprites/kenney-space-shooter/playerShip3_damage3.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_GREEN =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_GREEN =
         "assets/sprites/kenney-space-shooter/playerShip3_green.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_ORANGE =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_ORANGE =
         "assets/sprites/kenney-space-shooter/playerShip3_orange.png";
-    constexpr const char* KENNEY_SPACE_SHOOTER_SHIP_3_RED =
+    constexpr const char* KENNEY_SPACE_SHOOTER_PLAYER_SHIP_3_RED =
         "assets/sprites/kenney-space-shooter/playerShip3_red.png";
 
     // powerupBlue
