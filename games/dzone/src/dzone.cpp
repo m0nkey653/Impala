@@ -15,8 +15,13 @@ namespace dzone {
         assetDataBase->LoadSpriteTexture(playerSprite1);
 
         _activeScene = context->sceneManager->CreateScene();
-        _players.AddPlayer("Player 1", context, _activeScene, playerSprite0);
-        _players.AddPlayer("Player 2", context, _activeScene, playerSprite1);
+        auto& p1 = _players.AddPlayer("Player 1", context, _activeScene, playerSprite0);
+        p1.SetPosition({200.0f, 200.0f}, _activeScene);
+        p1.SetRotation(0.0f, _activeScene);
+
+        auto& p2 = _players.AddPlayer("Player 2", context, _activeScene, playerSprite1);
+        p2.SetPosition({400.0f, 200.0f}, _activeScene);
+        p2.SetRotation(0.0f, _activeScene);
     }
 
     void DzoneGame::Update(impala::GameContext* context, float dt) {

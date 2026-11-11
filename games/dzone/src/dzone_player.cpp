@@ -19,4 +19,18 @@ namespace dzone {
         }
     }
 
+    void DzonePlayer::SetPosition(impala::math::Vec2 position, impala::IScene* scene) {
+        auto transform = scene->GetComponent<impala::Transform2d>(_entity);
+        if (transform) {
+            transform->position = position;
+        }
+    }
+
+    void DzonePlayer::SetRotation(float rotation, impala::IScene* scene) {
+        auto transform = scene->GetComponent<impala::Transform2d>(_entity);
+        if (transform) {
+            transform->rotation = rotation;
+        }
+    }
+
 } // namespace dzone

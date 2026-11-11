@@ -1,5 +1,6 @@
 #pragma once
 #include "impala/handles.h"
+#include "impala/math.h"
 #include "impala/scene.h"
 #include "player_input.h"
 
@@ -17,6 +18,9 @@ namespace dzone {
 
         void SetRotationSpeed(float rotationSpeed) { _rotationSpeed = rotationSpeed; }
         void SetThrustSpeed(float thrustSpeed) { _thrustSpeed = thrustSpeed; }
+
+        void SetPosition(impala::math::Vec2 position, impala::IScene* scene);
+        void SetRotation(float rotation, impala::IScene* scene);
 
     private:
         float _rotationSpeed = 120.0f;
