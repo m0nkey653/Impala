@@ -12,6 +12,7 @@ namespace impala {
     public:
         bool IsButtonPressed(GamepadButton button) const override;
         float GetAxis(GamepadAxis axis) const override;
+        float GetAxisLastFrame(GamepadAxis axis) const override;
 
         bool WasButtonPressedThisFrame(GamepadButton button) const override;
         bool WasButtonReleasedThisFrame(GamepadButton button) const override;

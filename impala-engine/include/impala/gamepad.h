@@ -29,6 +29,7 @@ namespace impala {
 
         virtual bool IsButtonPressed(GamepadButton button) const = 0;
         virtual float GetAxis(GamepadAxis axis) const = 0;
+        virtual float GetAxisLastFrame(GamepadAxis axis) const = 0;
         virtual bool WasButtonPressedThisFrame(GamepadButton button) const = 0;
         virtual bool WasButtonReleasedThisFrame(GamepadButton button) const = 0;
     };
