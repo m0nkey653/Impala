@@ -7,7 +7,9 @@ add_executable(dzone src/impala_entry.cpp
     src/dzone_player.cpp
     src/player_input.h
     src/player_input.cpp
-    src/player_collection.cpp)
+    src/player_collection.cpp
+    src/components.h
+    src/projectile.h)
 
 # Each game gets its own folder so assets don't collide
 set_target_properties(dzone PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/dzone)
