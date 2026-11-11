@@ -3,6 +3,7 @@
 namespace dzone {
 
     constexpr float DEADZONE = 0.08f;
+    constexpr float FIRE_THRESHOLD = .25f;
 
     float PlayerInput::GetRotation() const {
         // Controller takes precedent over keyboard
@@ -38,6 +39,16 @@ namespace dzone {
             _keyboard->IsKeyPressed(_keyboardInputMap.up) ? thrust += 1.0f : 0;
             _keyboard->IsKeyPressed(_keyboardInputMap.down) ? thrust -= 1.0f : 0;
             return thrust;
+        }
+    }
+
+    bool PlayerInput::GetFire() const {
+        // Controller takes precedent over keyboard
+        auto gamepad = _gamepads->GetGamepad(_handle);
+        if (gamepad) {
+            return gamepad->GetAxis(_gamepadInputMap.fire) > FIRE_THRESHOLD;
+        } else {
+            return _keyboard->WasKeyPressedThisFrame(_keyboardInputMap.fire);
         }
     }
 
