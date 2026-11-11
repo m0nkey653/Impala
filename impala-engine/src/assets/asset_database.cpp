@@ -201,15 +201,15 @@ TextureHandle AssetDatabase::LoadSpriteTexture(SpriteHandle handle) {
     }
 
     if (texture->IsLoaded()) {
-        impala::log::Info(impala::log::LogCategory::Assets,
-                          "Texture for sprite handle '{}' is already loaded", handle.id);
+        impala::log::Debug(impala::log::LogCategory::Assets,
+                           "Texture for sprite handle '{}' is already loaded", handle.id);
         return sprite.textureHandle;
     }
 
     try {
         texture->Load(_renderer);
-        impala::log::Info(impala::log::LogCategory::Assets, "Loaded texture [{}] for sprite [{}]",
-                          sprite.textureHandle.id, handle.id);
+        impala::log::Debug(impala::log::LogCategory::Assets, "Loaded texture [{}] for sprite [{}]",
+                           sprite.textureHandle.id, handle.id);
 
     } catch (const std::exception& e) {
         impala::log::Error(impala::log::LogCategory::Assets, "Error loading texture - '{}' - {}",
