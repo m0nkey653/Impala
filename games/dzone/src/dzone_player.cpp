@@ -15,7 +15,7 @@ namespace dzone {
             // kenney ships point up
             // y points down, so negative y moves up on the screen
             impala::math::Vec2 velocity = {0.0f, -1 * dist};
-            transform->position += impala::math::RotateDegrees(velocity, transform->rotation);
+            transform->position += impala::Forward(*transform) * dist;
         }
     }
 

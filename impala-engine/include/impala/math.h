@@ -3,8 +3,8 @@
 
 namespace impala::math {
     struct Vec2 {
-        float x;
-        float y;
+        float x = 0;
+        float y = 0;
     };
 
     constexpr Vec2 operator+(const Vec2& lhs, const Vec2& rhs) {
@@ -17,8 +17,8 @@ namespace impala::math {
         return lhs;
     }
 
-    constexpr float operator*(const Vec2& lhs, float rhs) {
-        return lhs.x * rhs + lhs.y * rhs;
+    constexpr Vec2 operator*(const Vec2& lhs, float rhs) {
+        return Vec2{lhs.x * rhs, lhs.y * rhs};
     }
 
     inline Vec2 RotateDegrees(const Vec2& v, float angle) {
@@ -32,9 +32,9 @@ namespace impala::math {
     }
 
     struct Vec3 {
-        float x;
-        float y;
-        float z;
+        float x = 0;
+        float y = 0;
+        float z = 0;
     };
 
     constexpr Vec3 operator+(const Vec3& lhs, const Vec3& rhs) {
