@@ -3,6 +3,7 @@
 #include "impala/handles.h"
 #include "impala/math.h"
 #include "projectile.h"
+#include <vector>
 
 namespace dzone {
     struct Movement {
@@ -50,10 +51,9 @@ namespace dzone {
     };
 
     struct WeaponSlot {
-        Projectile projectile;
+        ProjectileBluePrint projectile;
         impala::math::Vec2 muzzleOffset; // where it fires from, relative to the ship
         float cooldownRemaining = 0;
-        bool triggerHeld = false;
     };
 
     struct Weapons {

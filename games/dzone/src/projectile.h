@@ -3,8 +3,8 @@
 
 namespace dzone {
 
-    struct Projectile {
-        const char* name;
+    struct ProjectileBluePrint {
+        const char* name = nullptr;
         float speed = 0;
         float lifetime = 0;
         float thrust = 0;
@@ -13,19 +13,19 @@ namespace dzone {
         float shieldPenetration = 0;
         float armorPenetration = 0;
         float cooldown = 0;
-        const char* texturePath;
+        const char* texturePath = nullptr;
     };
-    constexpr Projectile Laser() {
-        return Projectile{.name = "Laser",
-                          .speed = 100.0f,
-                          .lifetime = 0.0f,
-                          .thrust = 10.0f,
-                          .homingTurnRate = .5f,
-                          .damage = 1.0f,
-                          .shieldPenetration = 1.0f,
-                          .armorPenetration = 1.0f,
-                          .cooldown = 0.5f,
-                          .texturePath = "KENNEY_SPACE_SHOOTER_LASER_BLUE_01"};
+    constexpr ProjectileBluePrint Laser() {
+        return ProjectileBluePrint{.name = "Laser",
+                                   .speed = 100.0f,
+                                   .lifetime = -1.0f,
+                                   .thrust = 0.0f,
+                                   .homingTurnRate = 0.0f,
+                                   .damage = 10.0f,
+                                   .shieldPenetration = 1.0f,
+                                   .armorPenetration = 1.0f,
+                                   .cooldown = 0.5f,
+                                   .texturePath = KENNEY_SPACE_SHOOTER_LASER_BLUE_01};
     }
 
 } // namespace dzone
