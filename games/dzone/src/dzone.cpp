@@ -6,6 +6,7 @@
 namespace dzone {
 
     void DzoneGame::Init(impala::GameContext* context) {
+        impala::log::Debug(impala::log::LogCategory::Game, "Initializing Dzone game");
 
         auto* assetDataBase = context->assetDataBase;
         assetDataBase->AddSpriteAtlas(dzone::KENNEY_SPACE_SHOOTER_SPRITE_ATLAS);
@@ -41,10 +42,12 @@ namespace dzone {
     }
 
     void DzoneGame::OnGamepadConnected(impala::GamepadHandle handle) {
+        impala::log::Debug(impala::log::LogCategory::Game, "Gamepad connected: {}", handle);
         _players.AddGamepadToPlayer(handle);
     }
 
     void DzoneGame::OnGamepadDisconnected(impala::GamepadHandle handle) {
+        impala::log::Debug(impala::log::LogCategory::Game, "Gamepad disconnected: {}", handle);
         _players.RemoveGamepadFromPlayer(handle);
     }
 
