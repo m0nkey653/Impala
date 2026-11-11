@@ -3,7 +3,6 @@
 #include "impala/gamepad.h"
 #include "impala/handles.h"
 #include "impala/keyboard.h"
-#include "impala/math.h"
 
 namespace dzone {
 
