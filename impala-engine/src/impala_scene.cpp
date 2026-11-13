@@ -65,41 +65,6 @@ namespace impala {
         _destroyedEntities.clear();
     }
 
-    // std::vector<std::tuple<void*, void*, void*, void*>>
-    // ImpalaScene::GetEntitiesWithComponentsInternal(uint32_t componentTypeIdT,
-    //                                                uint32_t componentTypeIdU,
-    //                                                uint32_t componentTypeIdV,
-    //                                                uint32_t componentTypeIdW) {
-
-    //     std::vector<std::tuple<void*, void*, void*, void*>> result;
-    //     void* componentPtrT = nullptr;
-    //     void* componentPtrU = nullptr;
-    //     void* componentPtrV = nullptr;
-    //     void* componentPtrW = nullptr;
-
-    //     for (auto& entity : _entities) {
-    //         impala::log::Debug(impala::log::LogCategory::Scene, "Processing entity {}",
-    //         entity.id); if (!entity.isActive)
-    //             continue;
-    //         if (entity.componentMask.test(componentTypeIdT))
-    //             componentPtrT = _components[(entity.id << 16) | componentTypeIdT]->Get();
-    //         if (entity.componentMask.test(componentTypeIdU))
-    //             componentPtrU = _components[(entity.id << 16) | componentTypeIdU]->Get();
-    //         if (entity.componentMask.test(componentTypeIdV))
-    //             componentPtrV = _components[(entity.id << 16) | componentTypeIdV]->Get();
-    //         if (entity.componentMask.test(componentTypeIdW))
-    //             componentPtrW = _components[(entity.id << 16) | componentTypeIdW]->Get();
-    //         result.push_back(
-    //             std::make_tuple(componentPtrT, componentPtrU, componentPtrV, componentPtrW));
-
-    //         impala::log::Debug(impala::log::LogCategory::Scene,
-    //                            "Added entity {} to result {:p} {:p} {:p} {:p}", entity.id,
-    //                            componentPtrT, componentPtrU, componentPtrV, componentPtrW);
-    //     }
-
-    //     return result;
-    // }
-
     void ImpalaScene::GetEntitiesWithMaskInternal(std::bitset<64> required,
                                                   std::vector<EntityHandle>& out) {
         std::vector<EntityHandle> result;
