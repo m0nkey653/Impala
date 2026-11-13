@@ -15,7 +15,7 @@ namespace dzone {
 
     constexpr PlayerShip DefaultShip() {
         return PlayerShip{
-            .thrust = {.acceleration = 1, .maxSpeed = 20, .drag = 1, .grip = 1, .turnRate = 20},
+            .thrust = {.acceleration = 1, .maxSpeed = 100, .drag = 1, .grip = 1, .turnRate = 100},
             .health = {100},
             .armor = {0},
             .shield = {0},

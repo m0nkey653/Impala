@@ -21,6 +21,7 @@ namespace dzone {
 
         auto ship = DefaultShip();
         scene->AddComponent<Movement>(entity);
+        scene->AddComponent<ShipControls>(entity);
         scene->AddComponent<Health>(entity, ship.health);
         scene->AddComponent<Armor>(entity, ship.armor);
         scene->AddComponent<Shield>(entity, ship.shield);

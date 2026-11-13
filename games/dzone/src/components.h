@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace dzone {
+    // player input for controlling the ship
     struct ShipControls {
         float throttle = 0;
         float turn = 0;
@@ -13,6 +14,7 @@ namespace dzone {
         bool fireSecondary = false;
     };
 
+    // ship stats and movement characteristics
     struct Thrust {
         float acceleration = 0;
         float maxSpeed = 0;
@@ -23,6 +25,7 @@ namespace dzone {
         float turnRate = 0;
     };
 
+    // current velocity and angular velocity of the ship
     struct Movement {
         impala::math::Vec2 velocity;
         float angularVelocity = 0;

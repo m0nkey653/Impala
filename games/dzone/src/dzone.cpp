@@ -2,6 +2,7 @@
 #include "dzone_assets.h"
 #include "impala/game.h"
 #include "impala/log.h"
+#include "systems/movement_system.h"
 
 namespace dzone {
 
@@ -31,6 +32,9 @@ namespace dzone {
         for (uint32_t i = 0; i < _players.PlayerCount(); ++i) {
             _players[i].Update(dt, _activeScene);
         }
+
+        MovementSystem movementSystem;
+        movementSystem.Update(dt, _activeScene, context);
     }
 
     void DzoneGame::Render(impala::GameContext* context) {
