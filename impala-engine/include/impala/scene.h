@@ -1,6 +1,7 @@
 #pragma once
 #include "handles.h"
 #include <atomic>
+#include <bitset>
 #include <cstdint>
 #include <memory>
 #include <type_traits>
@@ -67,6 +68,15 @@ namespace impala {
             return static_cast<T*>(componentPtr);
         }
 
+        template <typename... Ts> std::vector<EntityHandle> GetEntitiesWithComponents() {
+
+            std::bitset<64> required;
+            ((required.set(detail::ComponentTypeId<Ts>())), ...);
+            std::vector<EntityHandle> entities;
+            GetEntitiesWithMaskInternal(required, entities);
+            return entities;
+        }
+
         virtual EntityHandle CreateEntity(const char* name) = 0;
         virtual void DestroyEntity(EntityHandle entity) = 0;
 
@@ -74,6 +84,9 @@ namespace impala {
         virtual void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
                                            std::unique_ptr<detail::IComponentHolder> component) = 0;
         virtual void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) = 0;
+
+        virtual void GetEntitiesWithMaskInternal(std::bitset<64> required,
+                                                 std::vector<EntityHandle>& out) = 0;
     };
 
 } // namespace impala

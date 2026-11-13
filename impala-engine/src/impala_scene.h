@@ -2,6 +2,7 @@
 
 #include "impala/scene.h"
 #include <bitset>
+#include <vector>
 
 namespace impala {
 
@@ -27,6 +28,14 @@ namespace impala {
         void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
                                    std::unique_ptr<detail::IComponentHolder> component) override;
         void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) override;
+
+        // std::vector<std::tuple<void*, void*, void*, void*>>
+        //  GetEntitiesWithComponentsInternal(uint32_t componentTypeIdT, uint32_t componentTypeIdU,
+        //                                    uint32_t componentTypeIdV,
+        //                                    uint32_t componentTypeIdW) override;
+
+        void GetEntitiesWithMaskInternal(std::bitset<64> required,
+                                         std::vector<EntityHandle>& out) override;
 
     private:
         std::vector<Entity> _entities;
