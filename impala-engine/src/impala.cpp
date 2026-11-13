@@ -54,7 +54,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
         }
         sdlRenderer = std::make_unique<impala::Renderer>(renderer);
     }
-    SDL_SetRenderLogicalPresentation(sdlRenderer->Get(), 640, 480,
+    SDL_SetWindowSize(window, 1280, 720);
+    SDL_SetRenderLogicalPresentation(sdlRenderer->Get(), 1920, 1080,
                                      SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     assetDb = std::make_unique<impala::AssetDatabase>(sdlRenderer.get());
