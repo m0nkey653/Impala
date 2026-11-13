@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../components.h"
 #include "impala/game.h"
 #include "impala/scene.h"
 
