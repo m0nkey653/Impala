@@ -4,7 +4,6 @@
 #include "impala/gamepad.h"
 #include "impala/keyboard.h"
 #include "impala/scene_manager.h"
-#include <string>
 
 namespace impala {
 
