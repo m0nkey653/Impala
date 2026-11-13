@@ -32,8 +32,9 @@ namespace impala {
     };
 
     struct GameInfo {
-        std::string name;
-        std::string version;
+        const char* name;
+        const char* version;
+        const char* iconPath;
     };
 
     class IGame {

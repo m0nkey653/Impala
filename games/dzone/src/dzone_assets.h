@@ -4,6 +4,8 @@
 // Each key is the atlas folder + SubTexture name, as registered by AddSpriteAtlas.
 
 namespace dzone {
+    constexpr const char* DZONE_ICON = "assets/sprites/icon.png";
+
     constexpr const char* KENNEY_SPACE_SHOOTER_SPRITE_ATLAS =
         "assets/sprites/kenney-space-shooter/sheet.xml";
 

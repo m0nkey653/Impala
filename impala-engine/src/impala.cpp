@@ -30,8 +30,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     impalaGame = std::unique_ptr<impala::IGame>(impala::CreateGame());
 
-    SDL_SetAppMetadata(impalaGame->GetGameInfo().name.c_str(),
-                       impalaGame->GetGameInfo().version.c_str(), nullptr);
+    SDL_SetAppMetadata(impalaGame->GetGameInfo().name, impalaGame->GetGameInfo().version, nullptr);
 
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
@@ -40,10 +39,18 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     {
         SDL_Renderer* renderer = nullptr;
-        if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name.c_str(), 640, 480,
+        if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name, 640, 480,
                                          SDL_WINDOW_RESIZABLE, &window, &renderer)) {
             SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
             return SDL_APP_FAILURE;
+        }
+        auto surface = SDL_LoadSurface(impalaGame->GetGameInfo().iconPath);
+        if (surface) {
+            SDL_SetWindowIcon(window, surface);
+            SDL_DestroySurface(surface);
+        } else {
+            impala::log::Warn(impala::log::LogCategory::Engine, "Failed to load window icon: {}",
+                              SDL_GetError());
         }
         sdlRenderer = std::make_unique<impala::Renderer>(renderer);
     }
