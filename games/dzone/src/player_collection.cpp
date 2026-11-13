@@ -29,6 +29,8 @@ namespace dzone {
         auto& w = scene->AddComponent<Weapons>(entity, ship.weapons);
         WeaponSlot ws = {.projectile = Laser(), .muzzleOffset = {0.0f, 0.0f}};
         w.slots.push_back(ws);
+        w.activePrimary = 0;
+        w.activeSecondary = 0;
 
         scene->AddComponent<impala::SpriteRenderer>(entity);
         auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(entity);

@@ -21,16 +21,21 @@ namespace dzone {
             auto movement = scene->GetComponent<Movement>(entity);
             auto controls = scene->GetComponent<ShipControls>(entity);
             auto thrust = scene->GetComponent<Thrust>(entity);
+            if (!thrust || !controls || !movement || !transform) {
+                impala::log::Debug(impala::log::LogCategory::Game,
+                                   "Skipping entity due to missing components {}", entity.id);
+                continue;
+            }
 
             movement->angularVelocity = controls->turn * thrust->turnRate;
             // impala::math::Vec2 heading = impala::Forward(*transform);
             movement->velocity =
                 impala::Forward(*transform) * controls->throttle * thrust->maxSpeed;
             // Log the updated movement for debugging
-            impala::log::Debug(impala::log::LogCategory::Game,
-                               "Entity {}: velocity = ({}, {}), angularVelocity = {}", entity.id,
-                               movement->velocity.x, movement->velocity.y,
-                               movement->angularVelocity);
+            // impala::log::Debug(impala::log::LogCategory::Game,
+            //                    "Entity {}: velocity = ({}, {}), angularVelocity = {}", entity.id,
+            //                    movement->velocity.x, movement->velocity.y,
+            //                    movement->angularVelocity);
         }
 
         std::vector<impala::EntityHandle> movementEntities =

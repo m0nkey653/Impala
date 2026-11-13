@@ -6,6 +6,7 @@
 #include "impala/sprite.h"
 #include "impala/transform.h"
 #include "systems/movement_system.h"
+#include "systems/weapons_system.h"
 
 namespace dzone {
 
@@ -51,6 +52,8 @@ namespace dzone {
 
         MovementSystem movementSystem;
         movementSystem.Update(dt, _activeScene, context);
+        WeaponsSystem weaponsSystem;
+        weaponsSystem.Update(dt, _activeScene, context);
     }
 
     void DzoneGame::Render(impala::GameContext* context) {
