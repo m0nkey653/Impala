@@ -21,6 +21,7 @@ static std::unique_ptr<impala::Keyboard> keyboard;
 impala::GameContext context{};
 uint64_t lastTicks = 0;
 bool firstFrame = true;
+float gameSpeed = 1.0f;
 
 struct AppState {};
 
@@ -39,7 +40,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     {
         SDL_Renderer* renderer = nullptr;
-        if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name, 640, 480,
+        if (!SDL_CreateWindowAndRenderer(impalaGame->GetGameInfo().name, 1920, 1080,
                                          SDL_WINDOW_RESIZABLE, &window, &renderer)) {
             SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
             return SDL_APP_FAILURE;
@@ -54,7 +55,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
         }
         sdlRenderer = std::make_unique<impala::Renderer>(renderer);
     }
-    SDL_SetWindowSize(window, 1280, 720);
+
     SDL_SetRenderLogicalPresentation(sdlRenderer->Get(), 1920, 1080,
                                      SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
@@ -87,6 +88,21 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         }
         break;
     }
+    case SDL_EVENT_KEY_UP:
+        switch (event->key.scancode) {
+        case SDL_SCANCODE_PAUSE:
+            gameSpeed = (gameSpeed == 1.0f) ? 0.0f : 1.0f;
+            break;
+        case SDL_SCANCODE_PAGEUP:
+            gameSpeed = std::min(gameSpeed + 0.1f, 1.0f);
+            break;
+        case SDL_SCANCODE_PAGEDOWN:
+            gameSpeed = std::max(gameSpeed - 0.1f, 0.0f);
+            break;
+        default:
+            break;
+        }
+        break;
     default:
         break;
     }
@@ -97,6 +113,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 SDL_AppResult SDL_AppIterate(void* appstate) {
     auto currentTicks = SDL_GetTicksNS();
     auto deltaTime = firstFrame ? 0.0f : (currentTicks - lastTicks) / 1e9f;
+    deltaTime *= std::clamp(gameSpeed, 0.0f, 1.0f);
     lastTicks = currentTicks;
     firstFrame = false;
 
@@ -140,12 +157,16 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         auto texture = assetDb->GetTexture(sprite.textureHandle);
 
         SDL_FRect srcRect = sprite.rect.ToSDLFRect();
-        SDL_FRect dstRect = {t->position.x, t->position.y, srcRect.w, srcRect.h};
+        auto anchor = r->anchor.value_or(sprite.anchor);
+        SDL_FPoint pivot = {(1 + anchor.x) * sprite.rect.width * 0.5f,
+                            (1 + anchor.y) * sprite.rect.height * 0.5f};
+        impala::math::Vec2 topLeft = t->position - impala::math::Vec2{pivot.x, pivot.y};
+        SDL_FRect dstRect = {topLeft.x, topLeft.y, srcRect.w, srcRect.h};
 
         bool result = false;
         if (t->rotation != 0) {
             result = SDL_RenderTextureRotated(sdlRenderer->Get(), texture->GetTexture(), &srcRect,
-                                              &dstRect, t->rotation, nullptr, SDL_FLIP_NONE);
+                                              &dstRect, t->rotation, &pivot, SDL_FLIP_NONE);
         } else {
             result =
                 SDL_RenderTexture(sdlRenderer->Get(), texture->GetTexture(), &srcRect, &dstRect);
@@ -154,6 +175,15 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
             impala::log::Error(impala::log::LogCategory::Engine, "Failed to render texture: {}",
                                SDL_GetError());
         }
+
+        float px = std::round(t->position.x);
+        float py = std::round(t->position.y);
+        SDL_FRect debugTransform = {px - 2.0f, py - 2.0f, 4.0f, 4.0f};
+        SDL_FRect debugTransformOutline = {px - 4.0f, py - 4.0f, 8.0f, 8.0f};
+        SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 0, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderFillRect(sdlRenderer->Get(), &debugTransform);
+        SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
+        SDL_RenderRect(sdlRenderer->Get(), &debugTransformOutline);
     }
 
     SDL_RenderPresent(sdlRenderer->Get());

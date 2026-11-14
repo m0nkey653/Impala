@@ -2,6 +2,8 @@
 
 #include "impala/asset.h"
 #include "impala/handles.h"
+#include "impala/math.h"
+#include <optional>
 #include <string>
 
 namespace impala {
@@ -19,6 +21,7 @@ namespace impala {
         uint8_t colorB = 0xff;
         uint8_t colorA = 0xff;
         uint32_t layer = 0;
+        std::optional<impala::math::Vec2> anchor;
 
         bool IsDefaultColor() const {
             return colorR == 0xff && colorG == 0xff && colorB == 0xff && colorA == 0xff;
