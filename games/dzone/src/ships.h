@@ -1,9 +1,14 @@
 #pragma once
 #include "components.h"
+#include "dzone_assets.h"
 
 namespace dzone {
 
     constexpr int MAX_PLAYER_SHIP_COUNT = 4;
+
+    const char* defaultPlayerShip[MAX_PLAYER_SHIP_COUNT] = {
+        KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_BLUE, KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_GREEN,
+        KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_RED, KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_ORANGE};
 
     struct PlayerShip {
         Thrust thrust = {0, 0, 0, 0, 0};
