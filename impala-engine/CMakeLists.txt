@@ -21,6 +21,8 @@ add_library(impala_engine STATIC
     include/impala/gamepad.h
     include/impala/keyboard.h
     src/input/keyboard.cpp
+    include/impala/renderer.h
+    src/renderer.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

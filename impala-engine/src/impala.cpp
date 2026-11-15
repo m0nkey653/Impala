@@ -178,12 +178,9 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 
         float px = std::round(t->position.x);
         float py = std::round(t->position.y);
-        SDL_FRect debugTransform = {px - 2.0f, py - 2.0f, 4.0f, 4.0f};
-        SDL_FRect debugTransformOutline = {px - 4.0f, py - 4.0f, 8.0f, 8.0f};
-        SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 0, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(sdlRenderer->Get(), &debugTransform);
-        SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderRect(sdlRenderer->Get(), &debugTransformOutline);
+        sdlRenderer->FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
+        sdlRenderer->DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
+        sdlRenderer->DrawCircle(t->position, 20.0f, impala::color::Red());
     }
 
     SDL_RenderPresent(sdlRenderer->Get());
