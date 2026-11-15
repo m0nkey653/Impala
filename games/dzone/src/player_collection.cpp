@@ -36,13 +36,13 @@ namespace dzone {
         auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(entity);
         spriteRenderer->sprite = sprite;
 
-        PlayerInput input0(gameContext->keyboard, dzone::KEYBOARD_MAPS[_players.size()],
-                           gameContext->gamepads);
+        PlayerInput input(gameContext->keyboard, dzone::KEYBOARD_MAPS[_players.size()],
+                          gameContext->gamepads);
 
         impala::log::Debug(impala::log::LogCategory::Game, "Created Player[{}] {} with entityID {}",
                            _players.size(), name, entity.id);
 
-        _players.push_back(DzonePlayer(entity, input0));
+        _players.push_back(DzonePlayer(entity, input));
         return _players.back();
     }
 
