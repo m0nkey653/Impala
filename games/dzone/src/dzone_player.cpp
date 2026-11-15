@@ -4,7 +4,7 @@
 #include "impala/transform.h"
 
 namespace dzone {
-    void DzonePlayer::Update(float dt, impala::IScene* scene) {
+    void DzonePlayer::UpdateControls(float dt, impala::IScene* scene) {
         auto controls = scene->GetComponent<ShipControls>(_entity);
         if (controls) {
             controls->turn = _input.GetRotation();

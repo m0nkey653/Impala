@@ -9,7 +9,7 @@ namespace dzone {
     public:
         DzonePlayer(impala::EntityHandle entity, dzone::PlayerInput input)
             : _entity(entity), _input(input) {}
-        void Update(float dt, impala::IScene* scene);
+        void UpdateControls(float dt, impala::IScene* scene);
 
         impala::GamepadHandle GetGamepad() const { return _input.GetGamepadHandle(); }
         impala::EntityHandle GetEntity() const { return _entity; }

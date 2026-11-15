@@ -39,18 +39,17 @@ namespace dzone {
         renderer.sprite = asteroidSprite;
     }
 
-    void DzoneGame::FixedUpdate(impala::GameContext* context, float dt) {}
-
-    void DzoneGame::Update(impala::GameContext* context, float dt) {
+    void DzoneGame::FixedUpdate(impala::GameContext* context, float dt) {
         for (uint32_t i = 0; i < _players.PlayerCount(); ++i) {
-            _players[i].Update(dt, _activeScene);
+            _players[i].UpdateControls(dt, _activeScene);
         }
-
         MovementSystem movementSystem;
         movementSystem.Update(dt, _activeScene, context);
         WeaponsSystem weaponsSystem;
         weaponsSystem.Update(dt, _activeScene, context);
     }
+
+    void DzoneGame::Update(impala::GameContext* context, float dt) {}
 
     void DzoneGame::Render(impala::GameContext* context) {
         // Render game here
