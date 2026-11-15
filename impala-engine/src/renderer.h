@@ -16,7 +16,8 @@ namespace impala {
 
         void DrawLine(impala::math::Vec2 start, impala::math::Vec2 end,
                       impala::Color color) override;
-        void DrawCircle(impala::math::Vec2 position, float radius, impala::Color color) override;
+        void DrawCircle(impala::math::Vec2 position, float radius, impala::Color color,
+                        float startAngle = 0.0f, float endAngle = 360.0f) override;
         void DrawRectangle(impala::math::Vec2 topLeft, float width, float height,
                            impala::Color color) override;
         void FillRectangle(impala::math::Vec2 topLeft, float width, float height,

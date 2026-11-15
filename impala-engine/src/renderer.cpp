@@ -7,15 +7,17 @@ namespace impala {
         SDL_RenderLine(_renderer.get(), start.x, start.y, end.x, end.y);
     }
 
-    void Renderer::DrawCircle(impala::math::Vec2 position, float radius, impala::Color color) {
+    void Renderer::DrawCircle(impala::math::Vec2 position, float radius, impala::Color color,
+                              float startAngle, float endAngle) {
         const int segments = 60;
         SDL_SetRenderDrawColorFloat(_renderer.get(), color.r, color.g, color.b, color.a);
 
         SDL_FRect rects[segments];
-        math::Vec2 point{1, 0};
+        math::Vec2 point{0, -1};
         math::Vec2 prev = point;
         for (int i = 1; i <= segments; i++) {
-            impala::math::Vec2 current = math::RotateDegrees(point, i * (360.0f / segments));
+            float angle = startAngle + (endAngle - startAngle) * (i / static_cast<float>(segments));
+            impala::math::Vec2 current = math::RotateDegrees(point, angle);
             rects[i - 1] = {position.x + current.x * radius - 1,
                             position.y + current.y * radius - 1, 2, 2};
             prev = current;
