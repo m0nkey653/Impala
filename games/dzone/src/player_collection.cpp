@@ -11,15 +11,17 @@
 namespace dzone {
 
     DzonePlayer& PlayerCollection::AddPlayer(std::string name, impala::GameContext* gameContext,
-                                             impala::IScene* scene,
-                                             const impala::SpriteHandle sprite) {
+                                             impala::IScene* scene) {
         if (_players.size() >= MAX_PLAYER_COUNT) {
             throw std::out_of_range("Cannot add more players, max count reached");
         }
         auto entity = scene->CreateEntity(name.c_str());
         auto& t = scene->AddComponent<impala::Transform2d>(entity);
 
-        auto ship = DefaultShip();
+        auto ship = DefaultShip(_players.size());
+        auto sprite = gameContext->assetDataBase->GetSprite(ship.spriteName);
+        gameContext->assetDataBase->LoadSpriteTexture(sprite);
+
         scene->AddComponent<Movement>(entity);
         scene->AddComponent<ShipControls>(entity);
         scene->AddComponent<Health>(entity, ship.health);
@@ -31,6 +33,14 @@ namespace dzone {
         w.slots.push_back(ws);
         w.activePrimary = 0;
         w.activeSecondary = 0;
+
+        auto& collider = scene->AddComponent<impala::Collider>(entity);
+        for (const auto& shape : ship.colliders) {
+            if (!collider.AddShape(shape)) {
+                impala::log::Error(impala::log::LogCategory::Game,
+                                   "Failed to add collider shape to entity {}", entity.id);
+            }
+        }
 
         scene->AddComponent<impala::SpriteRenderer>(entity);
         auto spriteRenderer = scene->GetComponent<impala::SpriteRenderer>(entity);

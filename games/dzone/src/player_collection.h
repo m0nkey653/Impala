@@ -19,7 +19,7 @@ namespace dzone {
         const uint32_t PlayerCount() const { return static_cast<uint32_t>(_players.size()); }
 
         DzonePlayer& AddPlayer(std::string name, impala::GameContext* gameContext,
-                               impala::IScene* scene, const impala::SpriteHandle sprite);
+                               impala::IScene* scene);
 
         void AddGamepadToPlayer(impala::GamepadHandle handle);
         void RemoveGamepadFromPlayer(impala::GamepadHandle handle);

@@ -17,16 +17,16 @@ namespace dzone {
     };
 
     constexpr ProjectileBluePrint Laser() {
-        return ProjectileBluePrint{.name = "Laser",
-                                   .speed = 1000.0f,
-                                   .lifetime = 5.0f,
-                                   .thrust = 0.0f,
-                                   .homingTurnRate = 0.0f,
-                                   .damage = 10.0f,
-                                   .shieldPenetration = 1.0f,
-                                   .armorPenetration = 1.0f,
-                                   .cooldown = 0.1f,
-                                   .spriteName = KENNEY_SPACE_SHOOTER_LASER_BLUE_01};
+        return {.name = "Laser",
+                .speed = 1000.0f,
+                .lifetime = 5.0f,
+                .thrust = 0.0f,
+                .homingTurnRate = 0.0f,
+                .damage = 10.0f,
+                .shieldPenetration = 1.0f,
+                .armorPenetration = 1.0f,
+                .cooldown = 0.1f,
+                .spriteName = KENNEY_SPACE_SHOOTER_LASER_BLUE_01};
     }
 
 } // namespace dzone

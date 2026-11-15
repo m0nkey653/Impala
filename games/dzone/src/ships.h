@@ -1,6 +1,7 @@
 #pragma once
 #include "components.h"
 #include "dzone_assets.h"
+#include "impala/colliders.h"
 
 namespace dzone {
 
@@ -10,21 +11,31 @@ namespace dzone {
         KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_BLUE, KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_GREEN,
         KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_RED, KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_ORANGE};
 
+    constexpr std::array<impala::ColliderShape, 8> DefaultPlayerShipColliders() {
+        auto shape = impala::ColliderShape{.offset = {.x = 0.0f, .y = 0.0f},
+                                           .shape = impala::CircleCollider{.radius = 32.0f}};
+        return {shape, {}, {}, {}, {}, {}, {}, {}};
+    }
+
     struct PlayerShip {
         Thrust thrust = {0, 0, 0, 0, 0};
         Health health = {100};
         Armor armor = {0};
         Shield shield = {0};
         Weapons weapons = {};
+        std::array<impala::ColliderShape, 8> colliders;
+        const char* spriteName = nullptr;
     };
 
-    constexpr PlayerShip DefaultShip() {
+    constexpr PlayerShip DefaultShip(int index) {
         return PlayerShip{
             .thrust = {.acceleration = 1, .maxSpeed = 100, .drag = 1, .grip = 1, .turnRate = 100},
             .health = {100},
             .armor = {0},
             .shield = {0},
-            .weapons = {}};
+            .weapons = {},
+            .colliders = DefaultPlayerShipColliders(),
+            .spriteName = defaultPlayerShip[index]};
     }
 
 } // namespace dzone
