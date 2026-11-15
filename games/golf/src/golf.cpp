@@ -9,6 +9,10 @@ public:
         // Initialization code here
     }
 
+    void FixedUpdate(impala::GameContext* context, float dt) override {
+        // Fixed update game state here
+    }
+
     void Update(impala::GameContext* context, float dt) override {
         // Update game state here
     }

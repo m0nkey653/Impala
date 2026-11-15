@@ -14,6 +14,7 @@ namespace dzone {
         }
         void Init(impala::GameContext* context) override;
         void Update(impala::GameContext* context, float dt) override;
+        void FixedUpdate(impala::GameContext* context, float dt) override;
         void Render(impala::GameContext* context) override;
         void OnEvent(const impala::GameEvent& event) override;
         void OnGamepadConnected(impala::GamepadHandle handle) override;

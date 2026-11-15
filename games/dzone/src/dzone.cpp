@@ -39,6 +39,8 @@ namespace dzone {
         renderer.sprite = asteroidSprite;
     }
 
+    void DzoneGame::FixedUpdate(impala::GameContext* context, float dt) {}
+
     void DzoneGame::Update(impala::GameContext* context, float dt) {
         for (uint32_t i = 0; i < _players.PlayerCount(); ++i) {
             _players[i].Update(dt, _activeScene);

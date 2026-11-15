@@ -41,6 +41,7 @@ namespace impala {
         virtual ~IGame() = default;
         virtual GameInfo GetGameInfo() const = 0;
         virtual void Init(GameContext* context) = 0;
+        virtual void FixedUpdate(GameContext* context, float dt) = 0;
         virtual void Update(GameContext* context, float dt) = 0;
         virtual void Render(GameContext* context) = 0;
         virtual void OnEvent(const GameEvent& event) = 0;
