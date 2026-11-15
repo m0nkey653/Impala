@@ -36,8 +36,9 @@ namespace dzone {
 
                 weapon.cooldownRemaining = weapon.projectile.cooldown;
                 auto e = scene->CreateEntity(weapon.projectile.name);
+                auto relVector = RotateDegrees(weapon.muzzleOffset, transform->rotation);
                 scene->AddComponent<impala::Transform2d>(
-                    e, {transform->position, transform->rotation});
+                    e, {transform->position + relVector, transform->rotation});
                 auto& m = scene->AddComponent<Movement>(e);
                 m.velocity = impala::Forward(*transform) * weapon.projectile.speed;
                 auto& s = scene->AddComponent<impala::SpriteRenderer>(e);

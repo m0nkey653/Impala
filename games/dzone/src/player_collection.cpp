@@ -27,7 +27,7 @@ namespace dzone {
         scene->AddComponent<Shield>(entity, ship.shield);
         scene->AddComponent<Thrust>(entity, ship.thrust);
         auto& w = scene->AddComponent<Weapons>(entity, ship.weapons);
-        WeaponSlot ws = {.projectile = Laser(), .muzzleOffset = {0.0f, 0.0f}};
+        WeaponSlot ws = {.projectile = Laser(), .muzzleOffset = {0.0f, -50.0f}};
         w.slots.push_back(ws);
         w.activePrimary = 0;
         w.activeSecondary = 0;
