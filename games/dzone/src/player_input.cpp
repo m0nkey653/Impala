@@ -48,11 +48,11 @@ namespace dzone {
         auto gamepad = _gamepads->GetGamepad(_handle);
         if (gamepad) {
             auto axis = gamepad->GetAxis(_gamepadInputMap.firePrimary) >= FIRE_THRESHOLD;
-            auto axisLastFrame =
-                gamepad->GetAxisLastFrame(_gamepadInputMap.firePrimary) < FIRE_THRESHOLD;
-            return axis && axisLastFrame;
+            auto axisLastFixed =
+                gamepad->GetAxisLastFixed(_gamepadInputMap.firePrimary) < FIRE_THRESHOLD;
+            return axis && axisLastFixed;
         } else {
-            auto wasPressed = _keyboard->WasKeyPressedThisFrame(_keyboardInputMap.firePrimary);
+            auto wasPressed = _keyboard->WasKeyPressedThisFixed(_keyboardInputMap.firePrimary);
             if (wasPressed) {
                 impala::log::Debug(impala::log::LogCategory::Input, "Fire primary key pressed");
             }
@@ -65,11 +65,11 @@ namespace dzone {
         auto gamepad = _gamepads->GetGamepad(_handle);
         if (gamepad) {
             auto axis = gamepad->GetAxis(_gamepadInputMap.fireSecondary) >= FIRE_THRESHOLD;
-            auto axisLastFrame =
-                gamepad->GetAxisLastFrame(_gamepadInputMap.fireSecondary) < FIRE_THRESHOLD;
-            return axis && axisLastFrame;
+            auto axisLastFixed =
+                gamepad->GetAxisLastFixed(_gamepadInputMap.fireSecondary) < FIRE_THRESHOLD;
+            return axis && axisLastFixed;
         } else {
-            auto wasPressed = _keyboard->WasKeyPressedThisFrame(_keyboardInputMap.fireSecondary);
+            auto wasPressed = _keyboard->WasKeyPressedThisFixed(_keyboardInputMap.fireSecondary);
             if (wasPressed) {
                 impala::log::Debug(impala::log::LogCategory::Input, "Fire secondary key pressed");
             }
