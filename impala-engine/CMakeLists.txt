@@ -23,6 +23,8 @@ add_library(impala_engine STATIC
     src/input/keyboard.cpp
     include/impala/renderer.h
     src/renderer.cpp
+    include/impala/colliders.h
+    include/impala/utility.h
 )
 add_library(Impala::Engine ALIAS impala_engine)
 
