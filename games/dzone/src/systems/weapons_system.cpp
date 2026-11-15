@@ -1,6 +1,7 @@
 #include "weapons_system.h"
 #include "../components.h"
 #include "impala/log.h"
+#include "impala/physics.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
 
@@ -39,8 +40,8 @@ namespace dzone {
                 auto relVector = RotateDegrees(weapon.muzzleOffset, transform->rotation);
                 scene->AddComponent<impala::Transform2d>(
                     e, {transform->position + relVector, transform->rotation});
-                auto& m = scene->AddComponent<Movement>(e);
-                m.velocity = impala::Forward(*transform) * weapon.projectile.speed;
+                auto& v = scene->AddComponent<impala::Velocity2d>(e);
+                v.velocity = impala::Forward(*transform) * weapon.projectile.speed;
                 auto& s = scene->AddComponent<impala::SpriteRenderer>(e);
                 s.sprite = gameContext->assetDataBase->GetSprite(weapon.projectile.spriteName);
             }
