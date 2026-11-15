@@ -21,6 +21,7 @@ namespace impala {
         GamepadCollection() = default;
         void Update(float dt);
         void PostUpdate();
+        void PostFixedUpdate();
 
         GamepadHandle GamepadConnected(SDL_JoystickID joystickId);
         void GamepadDisconnected(SDL_JoystickID joystickId);

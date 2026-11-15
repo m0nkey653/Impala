@@ -130,6 +130,8 @@ namespace impala {
         virtual bool IsKeyPressed(ImpalaKey key) const = 0;
         virtual bool WasKeyPressedThisFrame(ImpalaKey key) const = 0;
         virtual bool WasKeyReleasedThisFrame(ImpalaKey key) const = 0;
+        virtual bool WasKeyPressedThisFixed(ImpalaKey key) const = 0;
+        virtual bool WasKeyReleasedThisFixed(ImpalaKey key) const = 0;
     };
 
 } // namespace impala

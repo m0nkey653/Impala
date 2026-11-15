@@ -40,16 +40,29 @@ namespace impala {
 
     bool Keyboard::WasKeyPressedThisFrame(ImpalaKey key) const {
         int index = static_cast<int>(key);
-        return _current[index] && !_previous[index];
+        return _current[index] && !_previousFrame[index];
+    }
+
+    bool Keyboard::WasKeyPressedThisFixed(ImpalaKey key) const {
+        int index = static_cast<int>(key);
+        return _current[index] && !_previousFixed[index];
     }
 
     bool Keyboard::WasKeyReleasedThisFrame(ImpalaKey key) const {
         int index = static_cast<int>(key);
-        return !_current[index] && _previous[index];
+        return !_current[index] && _previousFrame[index];
+    }
+
+    bool Keyboard::WasKeyReleasedThisFixed(ImpalaKey key) const {
+        int index = static_cast<int>(key);
+        return !_current[index] && _previousFixed[index];
     }
 
     void Keyboard::PostUpdate() {
-        std::copy_n(_current, IMPALA_KEY_COUNT, _previous);
+        std::copy_n(_current, IMPALA_KEY_COUNT, _previousFrame);
+    }
+    void Keyboard::PostFixedUpdate() {
+        std::copy_n(_current, IMPALA_KEY_COUNT, _previousFixed);
     }
 
 } // namespace impala

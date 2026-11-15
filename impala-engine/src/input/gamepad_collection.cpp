@@ -56,7 +56,15 @@ namespace impala {
     void GamepadCollection::PostUpdate() {
         for (int i = 0; i < _gamepads.size(); ++i) {
             if (_gamepads[i].sdlGamepad) {
-                _gamepads[i].gamepad.ClearCurrentState();
+                _gamepads[i].gamepad.ClearCurrentFrameState();
+            }
+        }
+    }
+
+    void GamepadCollection::PostFixedUpdate() {
+        for (int i = 0; i < _gamepads.size(); ++i) {
+            if (_gamepads[i].sdlGamepad) {
+                _gamepads[i].gamepad.ClearCurrentFixedState();
             }
         }
     }

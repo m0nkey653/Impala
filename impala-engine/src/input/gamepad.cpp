@@ -10,7 +10,8 @@ namespace impala {
 
     void Gamepad::Reset() {
         _current = GamepadState{};
-        _previous = GamepadState{};
+        _previousFrame = GamepadState{};
+        _previousFixed = GamepadState{};
     }
 
     bool Gamepad::IsButtonPressed(GamepadButton button) const {
@@ -22,14 +23,28 @@ namespace impala {
         // Return true if the button was not pressed in the previous state but is pressed in the
         // current state
         return _current.buttonStates[static_cast<int>(button)] &&
-               !_previous.buttonStates[static_cast<int>(button)];
+               !_previousFrame.buttonStates[static_cast<int>(button)];
     }
 
     bool Gamepad::WasButtonReleasedThisFrame(GamepadButton button) const {
         // Return true if the button was pressed in the previous state but is not pressed in the
         // current state
         return !_current.buttonStates[static_cast<int>(button)] &&
-               _previous.buttonStates[static_cast<int>(button)];
+               _previousFrame.buttonStates[static_cast<int>(button)];
+    }
+
+    bool Gamepad::WasButtonPressedThisFixed(GamepadButton button) const {
+        // Return true if the button was not pressed in the previous fixed state but is pressed in
+        // the current state
+        return _current.buttonStates[static_cast<int>(button)] &&
+               !_previousFixed.buttonStates[static_cast<int>(button)];
+    }
+
+    bool Gamepad::WasButtonReleasedThisFixed(GamepadButton button) const {
+        // Return true if the button was pressed in the previous fixed state but is not pressed in
+        // the current state
+        return !_current.buttonStates[static_cast<int>(button)] &&
+               _previousFixed.buttonStates[static_cast<int>(button)];
     }
 
     float Gamepad::GetAxis(GamepadAxis axis) const {
@@ -56,7 +71,7 @@ namespace impala {
     }
 
     float Gamepad::GetAxisLastFrame(GamepadAxis axis) const {
-        auto result = _previous.axisStates[static_cast<int>(axis)];
+        auto result = _previousFrame.axisStates[static_cast<int>(axis)];
         switch (axis) {
         case GamepadAxis::LeftX:
         case GamepadAxis::RightX:
@@ -71,9 +86,28 @@ namespace impala {
         return result;
     }
 
-    void Gamepad::ClearCurrentState() {
-        _previous = _current;
-        _current = GamepadState{};
+    float Gamepad::GetAxisLastFixed(GamepadAxis axis) const {
+        auto result = _previousFixed.axisStates[static_cast<int>(axis)];
+        switch (axis) {
+        case GamepadAxis::LeftX:
+        case GamepadAxis::RightX:
+        case GamepadAxis::LeftY:
+        case GamepadAxis::RightY:
+            return std::max(result /= AXIS_MAX, -1.0f);
+        case GamepadAxis::LeftTrigger:
+        case GamepadAxis::RightTrigger:
+            return result > 0;
+        }
+
+        return result;
+    }
+
+    void Gamepad::ClearCurrentFrameState() {
+        _previousFrame = _current;
+    }
+
+    void Gamepad::ClearCurrentFixedState() {
+        _previousFixed = _current;
     }
 
 } // namespace impala
