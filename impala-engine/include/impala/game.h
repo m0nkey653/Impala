@@ -41,7 +41,24 @@ namespace impala {
         virtual ~IGame() = default;
         virtual GameInfo GetGameInfo() const = 0;
         virtual void Init(GameContext* context) = 0;
+        // FixedUpdate(dt): simulation. Runs at a fixed rate, zero or more times per frame. Use it
+        // for anything that changes the game state:
+        // - Applying gameplay input: set velocities, turn, fire.
+        // - AI and steering.
+        // - Spawning and destroying entities.
+        // - Gameplay timers and cooldowns (weapon reload, invulnerability).
+        // - Responding to collisions: the engine delivers the step’s collision events after
+        // detection.
         virtual void FixedUpdate(GameContext* context, float dt) = 0;
+        // Update(dt): presentation. Runs once per frame with a variable dt. Use it for things that
+        // only affect what the player sees and hears:
+        // - UI, menus, HUD and the pause screen.
+        // - The camera.
+        // - Visual effects, particles and sprite animation.
+        // - Audio.
+        // - Debug keys and overlays.
+        // Don’t change simulated state here (positions, velocities, health). It runs at a different
+        // rate than the simulation, so it breaks determinism and interpolation.
         virtual void Update(GameContext* context, float dt) = 0;
         virtual void Render(GameContext* context) = 0;
         virtual void OnEvent(const GameEvent& event) = 0;
