@@ -3,6 +3,7 @@
 #include "player_collection.h"
 #include "components.h"
 #include "impala/log.h"
+#include "impala/physics.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
 #include "projectile.h"
@@ -22,7 +23,7 @@ namespace dzone {
         auto sprite = gameContext->assetDataBase->GetSprite(ship.spriteName);
         gameContext->assetDataBase->LoadSpriteTexture(sprite);
 
-        scene->AddComponent<Movement>(entity);
+        scene->AddComponent<impala::Velocity2d>(entity);
         scene->AddComponent<ShipControls>(entity);
         scene->AddComponent<Health>(entity, ship.health);
         scene->AddComponent<Armor>(entity, ship.armor);

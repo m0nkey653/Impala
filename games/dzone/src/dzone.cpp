@@ -1,8 +1,8 @@
 #include "dzone.h"
-#include "components.h"
 #include "dzone_assets.h"
 #include "impala/game.h"
 #include "impala/log.h"
+#include "impala/physics.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
 #include "systems/movement_system.h"
@@ -32,7 +32,7 @@ namespace dzone {
         auto& t = _activeScene->AddComponent<impala::Transform2d>(m);
         t.position = {0.0f, 0.0f};
         t.rotation = 30;
-        auto& movement = _activeScene->AddComponent<Movement>(m);
+        auto& movement = _activeScene->AddComponent<impala::Velocity2d>(m);
         movement.velocity = {10.0f, 10.0f};
         movement.angularVelocity = 30.0f;
         auto& renderer = _activeScene->AddComponent<impala::SpriteRenderer>(m);

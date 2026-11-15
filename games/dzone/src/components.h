@@ -25,12 +25,6 @@ namespace dzone {
         float turnRate = 0;
     };
 
-    // current velocity and angular velocity of the ship
-    struct Movement {
-        impala::math::Vec2 velocity;
-        float angularVelocity = 0;
-    };
-
     struct Health {
         float current = 0;
         float maximum = 0;
