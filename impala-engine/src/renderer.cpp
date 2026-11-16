@@ -55,18 +55,8 @@ namespace impala {
         for (const auto& entity : entities) {
             auto r = scene->GetComponent<impala::SpriteRenderer>(
                 impala::EntityHandle{entity.id, entity.generation});
-            if (!r) {
-                impala::log::Error(impala::log::LogCategory::Engine,
-                                   "Entity {} is missing SpriteRenderer component", entity.id);
-                continue;
-            }
             auto t = scene->GetComponent<impala::Transform2d>(
                 impala::EntityHandle{entity.id, entity.generation});
-            if (!t) {
-                impala::log::Error(impala::log::LogCategory::Engine,
-                                   "Entity {} is missing Transform2d component", entity.id);
-                continue;
-            }
 
             auto sprite = assetDatabase->GetSprite(r->sprite);
             auto texture = assetDatabase->GetTexture(sprite.textureHandle);
