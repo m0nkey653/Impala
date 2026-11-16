@@ -149,7 +149,9 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         keyboard->PostFixedUpdate();
     }
 
-    // game logic
+    float alpha = fixedAccumulator / FIXED_TIMESTEP;
+
+    // game logic outside of physics
     impalaGame->Update(&context, deltaTime);
 
     // flush anything destroyed in this frame
@@ -160,58 +162,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     keyboard->PostUpdate();
 
     // render pass
-    // SDL_ClearRender(sdlRenderer->Get());
-    SDL_SetRenderDrawColor(sdlRenderer->Get(), 0, 0, 0, 255);
-    SDL_RenderClear(sdlRenderer->Get());
-    SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
-
-    auto entities =
-        activeScene->GetEntitiesWithComponents<impala::SpriteRenderer, impala::Transform2d>();
-    for (const auto& entity : entities) {
-        auto r = activeScene->GetComponent<impala::SpriteRenderer>(
-            impala::EntityHandle{entity.id, entity.generation});
-        if (!r) {
-            impala::log::Error(impala::log::LogCategory::Engine,
-                               "Entity {} is missing SpriteRenderer component", entity.id);
-            continue;
-        }
-        auto t = activeScene->GetComponent<impala::Transform2d>(
-            impala::EntityHandle{entity.id, entity.generation});
-        if (!t) {
-            impala::log::Error(impala::log::LogCategory::Engine,
-                               "Entity {} is missing Transform2d component", entity.id);
-            continue;
-        }
-
-        auto sprite = assetDb->GetSprite(r->sprite);
-        auto texture = assetDb->GetTexture(sprite.textureHandle);
-
-        SDL_FRect srcRect = sprite.rect.ToSDLFRect();
-        auto anchor = r->anchor.value_or(sprite.anchor);
-        SDL_FPoint pivot = {(1 + anchor.x) * sprite.rect.width * 0.5f,
-                            (1 + anchor.y) * sprite.rect.height * 0.5f};
-        impala::math::Vec2 topLeft = t->position - impala::math::Vec2{pivot.x, pivot.y};
-        SDL_FRect dstRect = {topLeft.x, topLeft.y, srcRect.w, srcRect.h};
-
-        bool result = false;
-        if (t->rotation != 0) {
-            result = SDL_RenderTextureRotated(sdlRenderer->Get(), texture->GetTexture(), &srcRect,
-                                              &dstRect, t->rotation, &pivot, SDL_FLIP_NONE);
-        } else {
-            result =
-                SDL_RenderTexture(sdlRenderer->Get(), texture->GetTexture(), &srcRect, &dstRect);
-        }
-        if (!result) {
-            impala::log::Error(impala::log::LogCategory::Engine, "Failed to render texture: {}",
-                               SDL_GetError());
-        }
-
-        float px = std::round(t->position.x);
-        float py = std::round(t->position.y);
-        sdlRenderer->FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
-        sdlRenderer->DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
-        sdlRenderer->DrawCircle(t->position, 20.0f, impala::color::Red());
-    }
+    sdlRenderer->RenderFrame(activeScene, assetDb.get(), alpha);
 
     SDL_RenderPresent(sdlRenderer->Get());
 

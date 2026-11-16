@@ -2,6 +2,10 @@
 #include "impala/renderer.h"
 
 namespace impala {
+
+    class AssetDatabase;
+    class ImpalaScene;
+
     namespace detail {
         struct RendererDeleter {
             void operator()(SDL_Renderer* renderer) const { SDL_DestroyRenderer(renderer); }
@@ -22,6 +26,9 @@ namespace impala {
                            impala::Color color) override;
         void FillRectangle(impala::math::Vec2 topLeft, float width, float height,
                            impala::Color color) override;
+
+        void RenderFrame(impala::ImpalaScene* scene, impala::AssetDatabase* assetDatabase,
+                         float alpha);
 
     private:
         std::unique_ptr<SDL_Renderer, detail::RendererDeleter> _renderer = nullptr;
