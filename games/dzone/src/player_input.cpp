@@ -52,11 +52,7 @@ namespace dzone {
                 gamepad->GetAxisLastFixed(_gamepadInputMap.firePrimary) < FIRE_THRESHOLD;
             return axis && axisLastFixed;
         } else {
-            auto wasPressed = _keyboard->WasKeyPressedThisFixed(_keyboardInputMap.firePrimary);
-            if (wasPressed) {
-                impala::log::Debug(impala::log::LogCategory::Input, "Fire primary key pressed");
-            }
-            return wasPressed;
+            return _keyboard->WasKeyPressedThisFixed(_keyboardInputMap.firePrimary);
         }
     }
 
@@ -69,11 +65,7 @@ namespace dzone {
                 gamepad->GetAxisLastFixed(_gamepadInputMap.fireSecondary) < FIRE_THRESHOLD;
             return axis && axisLastFixed;
         } else {
-            auto wasPressed = _keyboard->WasKeyPressedThisFixed(_keyboardInputMap.fireSecondary);
-            if (wasPressed) {
-                impala::log::Debug(impala::log::LogCategory::Input, "Fire secondary key pressed");
-            }
-            return wasPressed;
+            return _keyboard->WasKeyPressedThisFixed(_keyboardInputMap.fireSecondary);
         }
     }
 

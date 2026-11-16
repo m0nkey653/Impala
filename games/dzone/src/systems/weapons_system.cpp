@@ -31,9 +31,6 @@ namespace dzone {
             if (weapon.cooldownRemaining > 0.0f) {
                 weapon.cooldownRemaining -= deltaTime;
             } else if (shipControls->firePrimary) {
-                impala::log::Debug(impala::log::LogCategory::Game,
-                                   "Firing primary weapon for entity {} with projectile {}",
-                                   entity.id, weapon.projectile.name);
 
                 weapon.cooldownRemaining = weapon.projectile.cooldown;
                 auto e = scene->CreateEntity(weapon.projectile.name);
