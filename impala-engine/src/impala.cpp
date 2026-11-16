@@ -5,10 +5,12 @@
 #include "impala/transform.h"
 #include "input/gamepad_collection.h"
 #include "input/keyboard.h"
+#include "physics_system.h"
 #include "renderer.h"
 #include "scene_manager.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <cassert>
 
 static SDL_Window* window = nullptr;
 static std::unique_ptr<impala::Renderer> sdlRenderer;
@@ -17,11 +19,15 @@ static std::unique_ptr<impala::AssetDatabase> assetDb;
 static std::unique_ptr<impala::SceneManager> sceneManager;
 static std::unique_ptr<impala::GamepadCollection> gamepadCollection;
 static std::unique_ptr<impala::Keyboard> keyboard;
+static std::unique_ptr<impala::PhysicsSystem> physicsSystem;
 
 impala::GameContext context{};
 uint64_t lastTicks = 0;
 bool firstFrame = true;
 float gameSpeed = 1.0f;
+
+float fixedAccumulator = 0.0f;
+const float FIXED_TIMESTEP = 1.0f / 60.0f;
 
 struct AppState {};
 
@@ -63,6 +69,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     sceneManager = std::make_unique<impala::SceneManager>();
     gamepadCollection = std::make_unique<impala::GamepadCollection>();
     keyboard = std::make_unique<impala::Keyboard>();
+    physicsSystem = std::make_unique<impala::PhysicsSystem>();
 
     context.assetDataBase = assetDb.get();
     context.sceneManager = sceneManager.get();
@@ -113,18 +120,34 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 SDL_AppResult SDL_AppIterate(void* appstate) {
     auto currentTicks = SDL_GetTicksNS();
     auto deltaTime = firstFrame ? 0.0f : (currentTicks - lastTicks) / 1e9f;
+    firstFrame = false;
     deltaTime *= std::clamp(gameSpeed, 0.0f, 1.0f);
     lastTicks = currentTicks;
-    firstFrame = false;
-
-    // get input states
-    gamepadCollection->Update(deltaTime); // Assuming dt is 0 for now
 
     auto activeScene = sceneManager->GetActiveImpalaScene();
 
+    // get input states
+    gamepadCollection->Update(deltaTime);
     // locked physics update
     // add a flush for destroyed during the fixed update
-    // activeScene->FlushDestroyedEntities();
+
+    fixedAccumulator = std::min(fixedAccumulator += deltaTime, FIXED_TIMESTEP * 5);
+    while (fixedAccumulator >= FIXED_TIMESTEP) {
+        physicsSystem->SavePreviousTransforms(activeScene);
+        impalaGame->FixedUpdate(&context, FIXED_TIMESTEP);
+
+        // physics simulation -> move/rotate transforms with Velocity
+        physicsSystem->ApplyVelocity(activeScene, FIXED_TIMESTEP);
+        // calculate collisions - accumulate collision responses
+        fixedAccumulator -= FIXED_TIMESTEP;
+
+        // flush anything destroyed in this fixed update
+        activeScene->FlushDestroyedEntities();
+
+        // flush fixed gamepad/keyboard states
+        gamepadCollection->PostFixedUpdate();
+        keyboard->PostFixedUpdate();
+    }
 
     // game logic
     impalaGame->Update(&context, deltaTime);
@@ -132,7 +155,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // flush anything destroyed in this frame
     activeScene->FlushDestroyedEntities();
 
-    // post-update input states
+    // flush frame gamepad/keyboard states
     gamepadCollection->PostUpdate();
     keyboard->PostUpdate();
 
@@ -142,17 +165,24 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_RenderClear(sdlRenderer->Get());
     SDL_SetRenderDrawColor(sdlRenderer->Get(), 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-    for (const auto& entity : activeScene->GetAllEntities()) {
+    auto entities =
+        activeScene->GetEntitiesWithComponents<impala::SpriteRenderer, impala::Transform2d>();
+    for (const auto& entity : entities) {
         auto r = activeScene->GetComponent<impala::SpriteRenderer>(
             impala::EntityHandle{entity.id, entity.generation});
         if (!r) {
+            impala::log::Error(impala::log::LogCategory::Engine,
+                               "Entity {} is missing SpriteRenderer component", entity.id);
             continue;
         }
         auto t = activeScene->GetComponent<impala::Transform2d>(
             impala::EntityHandle{entity.id, entity.generation});
         if (!t) {
+            impala::log::Error(impala::log::LogCategory::Engine,
+                               "Entity {} is missing Transform2d component", entity.id);
             continue;
         }
+
         auto sprite = assetDb->GetSprite(r->sprite);
         auto texture = assetDb->GetTexture(sprite.textureHandle);
 

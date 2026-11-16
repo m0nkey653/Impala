@@ -26,6 +26,7 @@ add_library(impala_engine STATIC
     include/impala/colliders.h
     include/impala/utility.h
     include/impala/physics.h
+    src/physics_system.cpp
 )
 add_library(Impala::Engine ALIAS impala_engine)
 

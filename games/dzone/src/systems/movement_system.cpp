@@ -30,16 +30,6 @@ namespace dzone {
             movement->velocity =
                 impala::Forward(*transform) * controls->throttle * thrust->maxSpeed;
         }
-
-        std::vector<impala::EntityHandle> movementEntities =
-            scene->GetEntitiesWithComponents<impala::Transform2d, impala::Velocity2d>();
-        for (auto entity : movementEntities) {
-            auto transform = scene->GetComponent<impala::Transform2d>(entity);
-            auto movement = scene->GetComponent<impala::Velocity2d>(entity);
-
-            transform->position += movement->velocity * deltaTime;
-            transform->rotation += movement->angularVelocity * deltaTime;
-        }
     }
 
 } // namespace dzone
