@@ -74,6 +74,15 @@ namespace impala::math {
         return RotateRadians(v, DegreesToRadians(angle));
     }
 
+    // Linearly interpolates between two angles, taking the shortest path around the circle
+    inline float LerpAngle(float prevAngle, float currAngle, float alpha) {
+        float diff = std::fmod(currAngle - prevAngle + 180.0f, 360.0f);
+        if (diff < 0.0f)
+            diff += 360.0f;
+        diff -= 180.0f;
+        return prevAngle + diff * alpha;
+    }
+
     // Returns the normalized direction vector from 'from' to 'to'
     inline Vec2 Direction(const Vec2& from, const Vec2& to) {
         Vec2 d = to - from;

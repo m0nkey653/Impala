@@ -65,7 +65,7 @@ namespace impala {
             auto rotation = t->rotation;
             if (pt) {
                 position = pt->transform.position + (t->position - pt->transform.position) * alpha;
-                rotation = pt->transform.rotation + (t->rotation - pt->transform.rotation) * alpha;
+                rotation = impala::math::LerpAngle(pt->transform.rotation, t->rotation, alpha);
             }
 
             auto sprite = assetDatabase->GetSprite(r->sprite);
