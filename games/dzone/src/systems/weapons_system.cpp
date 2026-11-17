@@ -33,14 +33,18 @@ namespace dzone {
             } else if (shipControls->firePrimary) {
 
                 weapon.cooldownRemaining = weapon.projectile.cooldown;
-                auto e = scene->CreateEntity(weapon.projectile.name);
                 auto relVector = RotateDegrees(weapon.muzzleOffset, transform->rotation);
-                scene->AddComponent<impala::Transform2d>(
-                    e, {transform->position + relVector, transform->rotation});
+                auto e = scene->CreateEntity(weapon.projectile.name,
+                                             transform->position + relVector, transform->rotation);
                 auto& v = scene->AddComponent<impala::Velocity2d>(e);
                 v.velocity = impala::Forward(*transform) * weapon.projectile.speed;
                 auto& s = scene->AddComponent<impala::SpriteRenderer>(e);
                 s.sprite = gameContext->assetDataBase->GetSprite(weapon.projectile.spriteName);
+                auto& c = scene->AddComponent<impala::Collider>(e);
+                if (!c.AddShape(weapon.projectile.colliderShape)) {
+                    impala::log::Debug(impala::log::LogCategory::Game,
+                                       "Failed to add collider shape for entity {}", e.id);
+                }
             }
         }
     }
