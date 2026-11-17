@@ -76,7 +76,6 @@ namespace impala {
 
     void ImpalaScene::GetEntitiesWithMaskInternal(std::bitset<64> required,
                                                   std::vector<EntityHandle>& out) {
-        std::vector<EntityHandle> result;
         for (auto& entity : _entities) {
             if (!entity.isActive)
                 continue;
