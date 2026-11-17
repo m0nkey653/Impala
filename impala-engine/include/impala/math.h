@@ -56,6 +56,10 @@ namespace impala::math {
         return v.x * v.x + v.y * v.y;
     }
 
+    constexpr float Dot(const Vec2& lhs, const Vec2& rhs) {
+        return lhs.x * rhs.x + lhs.y * rhs.y;
+    }
+
     // Rotates the vector 'v' by 'angle' radians clockwise
     // 0 radians corresponds to up (0, -1) direction
     inline Vec2 RotateRadians(const Vec2& v, float angle) {
