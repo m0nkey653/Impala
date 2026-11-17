@@ -1,5 +1,3 @@
-#pragma once
-
 #include "player_collection.h"
 #include "components.h"
 #include "impala/log.h"
