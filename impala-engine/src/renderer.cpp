@@ -92,24 +92,33 @@ namespace impala {
                                    SDL_GetError());
             }
 
+            // Debug render transforms
+            float px = std::round(position.x);
+            float py = std::round(position.y);
+            FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
+            DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
+
+            // Debug render colliders for the entity
             auto c = scene->GetComponent<impala::Collider>(
                 impala::EntityHandle{entity.id, entity.generation});
             if (!c)
                 continue;
             for (auto i = 0; i < c->colliders.size(); ++i) {
                 auto& shape = c->colliders[i];
+                auto absolutePosition =
+                    position + impala::math::RotateDegrees(shape.offset, rotation);
                 // Render collider shapes here if needed
                 std::visit(impala::utility::Overloaded{
-                               [shape, position, this](const CircleCollider& c) {
-                                   DrawCircle(position + shape.offset, 20.0f, impala::color::Red());
+                               [shape, absolutePosition, this](const CircleCollider& c) {
+                                   DrawCircle(absolutePosition, c.radius, impala::color::Red());
                                },
-                               [shape, position, this](const AABBCollider& a) {
-                                   DrawRectangle(position + shape.offset - a.halfExtents,
+                               [shape, absolutePosition, this](const AABBCollider& a) {
+                                   DrawRectangle(absolutePosition - a.halfExtents,
                                                  a.halfExtents.x * 2, a.halfExtents.y * 2,
                                                  impala::color::Red());
                                },
-                               [shape, position, this](const CapsuleCollider& cap) {
-                                   //    this->DrawCapsule(position + shape.offset, cap.radius,
+                               [shape, absolutePosition, this](const CapsuleCollider& cap) {
+                                   //    this->DrawCapsule(absolutePosition, cap.radius,
                                    //                      cap.halfLength, cap.rotation,
                                    //                      impala::color::Red());
                                }},

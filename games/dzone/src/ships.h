@@ -11,10 +11,16 @@ namespace dzone {
         KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_BLUE, KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_GREEN,
         KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_RED, KENNEY_SPACE_SHOOTER_PLAYER_SHIP_1_ORANGE};
 
-    constexpr std::array<impala::ColliderShape, 8> DefaultPlayerShipColliders() {
-        auto shape = impala::ColliderShape{.offset = {.x = 0.0f, .y = 0.0f},
-                                           .shape = impala::CircleCollider{.radius = 32.0f}};
-        return {shape, {}, {}, {}, {}, {}, {}, {}};
+    constexpr std::tuple<std::array<impala::ColliderShape, 8>, int> DefaultPlayerShipColliders() {
+        auto shapeHull = impala::ColliderShape{.offset = {.x = 0.0f, .y = -20.0f},
+                                               .shape = impala::CircleCollider{.radius = 8.0f}};
+        auto nose = impala::ColliderShape{.offset = {.x = 0.0f, .y = 10.0f},
+                                          .shape = impala::CircleCollider{.radius = 20.0f}};
+        auto leftWing = impala::ColliderShape{.offset = {.x = -28.0f, .y = 12.0f},
+                                              .shape = impala::CircleCollider{.radius = 10.0f}};
+        auto rightWing = impala::ColliderShape{.offset = {.x = 28.0f, .y = 12.0f},
+                                               .shape = impala::CircleCollider{.radius = 10.0f}};
+        return {{shapeHull, nose, leftWing, rightWing, {}, {}, {}, {}}, 4};
     }
 
     struct PlayerShip {
@@ -24,6 +30,7 @@ namespace dzone {
         Shield shield = {0};
         Weapons weapons = {};
         std::array<impala::ColliderShape, 8> colliders;
+        int colliderCount = 0;
         const char* spriteName = nullptr;
     };
 
@@ -34,7 +41,8 @@ namespace dzone {
             .armor = {0},
             .shield = {0},
             .weapons = {},
-            .colliders = DefaultPlayerShipColliders(),
+            .colliders = std::get<0>(DefaultPlayerShipColliders()),
+            .colliderCount = std::get<1>(DefaultPlayerShipColliders()),
             .spriteName = defaultPlayerShip[index]};
     }
 

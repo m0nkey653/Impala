@@ -34,7 +34,8 @@ namespace dzone {
         w.activeSecondary = 0;
 
         auto& collider = scene->AddComponent<impala::Collider>(entity);
-        for (const auto& shape : ship.colliders) {
+        for (auto i = 0; i < ship.colliderCount; ++i) {
+            auto& shape = ship.colliders[i];
             if (!collider.AddShape(shape)) {
                 impala::log::Error(impala::log::LogCategory::Game,
                                    "Failed to add collider shape to entity {}", entity.id);
