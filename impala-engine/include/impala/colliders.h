@@ -1,4 +1,5 @@
 #pragma once
+#include "handles.h"
 #include "impala/math.h"
 #include "impala/utility.h"
 #include <algorithm>
@@ -62,6 +63,11 @@ namespace impala {
 
             return true;
         }
+    };
+
+    struct Collision {
+        impala::EntityHandle entityA;
+        impala::EntityHandle entityB;
     };
 
 } // namespace impala

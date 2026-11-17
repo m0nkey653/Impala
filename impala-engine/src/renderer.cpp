@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "assets/asset_database.h"
+#include "impala/colliders.h"
 #include "impala/math.h"
 #include "impala/sprite.h"
 #include "impala/transform.h"
@@ -91,12 +92,36 @@ namespace impala {
                                    SDL_GetError());
             }
 
-            float px = std::round(position.x);
-            float py = std::round(position.y);
-            FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
-            DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
-            DrawCircle(position, 20.0f, impala::color::Red());
+            auto c = scene->GetComponent<impala::Collider>(
+                impala::EntityHandle{entity.id, entity.generation});
+            if (!c)
+                continue;
+            for (auto i = 0; i < c->colliders.size(); ++i) {
+                auto& shape = c->colliders[i];
+                // Render collider shapes here if needed
+                std::visit(impala::utility::Overloaded{
+                               [shape, position, this](const CircleCollider& c) {
+                                   DrawCircle(position + shape.offset, 20.0f, impala::color::Red());
+                               },
+                               [shape, position, this](const AABBCollider& a) {
+                                   DrawRectangle(position + shape.offset - a.halfExtents,
+                                                 a.halfExtents.x * 2, a.halfExtents.y * 2,
+                                                 impala::color::Red());
+                               },
+                               [shape, position, this](const CapsuleCollider& cap) {
+                                   //    this->DrawCapsule(position + shape.offset, cap.radius,
+                                   //                      cap.halfLength, cap.rotation,
+                                   //                      impala::color::Red());
+                               }},
+                           shape.shape);
+            }
         }
+
+        // float px = std::round(position.x);
+        // float py = std::round(position.y);
+        // FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
+        // DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
+        // DrawCircle(position, 20.0f, impala::color::Red());
     }
 
 } // namespace impala
