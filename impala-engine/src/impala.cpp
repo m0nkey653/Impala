@@ -101,9 +101,11 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
             gameSpeed = (gameSpeed == 1.0f) ? 0.0f : 1.0f;
             break;
         case SDL_SCANCODE_PAGEUP:
+        case SDL_SCANCODE_EQUALS:
             gameSpeed = std::min(gameSpeed + 0.1f, 1.0f);
             break;
         case SDL_SCANCODE_PAGEDOWN:
+        case SDL_SCANCODE_MINUS:
             gameSpeed = std::max(gameSpeed - 0.1f, 0.0f);
             break;
         default:
