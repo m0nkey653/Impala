@@ -4,6 +4,7 @@
 #include "impala/sprite.h"
 #include "impala/transform.h"
 #include "impala_scene.h"
+#include "physics_system.h"
 #include "texture.h"
 
 namespace impala {
@@ -57,6 +58,15 @@ namespace impala {
                 impala::EntityHandle{entity.id, entity.generation});
             auto t = scene->GetComponent<impala::Transform2d>(
                 impala::EntityHandle{entity.id, entity.generation});
+            auto pt = scene->GetComponent<impala::PreviousTransform2d>(
+                impala::EntityHandle{entity.id, entity.generation});
+
+            auto position = t->position;
+            auto rotation = t->rotation;
+            if (pt) {
+                position = pt->transform.position + (t->position - pt->transform.position) * alpha;
+                rotation = pt->transform.rotation + (t->rotation - pt->transform.rotation) * alpha;
+            }
 
             auto sprite = assetDatabase->GetSprite(r->sprite);
             auto texture = assetDatabase->GetTexture(sprite.textureHandle);
@@ -65,13 +75,13 @@ namespace impala {
             auto anchor = r->anchor.value_or(sprite.anchor);
             SDL_FPoint pivot = {(1 + anchor.x) * sprite.rect.width * 0.5f,
                                 (1 + anchor.y) * sprite.rect.height * 0.5f};
-            impala::math::Vec2 topLeft = t->position - impala::math::Vec2{pivot.x, pivot.y};
+            impala::math::Vec2 topLeft = position - impala::math::Vec2{pivot.x, pivot.y};
             SDL_FRect dstRect = {topLeft.x, topLeft.y, srcRect.w, srcRect.h};
 
             bool result = false;
-            if (t->rotation != 0) {
+            if (rotation != 0) {
                 result = SDL_RenderTextureRotated(_renderer.get(), texture->GetTexture(), &srcRect,
-                                                  &dstRect, t->rotation, &pivot, SDL_FLIP_NONE);
+                                                  &dstRect, rotation, &pivot, SDL_FLIP_NONE);
             } else {
                 result =
                     SDL_RenderTexture(_renderer.get(), texture->GetTexture(), &srcRect, &dstRect);
@@ -81,11 +91,11 @@ namespace impala {
                                    SDL_GetError());
             }
 
-            float px = std::round(t->position.x);
-            float py = std::round(t->position.y);
+            float px = std::round(position.x);
+            float py = std::round(position.y);
             FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
             DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
-            DrawCircle(t->position, 20.0f, impala::color::Red());
+            DrawCircle(position, 20.0f, impala::color::Red());
         }
     }
 

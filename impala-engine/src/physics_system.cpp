@@ -25,7 +25,7 @@ namespace impala {
             auto v = scene->GetComponent<impala::Velocity2d>(entity);
             assert(t && v && "Entity with Velocity is missing Transform2d or Velocity2d component");
             t->position += v->velocity * deltaTime;
-            t->rotation += v->angularVelocity * deltaTime;
+            impala::RotateDegrees(*t, v->angularVelocity * deltaTime);
         }
     }
 } // namespace impala

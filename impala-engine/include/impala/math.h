@@ -6,6 +6,17 @@ namespace impala::math {
     constexpr float PI = 3.14159265358979323846f;
     constexpr float ZERO_COMPARISON = 1e-6f;
 
+    constexpr float DEG2RAD = PI / 180.0f;
+    constexpr float RAD2DEG = 180.0f / PI;
+
+    constexpr float DegreesToRadians(float degrees) {
+        return degrees * DEG2RAD;
+    }
+
+    constexpr float RadiansToDegrees(float radians) {
+        return radians * RAD2DEG;
+    }
+
     struct Vec2 {
         float x = 0;
         float y = 0;
@@ -45,17 +56,25 @@ namespace impala::math {
         return v.x * v.x + v.y * v.y;
     }
 
-    inline Vec2 RotateDegrees(const Vec2& v, float angle) {
+    // Rotates the vector 'v' by 'angle' radians clockwise
+    // 0 radians corresponds to up (0, -1) direction
+    inline Vec2 RotateRadians(const Vec2& v, float angle) {
         // positive angles rotate clockwise
         // sin and cos expect radians, so convert degrees to radians
         // sin(angle) = opposite / hypotenuse
         // cos(angle) = adjacent / hypotenuse
-        float rad = angle * (PI / 180.0f);
-        float cosA = std::cos(rad);
-        float sinA = std::sin(rad);
+        float cosA = std::cos(angle);
+        float sinA = std::sin(angle);
         return Vec2{v.x * cosA - v.y * sinA, v.x * sinA + v.y * cosA};
     }
 
+    // Rotates the vector 'v' by 'angle' degrees clockwise
+    // 0 degrees corresponds to up (0, -1) direction
+    inline Vec2 RotateDegrees(const Vec2& v, float angle) {
+        return RotateRadians(v, DegreesToRadians(angle));
+    }
+
+    // Returns the normalized direction vector from 'from' to 'to'
     inline Vec2 Direction(const Vec2& from, const Vec2& to) {
         Vec2 d = to - from;
         float length = Length(d);
