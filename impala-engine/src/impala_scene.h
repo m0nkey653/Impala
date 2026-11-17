@@ -1,5 +1,6 @@
 #pragma once
 
+#include "impala/math.h"
 #include "impala/scene.h"
 #include <bitset>
 #include <vector>
@@ -19,6 +20,7 @@ namespace impala {
         ~ImpalaScene() override = default;
 
         EntityHandle CreateEntity(const char* name) override;
+        EntityHandle CreateEntity(const char* name, math::Vec2 position, float rotation) override;
         void DestroyEntity(EntityHandle entity) override;
 
         std::vector<Entity>& GetAllEntities() { return _entities; };
@@ -30,6 +32,8 @@ namespace impala {
         void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) override;
         void GetEntitiesWithMaskInternal(std::bitset<64> required,
                                          std::vector<EntityHandle>& out) override;
+        void TeleportEntity(EntityHandle entity, math::Vec2 position, float rotation) override;
+        void SetRotation(EntityHandle entity, float rotation) override;
 
     private:
         std::vector<Entity> _entities;
