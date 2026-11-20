@@ -4,6 +4,7 @@
 #include "impala_scene.h"
 
 namespace impala {
+    // contains previous world transform
     struct PreviousTransform2d {
         Transform2d transform;
     };
@@ -15,7 +16,6 @@ namespace impala {
     class PhysicsSystem {
     public:
         PhysicsSystem() { _collisions.reserve(64); };
-        void SavePreviousTransforms(impala::ImpalaScene* scene);
         void ApplyVelocity(impala::ImpalaScene* scene, float deltaTime);
         std::span<Collision> CalculateCollisions(impala::ImpalaScene* scene);
 

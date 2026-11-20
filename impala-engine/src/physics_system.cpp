@@ -1,22 +1,9 @@
 #include "physics_system.h"
 #include "cassert"
 #include "impala/physics.h"
+#include "impala/transform.h"
 
 namespace impala {
-
-    void PhysicsSystem::SavePreviousTransforms(impala::ImpalaScene* scene) {
-        auto entities = scene->GetEntitiesWithComponents<impala::Transform2d, impala::Velocity2d>();
-        for (const auto& entity : entities) {
-            auto t = scene->GetComponent<impala::Transform2d>(entity);
-            assert(t && "Entity with Velocity is missing Transform2d component");
-            auto prev = scene->GetComponent<impala::PreviousTransform2d>(entity);
-            if (!prev) {
-                scene->AddComponent<impala::PreviousTransform2d>(entity, {.transform = *t});
-            } else {
-                prev->transform = *t;
-            }
-        }
-    }
 
     void PhysicsSystem::ApplyVelocity(impala::ImpalaScene* scene, float deltaTime) {
         auto entities = scene->GetEntitiesWithComponents<impala::Transform2d, impala::Velocity2d>();

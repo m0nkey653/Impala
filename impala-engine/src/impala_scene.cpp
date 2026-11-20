@@ -1,6 +1,7 @@
 #include "impala_scene.h"
 #include "impala/transform.h"
 #include "physics_system.h"
+#include <cassert>
 
 namespace impala {
 
@@ -13,6 +14,14 @@ namespace impala {
         uint32_t key = (entity.id << 16) | componentTypeId;
         _components[key] = std::move(component);
         e->componentMask.set(componentTypeId);
+
+        if (componentTypeId == detail::ComponentTypeId<Transform2d>()) {
+            AddComponentInternal(entity, detail::ComponentTypeId<WorldTransform2d>(),
+                                 std::make_unique<detail::ComponentHolder<WorldTransform2d>>());
+            AddComponentInternal(entity, detail::ComponentTypeId<PreviousTransform2d>(),
+                                 std::make_unique<detail::ComponentHolder<PreviousTransform2d>>());
+        }
+
         return _components[key]->Get();
     }
 
@@ -46,8 +55,14 @@ namespace impala {
 
     EntityHandle ImpalaScene::CreateEntity(const char* name, math::Vec2 position, float rotation) {
         auto handle = CreateEntity(name);
-        AddComponent<Transform2d>(handle);
+        auto& t = AddComponent<Transform2d>(handle);
         TeleportEntity(handle, position, rotation);
+
+        auto& prev = AddComponent<PreviousTransform2d>(handle);
+        prev.transform = *GetComponent<Transform2d>(handle);
+        prev.transform = t;
+        auto& w = AddComponent<WorldTransform2d>(handle);
+        w.transform = t;
         return handle;
     }
 
@@ -109,6 +124,42 @@ namespace impala {
         auto* transform = GetComponent<Transform2d>(entity);
         if (transform)
             transform->rotation = rotation;
+    }
+
+    const Transform2d* ImpalaScene::GetWorldTransform(EntityHandle entity) {
+        auto e = &_entities[entity.id];
+        if (e->generation != entity.generation || !e->isActive) {
+            return nullptr;
+        }
+        auto* world = GetComponent<WorldTransform2d>(entity);
+        if (world) {
+            return &world->transform;
+        }
+        return nullptr;
+    }
+
+    void ImpalaScene::ComputeWorldTransforms() {
+        auto entities = GetEntitiesWithComponents<Transform2d, WorldTransform2d>();
+        for (const auto& entity : entities) {
+            auto t = GetComponent<impala::Transform2d>(entity);
+            auto w = GetComponent<impala::WorldTransform2d>(entity);
+            assert(t && w && "Entity with Transform2d is missing WorldTransform2d component");
+            // TODO: once we have parent transforms, compute them here
+            w->transform = *t;
+        }
+    }
+
+    void ImpalaScene::SavePreviousTransforms(impala::ImpalaScene* scene) {
+        auto entities = scene->GetEntitiesWithComponents<impala::WorldTransform2d,
+                                                         impala::PreviousTransform2d>();
+        for (const auto& entity : entities) {
+            auto w = scene->GetComponent<impala::WorldTransform2d>(entity);
+            auto prev = scene->GetComponent<impala::PreviousTransform2d>(entity);
+            assert(w && prev &&
+                   "Entity is missing WorldTransform2d or PreviousTransform2d "
+                   "component");
+            prev->transform = w->transform;
+        }
     }
 
 } // namespace impala

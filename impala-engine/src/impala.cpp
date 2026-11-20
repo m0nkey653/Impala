@@ -2,7 +2,6 @@
 #include "assets/asset_database.h"
 #include "impala/game.h"
 #include "impala/handles.h"
-#include "impala/transform.h"
 #include "input/gamepad_collection.h"
 #include "input/keyboard.h"
 #include "physics_system.h"
@@ -135,11 +134,13 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 
     fixedAccumulator = std::min(fixedAccumulator += deltaTime, FIXED_TIMESTEP * 5);
     while (fixedAccumulator >= FIXED_TIMESTEP) {
-        physicsSystem->SavePreviousTransforms(activeScene);
+        activeScene->SavePreviousTransforms(activeScene);
         impalaGame->FixedUpdate(&context, FIXED_TIMESTEP);
 
         // physics simulation -> move/rotate transforms with Velocity
         physicsSystem->ApplyVelocity(activeScene, FIXED_TIMESTEP);
+        // compute world transform for all entities
+        activeScene->ComputeWorldTransforms();
         // calculate collisions - accumulate collision responses
         fixedAccumulator -= FIXED_TIMESTEP;
 
@@ -162,6 +163,9 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // flush frame gamepad/keyboard states
     gamepadCollection->PostUpdate();
     keyboard->PostUpdate();
+
+    // compute world transform for all entities before rendering
+    activeScene->ComputeWorldTransforms();
 
     // render pass
     sdlRenderer->RenderFrame(activeScene, assetDb.get(), alpha);

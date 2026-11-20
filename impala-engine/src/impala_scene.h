@@ -22,9 +22,12 @@ namespace impala {
         EntityHandle CreateEntity(const char* name) override;
         EntityHandle CreateEntity(const char* name, math::Vec2 position, float rotation) override;
         void DestroyEntity(EntityHandle entity) override;
+        const Transform2d* GetWorldTransform(EntityHandle entity) override;
 
         std::vector<Entity>& GetAllEntities() { return _entities; };
         void FlushDestroyedEntities();
+        void ComputeWorldTransforms();
+        void SavePreviousTransforms(impala::ImpalaScene* scene);
 
     protected:
         void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,

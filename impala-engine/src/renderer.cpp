@@ -53,21 +53,21 @@ namespace impala {
         SDL_RenderClear(_renderer.get());
 
         auto entities =
-            scene->GetEntitiesWithComponents<impala::SpriteRenderer, impala::Transform2d>();
+            scene->GetEntitiesWithComponents<impala::SpriteRenderer, impala::WorldTransform2d,
+                                             impala::PreviousTransform2d>();
         for (const auto& entity : entities) {
             auto r = scene->GetComponent<impala::SpriteRenderer>(
                 impala::EntityHandle{entity.id, entity.generation});
-            auto t = scene->GetComponent<impala::Transform2d>(
+            auto w = scene->GetComponent<impala::WorldTransform2d>(
                 impala::EntityHandle{entity.id, entity.generation});
             auto pt = scene->GetComponent<impala::PreviousTransform2d>(
                 impala::EntityHandle{entity.id, entity.generation});
 
-            auto position = t->position;
-            auto rotation = t->rotation;
-            if (pt) {
-                position = pt->transform.position + (t->position - pt->transform.position) * alpha;
-                rotation = impala::math::LerpAngle(pt->transform.rotation, t->rotation, alpha);
-            }
+            auto position = w->transform.position;
+            position =
+                pt->transform.position + (w->transform.position - pt->transform.position) * alpha;
+            auto rotation =
+                impala::math::LerpAngle(pt->transform.rotation, w->transform.rotation, alpha);
 
             auto sprite = assetDatabase->GetSprite(r->sprite);
             auto texture = assetDatabase->GetTexture(sprite.textureHandle);

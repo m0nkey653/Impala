@@ -1,6 +1,7 @@
 #pragma once
 #include "handles.h"
 #include "math.h"
+#include "transform.h"
 #include <atomic>
 #include <bitset>
 #include <cstdint>
@@ -84,6 +85,7 @@ namespace impala {
         virtual void TeleportEntity(EntityHandle entity, math::Vec2 position, float rotation) = 0;
         virtual void SetRotation(EntityHandle entity, float rotation) = 0;
         virtual void DestroyEntity(EntityHandle entity) = 0;
+        virtual const Transform2d* GetWorldTransform(EntityHandle entity) = 0;
 
     protected:
         virtual void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,

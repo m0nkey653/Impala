@@ -12,6 +12,11 @@ namespace impala {
         math::Vec2 scale = {1.0f, 1.0f};
     };
 
+    struct WorldTransform2d {
+        // Transform representing the world position, rotation, and scale
+        Transform2d transform;
+    };
+
     // Rotates the transform by the specified angle in degrees clockwise
     // 0 degrees corresponds to up (0, -1) direction
     // This keeps the rotation normalized to [0, 360) degrees

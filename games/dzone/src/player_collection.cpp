@@ -1,9 +1,7 @@
 #include "player_collection.h"
 #include "components.h"
 #include "impala/log.h"
-#include "impala/physics.h"
 #include "impala/sprite.h"
-#include "impala/transform.h"
 #include "projectile.h"
 #include "ships.h"
 
@@ -14,14 +12,13 @@ namespace dzone {
         if (_players.size() >= MAX_PLAYER_COUNT) {
             throw std::out_of_range("Cannot add more players, max count reached");
         }
-        auto entity = scene->CreateEntity(name.c_str());
-        auto& t = scene->AddComponent<impala::Transform2d>(entity);
+
+        auto entity = scene->CreateEntity(name.c_str(), {0.0f, 0.0f}, 0.0f);
 
         auto ship = DefaultShip(_players.size());
         auto sprite = gameContext->assetDataBase->GetSprite(ship.spriteName);
         gameContext->assetDataBase->LoadSpriteTexture(sprite);
 
-        scene->AddComponent<impala::Velocity2d>(entity);
         scene->AddComponent<ShipControls>(entity);
         scene->AddComponent<Health>(entity, ship.health);
         scene->AddComponent<Armor>(entity, ship.armor);

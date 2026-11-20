@@ -4,7 +4,6 @@
 #include "impala/log.h"
 #include "impala/physics.h"
 #include "impala/sprite.h"
-#include "impala/transform.h"
 #include "systems/lifetime_system.h"
 #include "systems/movement_system.h"
 #include "systems/weapons_system.h"
@@ -19,23 +18,18 @@ namespace dzone {
 
         _activeScene = context->sceneManager->CreateScene();
         auto& p1 = _players.AddPlayer("Player 1", context, _activeScene);
-        p1.SetPosition({200.0f, 200.0f}, _activeScene);
-        p1.SetRotation(0.0f, _activeScene);
+        p1.TeleportPositionAndRotation({200.0f, 200.0f}, 0.0f, _activeScene);
 
         auto& p2 = _players.AddPlayer("Player 2", context, _activeScene);
-        p2.SetPosition({400.0f, 200.0f}, _activeScene);
-        p2.SetRotation(0.0f, _activeScene);
+        p2.TeleportPositionAndRotation({600.0f, 600.0f}, -90.0f, _activeScene);
 
         auto asteroidSprite =
             assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_METEOR_BROWN_BIG_1);
         assetDataBase->LoadSpriteTexture(asteroidSprite);
-        auto m = _activeScene->CreateEntity("meteor");
-        auto& t = _activeScene->AddComponent<impala::Transform2d>(m);
-        t.position = {0.0f, 0.0f};
-        t.rotation = 30;
-        auto& movement = _activeScene->AddComponent<impala::Velocity2d>(m);
-        movement.velocity = {10.0f, 10.0f};
-        movement.angularVelocity = 30.0f;
+        auto m = _activeScene->CreateEntity("meteor", {0.0f, 0.0f}, 0.0f);
+        auto& v = _activeScene->AddComponent<impala::Velocity2d>(m);
+        v.velocity = {10.0f, 10.0f};
+        v.angularVelocity = 30.0f;
         auto& renderer = _activeScene->AddComponent<impala::SpriteRenderer>(m);
         renderer.sprite = asteroidSprite;
     }

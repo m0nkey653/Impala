@@ -19,8 +19,8 @@ namespace dzone {
         void SetRotationSpeed(float rotationSpeed) { _rotationSpeed = rotationSpeed; }
         void SetThrustSpeed(float thrustSpeed) { _thrustSpeed = thrustSpeed; }
 
-        void SetPosition(impala::math::Vec2 position, impala::IScene* scene);
-        void SetRotation(float rotation, impala::IScene* scene);
+        void TeleportPositionAndRotation(impala::math::Vec2 position, float rotation,
+                                         impala::IScene* scene);
 
     private:
         float _rotationSpeed = 120.0f;
