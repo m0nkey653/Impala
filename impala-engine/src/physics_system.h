@@ -15,11 +15,9 @@ namespace impala {
 
     class PhysicsSystem {
     public:
-        PhysicsSystem() { _collisions.reserve(64); };
+        PhysicsSystem() {};
         void ApplyVelocity(impala::ImpalaScene* scene, float deltaTime);
-        std::span<Collision> CalculateCollisions(impala::ImpalaScene* scene);
 
     private:
-        std::vector<Collision> _collisions;
     };
 } // namespace impala

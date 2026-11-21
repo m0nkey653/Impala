@@ -1,5 +1,6 @@
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include "assets/asset_database.h"
+#include "collision_system.h"
 #include "impala/game.h"
 #include "impala/handles.h"
 #include "input/gamepad_collection.h"
@@ -19,6 +20,7 @@ static std::unique_ptr<impala::SceneManager> sceneManager;
 static std::unique_ptr<impala::GamepadCollection> gamepadCollection;
 static std::unique_ptr<impala::Keyboard> keyboard;
 static std::unique_ptr<impala::PhysicsSystem> physicsSystem;
+static std::unique_ptr<impala::CollisionSystem> collisionSystem;
 
 impala::GameContext context{};
 uint64_t lastTicks = 0;
@@ -69,6 +71,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     gamepadCollection = std::make_unique<impala::GamepadCollection>();
     keyboard = std::make_unique<impala::Keyboard>();
     physicsSystem = std::make_unique<impala::PhysicsSystem>();
+    collisionSystem = std::make_unique<impala::CollisionSystem>();
 
     context.assetDataBase = assetDb.get();
     context.sceneManager = sceneManager.get();
@@ -142,6 +145,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         // compute world transform for all entities
         activeScene->ComputeWorldTransforms();
         // calculate collisions - accumulate collision responses
+        collisionSystem->CalculateCollisions(activeScene);
         fixedAccumulator -= FIXED_TIMESTEP;
 
         // flush anything destroyed in this fixed update

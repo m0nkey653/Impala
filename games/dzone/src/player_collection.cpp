@@ -1,6 +1,7 @@
 #include "player_collection.h"
 #include "components.h"
 #include "impala/log.h"
+#include "impala/physics.h"
 #include "impala/sprite.h"
 #include "projectile.h"
 #include "ships.h"
@@ -24,6 +25,7 @@ namespace dzone {
         scene->AddComponent<Armor>(entity, ship.armor);
         scene->AddComponent<Shield>(entity, ship.shield);
         scene->AddComponent<Thrust>(entity, ship.thrust);
+        scene->AddComponent<impala::Velocity2d>(entity);
         auto& w = scene->AddComponent<Weapons>(entity, ship.weapons);
         WeaponSlot ws = {.projectile = Laser(), .muzzleOffset = {0.0f, -50.0f}};
         w.slots.push_back(ws);

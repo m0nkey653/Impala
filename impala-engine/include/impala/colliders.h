@@ -8,6 +8,14 @@
 #include <variant>
 
 namespace impala {
+
+    struct Collision2d {
+        EntityHandle a;
+        EntityHandle b;
+        math::Vec2 normal{0, 0};
+        float depth = 0.0f;
+    };
+
     struct CircleCollider {
         float radius = 0;
     };
@@ -38,13 +46,6 @@ namespace impala {
         uint32_t layerIndex = 0;
         uint32_t mask = 0xFFFFFFFF; // collision mask, default to collide with all layers
 
-        bool CanCollideWith(const Collider& other) const {
-            if (other.layerIndex >= 32 || layerIndex >= 32) {
-                return false;
-            }
-            return (mask & (1u << other.layerIndex)) != 0 && (other.mask & (1u << layerIndex)) != 0;
-        }
-
         [[nodiscard]]
         bool AddShape(const ColliderShape& shape) {
             if (colliderCount >= colliders.size()) {
@@ -64,10 +65,4 @@ namespace impala {
             return true;
         }
     };
-
-    struct Collision {
-        impala::EntityHandle entityA;
-        impala::EntityHandle entityB;
-    };
-
 } // namespace impala
