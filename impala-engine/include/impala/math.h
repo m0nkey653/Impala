@@ -78,6 +78,14 @@ namespace impala::math {
         return RotateRadians(v, DegreesToRadians(angle));
     }
 
+    // Rotates the point 'point' around the 'center' by 'angle' radians clockwise
+    // 0 degrees corresponds to up (0, -1) direction
+    inline Vec2 RotateAroundPointDegrees(const Vec2& point, const Vec2& center, float angle) {
+        Vec2 translated = point - center;
+        Vec2 rotated = RotateDegrees(translated, angle);
+        return rotated + center;
+    }
+
     // Linearly interpolates between two angles, taking the shortest path around the circle
     inline float LerpAngle(float prevAngle, float currAngle, float alpha) {
         float diff = std::fmod(currAngle - prevAngle + 180.0f, 360.0f);
