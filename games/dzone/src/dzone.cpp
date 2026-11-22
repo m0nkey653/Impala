@@ -19,10 +19,10 @@ namespace dzone {
 
         _activeScene = context->sceneManager->CreateScene();
         auto& p1 = _players.AddPlayer("Player 1", context, _activeScene);
-        p1.TeleportPositionAndRotation({200.0f, 200.0f}, 0.0f, _activeScene);
+        p1.TeleportPositionAndRotation({200.0f, 200.0f}, 120.0f, _activeScene);
 
         auto& p2 = _players.AddPlayer("Player 2", context, _activeScene);
-        p2.TeleportPositionAndRotation({600.0f, 600.0f}, -90.0f, _activeScene);
+        p2.TeleportPositionAndRotation({1600.0f, 800.0f}, -45.0f, _activeScene);
 
         auto asteroidSprite =
             assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_METEOR_BROWN_BIG_1);
