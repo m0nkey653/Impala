@@ -27,9 +27,9 @@ namespace dzone {
         auto asteroidSprite =
             assetDataBase->GetSprite(dzone::KENNEY_SPACE_SHOOTER_METEOR_BROWN_BIG_1);
         assetDataBase->LoadSpriteTexture(asteroidSprite);
-        auto m = _activeScene->CreateEntity("meteor", {0.0f, 0.0f}, 0.0f);
+        auto m = _activeScene->CreateEntity("meteor", {600.0f, 0.0f}, 0.0f);
         auto& v = _activeScene->AddComponent<impala::Velocity2d>(m);
-        v.velocity = {10.0f, 10.0f};
+        v.velocity = {10.0f, 2.0f};
         v.angularVelocity = 30.0f;
         auto& renderer = _activeScene->AddComponent<impala::SpriteRenderer>(m);
         renderer.sprite = asteroidSprite;
