@@ -19,7 +19,7 @@ namespace impala {
         SpriteHandle sprite;
         Color color = color::White();
         uint32_t layer = 0;
-        std::optional<impala::math::Vec2> anchor;
+        std::optional<impala::math::Vec2> pivot;
 
         bool IsDefaultColor() const { return color == color::White(); }
     };
