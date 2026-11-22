@@ -1,4 +1,5 @@
 #include "dzone.h"
+#include "components.h"
 #include "dzone_assets.h"
 #include "impala/game.h"
 #include "impala/log.h"
@@ -44,6 +45,62 @@ namespace dzone {
         weaponsSystem.Update(dt, _activeScene, context);
         LifetimeSystem lifetimeSystem;
         lifetimeSystem.Update(_activeScene, dt);
+    }
+
+    void DzoneGame::OnCollisions(impala::IScene* scene,
+                                 const std::span<impala::Collision2d>& collisions) {
+        for (const auto& collision : collisions) {
+            auto a = collision.a;
+            auto b = collision.b;
+            impala::log::Debug(impala::log::LogCategory::Game,
+                               "Collision detected between entities {} and {}", a.id, b.id);
+            auto destroyA = scene->GetComponent<DestroyOnCollision>(a);
+            if (destroyA) {
+                scene->DestroyEntity(a);
+            }
+            auto destroyB = scene->GetComponent<DestroyOnCollision>(b);
+            if (destroyB) {
+                scene->DestroyEntity(b);
+            }
+            auto healthA = scene->GetComponent<Health>(a);
+            auto damageA = scene->GetComponent<Damage>(a);
+            auto armorA = scene->GetComponent<Armor>(a);
+            auto healthB = scene->GetComponent<Health>(b);
+            auto damageB = scene->GetComponent<Damage>(b);
+            auto armorB = scene->GetComponent<Armor>(b);
+            if (healthA && damageB) {
+                auto totalDamage = damageB->amount;
+                if (armorA && armorA->current > 0.0f) {
+                    auto armorDamage = totalDamage * (1.0f - armorA->current);
+                    auto armorAbsorbed = std::min(armorA->current, armorDamage);
+                    armorA->current -= armorAbsorbed;
+                    totalDamage -= armorAbsorbed;
+                }
+                healthA->current -= totalDamage;
+                impala::log::Debug(impala::log::LogCategory::Game,
+                                   "Entity {} took damage: {} - Health: {}", a, damageB->amount,
+                                   healthA->current);
+                if (healthA->current <= 0) {
+                    scene->DestroyEntity(a);
+                }
+            }
+            if (healthB && damageA) {
+                auto totalDamage = damageA->amount;
+                if (armorB && armorB->current > 0.0f) {
+                    auto armorDamage = totalDamage * (1.0f - armorB->current);
+                    auto armorAbsorbed = std::min(armorB->current, armorDamage);
+                    armorB->current -= armorAbsorbed;
+                    totalDamage -= armorAbsorbed;
+                }
+                healthB->current -= totalDamage;
+                impala::log::Debug(impala::log::LogCategory::Game,
+                                   "Entity {} took damage: {} - Health: {}", b, damageA->amount,
+                                   healthB->current);
+                if (healthB->current <= 0) {
+                    scene->DestroyEntity(b);
+                }
+            }
+        }
     }
 
     void DzoneGame::Update(impala::GameContext* context, float dt) {}

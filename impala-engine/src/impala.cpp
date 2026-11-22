@@ -145,7 +145,9 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         // compute world transform for all entities
         activeScene->ComputeWorldTransforms();
         // calculate collisions - accumulate collision responses
-        collisionSystem->CalculateCollisions(activeScene);
+        auto collisions = collisionSystem->CalculateCollisions(activeScene);
+        impalaGame->OnCollisions(activeScene, collisions);
+
         fixedAccumulator -= FIXED_TIMESTEP;
 
         // flush anything destroyed in this fixed update

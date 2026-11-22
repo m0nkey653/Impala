@@ -1,6 +1,7 @@
 #pragma once
 
 #include "impala/asset_database.h"
+#include "impala/colliders.h"
 #include "impala/gamepad.h"
 #include "impala/keyboard.h"
 #include "impala/scene_manager.h"
@@ -62,6 +63,10 @@ namespace impala {
         virtual void Update(GameContext* context, float dt) = 0;
         virtual void Render(GameContext* context) = 0;
         virtual void OnEvent(const GameEvent& event) = 0;
+
+        // all collisions that occured in the current simulation step
+        virtual void OnCollisions(impala::IScene* scene,
+                                  const std::span<impala::Collision2d>& collisions) = 0;
 
         virtual void OnGamepadConnected(GamepadHandle handle) {}
         virtual void OnGamepadDisconnected(GamepadHandle handle) {}

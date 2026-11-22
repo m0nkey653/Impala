@@ -13,6 +13,11 @@ public:
         // Fixed update game state here
     }
 
+    void OnCollisions(impala::IScene* scene,
+                      const std::span<impala::Collision2d>& collisions) override {
+        // handle collisions
+    }
+
     void Update(impala::GameContext* context, float dt) override {
         // Update game state here
     }

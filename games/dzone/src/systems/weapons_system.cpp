@@ -43,9 +43,15 @@ namespace dzone {
                 auto& l = scene->AddComponent<dzone::Lifetime>(e);
                 l.remaining = weapon.projectile.lifetime;
                 auto& c = scene->AddComponent<impala::Collider>(e);
+                auto& damage = scene->AddComponent<Damage>(e);
+                damage.amount = weapon.projectile.damage;
+                damage.armorPenetration = weapon.projectile.armorPenetration;
                 if (!c.AddShape(weapon.projectile.colliderShape)) {
                     impala::log::Debug(impala::log::LogCategory::Game,
                                        "Failed to add collider shape for entity {}", e.id);
+                }
+                if (weapon.projectile.destroyOnCollision) {
+                    auto& d = scene->AddComponent<DestroyOnCollision>(e);
                 }
             }
         }

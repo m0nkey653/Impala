@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dzone_assets.h"
+#include "impala/colliders.h"
 #include "impala/game.h"
 #include "impala/scene.h"
 #include "player_collection.h"
@@ -15,6 +16,8 @@ namespace dzone {
         void Init(impala::GameContext* context) override;
         void Update(impala::GameContext* context, float dt) override;
         void FixedUpdate(impala::GameContext* context, float dt) override;
+        void OnCollisions(impala::IScene* scene,
+                          const std::span<impala::Collision2d>& collisions) override;
         void Render(impala::GameContext* context) override;
         void OnEvent(const impala::GameEvent& event) override;
         void OnGamepadConnected(impala::GamepadHandle handle) override;

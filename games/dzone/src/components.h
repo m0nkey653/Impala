@@ -66,4 +66,6 @@ namespace dzone {
         int activeSecondary = -1;      // -1 = none equipped
     };
 
+    struct DestroyOnCollision {};
+
 } // namespace dzone
