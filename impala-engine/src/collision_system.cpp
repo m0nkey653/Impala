@@ -6,19 +6,6 @@
 
 namespace impala {
 
-    bool CheckCollision(const WorldTransform2d& t1, const Collider& c1, const WorldTransform2d& t2,
-                        const Collider& c2, Collision2d& collision) {
-
-        float combinedRadius = c1.boundingRadius + c2.boundingRadius;
-        if (combinedRadius * combinedRadius <
-            math::LengthSquared(t2.transform.position - t1.transform.position)) {
-            return false;
-        }
-
-        // TODO: Implement actual collision detection
-        return true;
-    }
-
     collision_system::WorldShape CollisionSystem::TransformCollider(const WorldTransform2d* wt,
                                                                     const ColliderShape& c) {
         collision_system::WorldShape ws;
@@ -83,6 +70,8 @@ namespace impala {
         }
 
         _collisions.clear();
+        _collisionEntries.clear();
+        _worldShapes.clear();
         for (auto i = 0; i < entities.size(); ++i) {
             auto& entry = GetCollisionEntry(i, scene, entities[i]);
 
@@ -135,15 +124,15 @@ namespace impala {
                                    const collision_system::WorldBoxAABB& b,
                                    collision_system::Contact& out) {
         auto north = b.position.y - b.halfExtents.y;
-        if (a.position.y + a.radius < north) {
+        if (a.position.y - a.radius < north) {
             out.normal = {0, -1};
-            out.depth = north - (a.position.y + a.radius);
+            out.depth = north - (a.position.y - a.radius);
             return true;
         }
         auto south = b.position.y + b.halfExtents.y;
-        if (a.position.y - a.radius > south) {
+        if (a.position.y + a.radius > south) {
             out.normal = {0, 1};
-            out.depth = (a.position.y - a.radius) - south;
+            out.depth = (a.position.y + a.radius) - south;
             return true;
         }
         auto east = b.position.x + b.halfExtents.x;

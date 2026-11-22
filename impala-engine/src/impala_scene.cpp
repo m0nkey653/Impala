@@ -45,12 +45,10 @@ namespace impala {
                 return EntityHandle{e->id, e->generation};
             }
         }
-        auto entity = new Entity();
-        entity->id = static_cast<uint32_t>(_entities.size());
-        entity->generation = 0;
-        entity->isActive = true;
-        _entities.push_back(*entity);
-        return EntityHandle{entity->id, entity->generation};
+        Entity entity{
+            .id = static_cast<uint32_t>(_entities.size()), .generation = 0, .isActive = true};
+        _entities.push_back(entity);
+        return EntityHandle{entity.id, entity.generation};
     }
 
     EntityHandle ImpalaScene::CreateEntity(const char* name, math::Vec2 position, float rotation) {
