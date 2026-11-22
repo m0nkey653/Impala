@@ -176,7 +176,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // render pass
     sdlRenderer->RenderFrame(activeScene, assetDb.get(), alpha);
 
-    SDL_RenderPresent(sdlRenderer->Get());
+    sdlRenderer->RenderPresent();
 
     return SDL_APP_CONTINUE;
 }

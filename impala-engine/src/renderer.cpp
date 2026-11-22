@@ -47,11 +47,8 @@ namespace impala {
         SDL_RenderFillRect(_renderer.get(), &rect);
     }
 
-    void Renderer::RenderFrame(impala::ImpalaScene* scene, impala::AssetDatabase* assetDatabase,
-                               float alpha) {
-        SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
-        SDL_RenderClear(_renderer.get());
-
+    void Renderer::RenderWorldSprites(impala::ImpalaScene* scene,
+                                      impala::AssetDatabase* assetDatabase, float alpha) {
         auto entities =
             scene->GetEntitiesWithComponents<impala::SpriteRenderer, impala::WorldTransform2d,
                                              impala::PreviousTransform2d>();
@@ -125,12 +122,18 @@ namespace impala {
                            shape.shape);
             }
         }
+    }
 
-        // float px = std::round(position.x);
-        // float py = std::round(position.y);
-        // FillRectangle({px - 2.0f, py - 2.0f}, 4.0f, 4.0f, impala::color::Red());
-        // DrawRectangle({px - 4.0f, py - 4.0f}, 8.0f, 8.0f, impala::color::White());
-        // DrawCircle(position, 20.0f, impala::color::Red());
+    void Renderer::RenderFrame(impala::ImpalaScene* scene, impala::AssetDatabase* assetDatabase,
+                               float alpha) {
+        SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
+        SDL_RenderClear(_renderer.get());
+
+        RenderWorldSprites(scene, assetDatabase, alpha);
+    }
+
+    void Renderer::RenderPresent() {
+        SDL_RenderPresent(_renderer.get());
     }
 
 } // namespace impala

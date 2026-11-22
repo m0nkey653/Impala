@@ -30,6 +30,11 @@ namespace impala {
         void RenderFrame(impala::ImpalaScene* scene, impala::AssetDatabase* assetDatabase,
                          float alpha);
 
+        void RenderWorldSprites(impala::ImpalaScene* scene, impala::AssetDatabase* assetDatabase,
+                                float alpha);
+
+        void RenderPresent();
+
     private:
         std::unique_ptr<SDL_Renderer, detail::RendererDeleter> _renderer = nullptr;
     };
