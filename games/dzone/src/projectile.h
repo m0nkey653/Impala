@@ -1,7 +1,6 @@
 #pragma once
 #include "dzone_assets.h"
 #include "impala/colliders.h"
-#include "impala/math.h"
 
 namespace dzone {
 
