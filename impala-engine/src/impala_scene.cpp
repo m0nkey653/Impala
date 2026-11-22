@@ -53,14 +53,9 @@ namespace impala {
 
     EntityHandle ImpalaScene::CreateEntity(const char* name, math::Vec2 position, float rotation) {
         auto handle = CreateEntity(name);
+        // Transform2d automatically adds Previous and World transform components
         auto& t = AddComponent<Transform2d>(handle);
         TeleportEntity(handle, position, rotation);
-
-        auto& prev = AddComponent<PreviousTransform2d>(handle);
-        prev.transform = *GetComponent<Transform2d>(handle);
-        prev.transform = t;
-        auto& w = AddComponent<WorldTransform2d>(handle);
-        w.transform = t;
         return handle;
     }
 
