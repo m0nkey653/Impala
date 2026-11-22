@@ -63,6 +63,10 @@ namespace impala {
     }
 
     std::span<Collision2d> CollisionSystem::CalculateCollisions(impala::ImpalaScene* scene) {
+        _collisions.clear();
+        _collisionEntries.clear();
+        _worldShapes.clear();
+
         auto entities =
             scene->GetEntitiesWithComponents<impala::WorldTransform2d, impala::Collider>();
 
@@ -70,9 +74,6 @@ namespace impala {
             return std::span<Collision2d>();
         }
 
-        _collisions.clear();
-        _collisionEntries.clear();
-        _worldShapes.clear();
         for (size_t i = 0; i < entities.size(); ++i) {
             auto& entry = GetCollisionEntry(i, scene, entities[i]);
 
@@ -107,6 +108,11 @@ namespace impala {
                             impala::log::Debug(impala::log::LogCategory::Engine,
                                                "Collision detected between entities {} and {}",
                                                entry.handle, otherEntry.handle);
+
+                            // Jump out of the inner loop since we found a collision for this shape
+                            // pair when RigidBody collisions - we'll get the deepest contact for
+                            // these collisions
+                            break;
                         }
                     }
                 }
