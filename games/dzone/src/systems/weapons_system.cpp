@@ -40,6 +40,8 @@ namespace dzone {
                 v.velocity = impala::Forward(*transform) * weapon.projectile.speed;
                 auto& s = scene->AddComponent<impala::SpriteRenderer>(e);
                 s.sprite = gameContext->assetDataBase->GetSprite(weapon.projectile.spriteName);
+                auto& l = scene->AddComponent<dzone::Lifetime>(e);
+                l.remaining = weapon.projectile.lifetime;
                 auto& c = scene->AddComponent<impala::Collider>(e);
                 if (!c.AddShape(weapon.projectile.colliderShape)) {
                     impala::log::Debug(impala::log::LogCategory::Game,

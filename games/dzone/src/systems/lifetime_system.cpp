@@ -1,5 +1,6 @@
 #include "lifetime_system.h"
 #include "../components.h"
+#include <impala/log.h>
 #include <impala/scene.h>
 
 namespace dzone {
@@ -11,6 +12,8 @@ namespace dzone {
 
             lifetime->remaining -= deltaTime;
             if (lifetime->remaining <= 0.0f) {
+                impala::log::Debug(impala::log::LogCategory::Engine,
+                                   "Entity {} has expired and will be destroyed", entity);
                 scene->DestroyEntity(entity);
             }
         }
