@@ -1,5 +1,5 @@
 # Impala
-Impala Game Engine — a small C++17 engine on [SDL3](https://github.com/libsdl-org/SDL), plus two games built with it.
+Impala Game Engine — a small C++20 engine on [SDL3](https://github.com/libsdl-org/SDL), plus two games built with it.
 
 ```
 impala-engine/   engine library (Impala::Engine)
@@ -62,3 +62,8 @@ To reformat all sources: `cmake --build --preset debug --target format`
 - Formatting: `.clang-format` (format on save is enabled in VS Code)
 - Naming: `.clang-tidy` — PascalCase types/functions, `I`-prefixed interfaces, camelCase locals, `_camelCase` members
 - Line endings: LF everywhere (`.gitattributes`), UTF-8 source
+
+## Assets
+
+- Dzone ships - [Kenney Space Shooter Remastered](https://kenney.nl/assets/space-shooter-remastered)
+- Dzone fonts - [Kenney Fonts](https://kenney.nl/assets/kenney-fonts)
