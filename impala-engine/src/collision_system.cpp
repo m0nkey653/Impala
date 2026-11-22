@@ -47,13 +47,14 @@ namespace impala {
         auto c = scene->GetComponent<impala::Collider>(entity);
         assert(wt && c && "Entity with Collider is missing Transform2d or Collider2d component");
         collision_system::CollisionEntry entry = {.handle = entity,
+                                                  .worldPosition = wt->transform.position,
                                                   .layerIndex = c->layerIndex,
                                                   .mask = c->mask,
                                                   .boundingRadius = c->boundingRadius,
                                                   .shapeStart = _worldShapes.size(),
                                                   .shapeCount = c->colliderCount};
 
-        for (auto i = 0; i < c->colliderCount; ++i) {
+        for (uint8_t i = 0; i < c->colliderCount; ++i) {
             _worldShapes.push_back(TransformCollider(wt, c->colliders[i]));
         }
         _collisionEntries.push_back(entry);
@@ -72,10 +73,10 @@ namespace impala {
         _collisions.clear();
         _collisionEntries.clear();
         _worldShapes.clear();
-        for (auto i = 0; i < entities.size(); ++i) {
+        for (size_t i = 0; i < entities.size(); ++i) {
             auto& entry = GetCollisionEntry(i, scene, entities[i]);
 
-            for (auto j = i + 1; j < entities.size(); ++j) {
+            for (size_t j = i + 1; j < entities.size(); ++j) {
                 auto& otherEntry = GetCollisionEntry(j, scene, entities[j]);
 
                 // skip if the collision layers do not match
@@ -83,9 +84,17 @@ namespace impala {
                     continue;
                 }
 
-                for (auto k = 0; k < entry.shapeCount; ++k) {
+                // skip if the bounding radii do not overlap
+                auto distanceSqr =
+                    impala::math::LengthSquared(otherEntry.worldPosition - entry.worldPosition);
+                auto radiusSum = entry.boundingRadius + otherEntry.boundingRadius;
+                if (distanceSqr > radiusSum * radiusSum) {
+                    continue;
+                }
+
+                for (size_t k = 0; k < entry.shapeCount; ++k) {
                     auto& shapeA = _worldShapes[entry.shapeStart + k];
-                    for (auto l = 0; l < otherEntry.shapeCount; ++l) {
+                    for (size_t l = 0; l < otherEntry.shapeCount; ++l) {
                         auto& shapeB = _worldShapes[otherEntry.shapeStart + l];
                         collision_system::Contact contact;
                         if (collision_system::OverlapShapes(shapeA, shapeB, contact)) {
@@ -123,31 +132,37 @@ namespace impala {
     bool collision_system::Overlap(const collision_system::WorldCircle& a,
                                    const collision_system::WorldBoxAABB& b,
                                    collision_system::Contact& out) {
+
+        bool intersectY = false;
+        bool intersectX = false;
+
         auto north = b.position.y - b.halfExtents.y;
         if (a.position.y - a.radius < north) {
             out.normal = {0, -1};
             out.depth = north - (a.position.y - a.radius);
-            return true;
-        }
-        auto south = b.position.y + b.halfExtents.y;
-        if (a.position.y + a.radius > south) {
-            out.normal = {0, 1};
-            out.depth = (a.position.y + a.radius) - south;
-            return true;
+            intersectY = true;
+        } else {
+            auto south = b.position.y + b.halfExtents.y;
+            if (a.position.y + a.radius > south) {
+                out.normal = {0, 1};
+                out.depth = (a.position.y + a.radius) - south;
+                intersectY = true;
+            }
         }
         auto east = b.position.x + b.halfExtents.x;
         if (a.position.x - a.radius > east) {
-            out.normal = {1, 0};
-            out.depth = (a.position.x - a.radius) - east;
-            return true;
+            out.normal += {1, 0};
+            out.depth = std::max(out.depth, (a.position.x - a.radius) - east);
+            intersectX = true;
+        } else {
+            auto west = b.position.x - b.halfExtents.x;
+            if (a.position.x + a.radius < west) {
+                out.normal += {-1, 0};
+                out.depth = std::max(out.depth, west - (a.position.x + a.radius));
+                intersectX = true;
+            }
         }
-        auto west = b.position.x - b.halfExtents.x;
-        if (a.position.x + a.radius < west) {
-            out.normal = {-1, 0};
-            out.depth = west - (a.position.x + a.radius);
-            return true;
-        }
-        return false;
+        return intersectX && intersectY;
     }
     bool collision_system::Overlap(const collision_system::WorldCircle& a,
                                    const collision_system::WorldCapsule& b,

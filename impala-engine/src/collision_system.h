@@ -13,6 +13,7 @@ namespace impala {
 
         struct CollisionEntry {
             EntityHandle handle;
+            math::Vec2 worldPosition{0, 0};
             uint32_t layerIndex = 0;
             uint32_t mask = 0;
             float boundingRadius = 0;
