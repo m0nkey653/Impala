@@ -1,6 +1,7 @@
 #pragma once
 
 #include "impala/asset.h"
+#include "impala/color.h"
 #include "impala/handles.h"
 #include "impala/math.h"
 #include <optional>
@@ -16,16 +17,11 @@ namespace impala {
 
     struct SpriteRenderer {
         SpriteHandle sprite;
-        uint8_t colorR = 0xff;
-        uint8_t colorG = 0xff;
-        uint8_t colorB = 0xff;
-        uint8_t colorA = 0xff;
+        Color color = color::White();
         uint32_t layer = 0;
         std::optional<impala::math::Vec2> anchor;
 
-        bool IsDefaultColor() const {
-            return colorR == 0xff && colorG == 0xff && colorB == 0xff && colorA == 0xff;
-        }
+        bool IsDefaultColor() const { return color == color::White(); }
     };
 
 } // namespace impala
