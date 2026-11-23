@@ -21,7 +21,10 @@ namespace impala {
         ~ImpalaScene() override = default;
 
         EntityHandle CreateEntity(const char* name) override;
+        EntityHandle CreateEntity(const char* name, EntityHandle parent) override;
         EntityHandle CreateEntity(const char* name, math::Vec2 position, float rotation) override;
+        EntityHandle CreateEntity(const char* name, math::Vec2 position, float rotation,
+                                  EntityHandle parent) override;
         void DestroyEntity(EntityHandle entity) override;
         const Transform2d* GetWorldTransform(EntityHandle entity) override;
 

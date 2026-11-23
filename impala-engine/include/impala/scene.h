@@ -131,6 +131,10 @@ namespace impala {
 
     } // namespace detail
 
+    struct ParentEntity {
+        EntityHandle parent;
+    };
+
     class IScene {
     public:
         virtual ~IScene() = default;
@@ -163,8 +167,11 @@ namespace impala {
         }
 
         virtual EntityHandle CreateEntity(const char* name) = 0;
+        virtual EntityHandle CreateEntity(const char* name, EntityHandle parent) = 0;
         virtual EntityHandle CreateEntity(const char* name, math::Vec2 position,
                                           float rotation) = 0;
+        virtual EntityHandle CreateEntity(const char* name, math::Vec2 position, float rotation,
+                                          EntityHandle parent) = 0;
         virtual void TeleportEntity(EntityHandle entity, math::Vec2 position, float rotation) = 0;
         virtual void SetRotation(EntityHandle entity, float rotation) = 0;
         virtual void DestroyEntity(EntityHandle entity) = 0;

@@ -25,11 +25,34 @@ namespace impala {
         _entities.push_back(entity);
         return EntityHandle{entity.id, entity.generation};
     }
+    EntityHandle ImpalaScene::CreateEntity(const char* name, EntityHandle parent) {
+        for (size_t i = 0; i < _entities.size(); ++i) {
+            auto e = &_entities[i];
+            if (!e->isActive) {
+                e->isActive = true;
+                return EntityHandle{e->id, e->generation};
+            }
+        }
+        Entity entity{
+            .id = static_cast<uint32_t>(_entities.size()), .generation = 0, .isActive = true};
+        _entities.push_back(entity);
+        return EntityHandle{entity.id, entity.generation};
+    }
 
     EntityHandle ImpalaScene::CreateEntity(const char* name, math::Vec2 position, float rotation) {
         auto handle = CreateEntity(name);
         // Transform2d automatically adds Previous and World transform components
         auto& t = AddComponent<Transform2d>(handle);
+        TeleportEntity(handle, position, rotation);
+        return handle;
+    }
+
+    EntityHandle ImpalaScene::CreateEntity(const char* name, math::Vec2 position, float rotation,
+                                           EntityHandle parent) {
+        auto handle = CreateEntity(name);
+        // Transform2d automatically adds Previous and World transform components
+        auto& t = AddComponent<Transform2d>(handle);
+        AddComponent<ParentEntity>(handle, ParentEntity{parent});
         TeleportEntity(handle, position, rotation);
         return handle;
     }
