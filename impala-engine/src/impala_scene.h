@@ -3,6 +3,7 @@
 #include "impala/math.h"
 #include "impala/scene.h"
 #include <bitset>
+#include <cassert>
 #include <vector>
 
 namespace impala {
@@ -24,24 +25,30 @@ namespace impala {
         void DestroyEntity(EntityHandle entity) override;
         const Transform2d* GetWorldTransform(EntityHandle entity) override;
 
+        impala::detail::IComponentPool* GetPoolInternal(uint32_t) override;
+        impala::detail::IComponentPool* AddPoolInternal(
+            uint32_t,
+            std::unique_ptr<impala::detail::IComponentPool,
+                            std::default_delete<impala::detail::IComponentPool>>) override;
+        void SetComponentBitInternal(impala::EntityHandle, uint32_t) override;
+
         std::vector<Entity>& GetAllEntities() { return _entities; };
         void FlushDestroyedEntities();
         void ComputeWorldTransforms();
         void SavePreviousTransforms(impala::ImpalaScene* scene);
+        bool IsAlive(EntityHandle entity) const override;
 
     protected:
-        void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
-                                   std::unique_ptr<detail::IComponentHolder> component) override;
-        void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) override;
         void GetEntitiesWithMaskInternal(std::bitset<64> required,
                                          std::vector<EntityHandle>& out) override;
         void TeleportEntity(EntityHandle entity, math::Vec2 position, float rotation) override;
         void SetRotation(EntityHandle entity, float rotation) override;
+        void OnComponentAddedInternal(EntityHandle entity, uint32_t typeId) override;
 
     private:
         std::vector<Entity> _entities;
         std::vector<EntityHandle> _destroyedEntities;
-        std::unordered_map<uint32_t, std::unique_ptr<detail::IComponentHolder>> _components;
+        std::vector<std::unique_ptr<detail::IComponentPool>> _componentPools;
     };
 
 } // namespace impala

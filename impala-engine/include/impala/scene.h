@@ -6,9 +6,11 @@
 #include <atomic>
 #include <bit>
 #include <bitset>
+#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <type_traits>
+#include <vector>
 
 namespace impala {
 
@@ -28,25 +30,6 @@ namespace impala {
             const static uint32_t ID = componentNextCounter.fetch_add(1, std::memory_order_relaxed);
             return ID;
         }
-
-        class IComponentHolder {
-        public:
-            virtual ~IComponentHolder() = default;
-            virtual void* Get() = 0;
-        };
-
-        template <Component T> class ComponentHolder : public IComponentHolder {
-        public:
-            template <typename... Args>
-            explicit ComponentHolder<T>(Args&&... args)
-                : _component(std::make_unique<T>(std::forward<Args>(args)...)) {}
-            virtual ~ComponentHolder() = default;
-
-            void* Get() override { return static_cast<T*>(_component.get()); }
-
-        private:
-            std::unique_ptr<T> _component;
-        };
 
         class IComponentPool {
         public:
@@ -74,6 +57,9 @@ namespace impala {
             }
 
             uint32_t FindSlot(EntityHandle entity) const {
+                if (!entity.IsValid()) {
+                    return INVALID_SLOT;
+                }
                 if (entity.id >= _entityToSlot.size()) {
                     return INVALID_SLOT;
                 }
@@ -116,6 +102,7 @@ namespace impala {
                     _slotToEntity[slot] = lastEntity;
                     _entityToSlot[lastEntity.id] = static_cast<uint32_t>(slot);
                 }
+                _components[lastSlot >> PAGE_SHIFT][lastSlot & PAGE_MASK] = T{};
                 _slotToEntity.pop_back();
                 _entityToSlot[entity.id] = INVALID_SLOT;
             }
@@ -136,7 +123,7 @@ namespace impala {
             std::vector<std::unique_ptr<T[]>> _components;
             // dense - contiguous array of slots -> entity
             std::vector<EntityHandle> _slotToEntity;
-            // dense array of entity IDs corresponding to the components in the paged pool
+            // sparse array of entity IDs corresponding to the components in the paged pool
             // entity -> slot
             // sparse - sizeof(max entity ID)
             std::vector<uint32_t> _entityToSlot;
@@ -148,29 +135,26 @@ namespace impala {
     public:
         virtual ~IScene() = default;
 
-        template <Component T> T& AddComponent(EntityHandle entity) {
-            auto* componentHolder = new detail::ComponentHolder<T>();
-            auto* componentPtr =
-                AddComponentInternal(entity, detail::ComponentTypeId<T>(),
-                                     std::unique_ptr<detail::IComponentHolder>(componentHolder));
-            return *static_cast<T*>(componentPtr);
-        }
-
         template <Component T> T& AddComponent(EntityHandle entity, T component) {
-            auto* componentHolder = new detail::ComponentHolder<T>(std::move(component));
-            auto* componentPtr =
-                AddComponentInternal(entity, detail::ComponentTypeId<T>(),
-                                     std::unique_ptr<detail::IComponentHolder>(componentHolder));
-            return *static_cast<T*>(componentPtr);
+            assert(IsAlive(entity) && "AddComponent on a dead or invalid entity");
+            auto& pool = GetOrCreatePool<T>();
+            assert(!pool.Contains(entity) && "entity already has this component");
+            T& added = pool.Add(entity, std::move(component));
+            SetComponentBitInternal(entity, detail::ComponentTypeId<T>());
+            OnComponentAddedInternal(entity, detail::ComponentTypeId<T>());
+            return added;
         }
 
-        template <typename T> T* GetComponent(EntityHandle entity) {
-            auto* componentPtr = GetComponentInternal(entity, detail::ComponentTypeId<T>());
-            return static_cast<T*>(componentPtr);
+        template <Component T> T& AddComponent(EntityHandle entity) {
+            return AddComponent<T>(entity, T{});
+        }
+
+        template <Component T> T* GetComponent(EntityHandle entity) {
+            auto* pool = GetPool<T>();
+            return pool ? pool->Get(entity) : nullptr;
         }
 
         template <typename... Ts> std::vector<EntityHandle> GetEntitiesWithComponents() {
-
             std::bitset<64> required;
             ((required.set(detail::ComponentTypeId<Ts>())), ...);
             std::vector<EntityHandle> entities;
@@ -185,14 +169,33 @@ namespace impala {
         virtual void SetRotation(EntityHandle entity, float rotation) = 0;
         virtual void DestroyEntity(EntityHandle entity) = 0;
         virtual const Transform2d* GetWorldTransform(EntityHandle entity) = 0;
+        virtual bool IsAlive(EntityHandle entity) const = 0;
 
     protected:
-        virtual void* AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
-                                           std::unique_ptr<detail::IComponentHolder> component) = 0;
-        virtual void* GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) = 0;
+        virtual void OnComponentAddedInternal(EntityHandle entity, uint32_t typeId) = 0;
+        virtual detail::IComponentPool* GetPoolInternal(uint32_t typeId) = 0;
+        virtual detail::IComponentPool*
+        AddPoolInternal(uint32_t typeId, std::unique_ptr<detail::IComponentPool> pool) = 0;
+
+        virtual void SetComponentBitInternal(EntityHandle entity, uint32_t typeId) = 0;
 
         virtual void GetEntitiesWithMaskInternal(std::bitset<64> required,
                                                  std::vector<EntityHandle>& out) = 0;
+
+    private:
+        template <Component T> detail::ComponentPool<T>* GetPool() {
+            return static_cast<detail::ComponentPool<T>*>(
+                GetPoolInternal(detail::ComponentTypeId<T>()));
+        }
+
+        template <Component T> detail::ComponentPool<T>& GetOrCreatePool() {
+            if (auto* pool = GetPool<T>()) {
+                return *pool;
+            }
+            auto* created = AddPoolInternal(detail::ComponentTypeId<T>(),
+                                            std::make_unique<detail::ComponentPool<T>>());
+            return *static_cast<detail::ComponentPool<T>*>(created);
+        }
     };
 
 } // namespace impala

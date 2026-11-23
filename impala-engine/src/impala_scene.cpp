@@ -5,36 +5,11 @@
 
 namespace impala {
 
-    void* ImpalaScene::AddComponentInternal(EntityHandle entity, uint32_t componentTypeId,
-                                            std::unique_ptr<detail::IComponentHolder> component) {
-        auto e = &_entities[entity.id];
-        if (e->generation != entity.generation || !e->isActive)
-            return nullptr;
-
-        uint32_t key = (entity.id << 16) | componentTypeId;
-        _components[key] = std::move(component);
-        e->componentMask.set(componentTypeId);
-
-        if (componentTypeId == detail::ComponentTypeId<Transform2d>()) {
-            AddComponentInternal(entity, detail::ComponentTypeId<WorldTransform2d>(),
-                                 std::make_unique<detail::ComponentHolder<WorldTransform2d>>());
-            AddComponentInternal(entity, detail::ComponentTypeId<PreviousTransform2d>(),
-                                 std::make_unique<detail::ComponentHolder<PreviousTransform2d>>());
+    void ImpalaScene::OnComponentAddedInternal(EntityHandle entity, uint32_t typeId) {
+        if (typeId == detail::ComponentTypeId<Transform2d>()) {
+            AddComponent<WorldTransform2d>(entity);
+            AddComponent<PreviousTransform2d>(entity);
         }
-
-        return _components[key]->Get();
-    }
-
-    void* ImpalaScene::GetComponentInternal(EntityHandle entity, uint32_t componentTypeId) {
-        auto e = &_entities[entity.id];
-        if (e->generation != entity.generation || !e->isActive)
-            return nullptr;
-
-        uint32_t key = (entity.id << 16) | componentTypeId;
-        auto it = _components.find(key);
-        if (it == _components.end())
-            return nullptr;
-        return it->second->Get();
     }
 
     EntityHandle ImpalaScene::CreateEntity(const char* name) {
@@ -60,6 +35,9 @@ namespace impala {
     }
 
     void ImpalaScene::DestroyEntity(EntityHandle entity) {
+        if (!IsAlive(entity)) {
+            return; // normal "no entity"
+        }
         _destroyedEntities.push_back(entity);
     }
 
@@ -73,8 +51,8 @@ namespace impala {
 
             for (uint32_t i = 0; i < 64; ++i) {
                 if (e->componentMask.test(i)) {
-                    uint32_t key = (entity.id << 16) | i;
-                    _components.erase(key);
+                    // uint32_t key = (entity.id << 16) | i;
+                    _componentPools[i]->Remove(entity);
                 }
             }
             e->componentMask.reset();
@@ -95,10 +73,10 @@ namespace impala {
     }
 
     void ImpalaScene::TeleportEntity(EntityHandle entity, math::Vec2 position, float rotation) {
-        auto e = &_entities[entity.id];
-        if (e->generation != entity.generation || !e->isActive) {
-            return;
+        if (!IsAlive(entity)) {
+            return; // normal "no entity"
         }
+
         auto* transform = GetComponent<Transform2d>(entity);
         if (transform) {
             transform->position = position;
@@ -111,19 +89,20 @@ namespace impala {
     }
 
     void ImpalaScene::SetRotation(EntityHandle entity, float rotation) {
-        auto e = &_entities[entity.id];
-        if (e->generation != entity.generation || !e->isActive)
-            return;
+        if (!IsAlive(entity)) {
+            return; // normal "no entity"
+        }
+
         auto* transform = GetComponent<Transform2d>(entity);
         if (transform)
             transform->rotation = rotation;
     }
 
     const Transform2d* ImpalaScene::GetWorldTransform(EntityHandle entity) {
-        auto e = &_entities[entity.id];
-        if (e->generation != entity.generation || !e->isActive) {
-            return nullptr;
+        if (!IsAlive(entity)) {
+            return nullptr; // normal "no entity"
         }
+
         auto* world = GetComponent<WorldTransform2d>(entity);
         if (world) {
             return &world->transform;
@@ -153,6 +132,47 @@ namespace impala {
                    "component");
             prev->transform = w->transform;
         }
+    }
+
+    bool ImpalaScene::IsAlive(EntityHandle entity) const {
+        if (!entity.IsValid()) {
+            return false; // normal "no entity"
+        }
+        assert(entity.id < _entities.size() && "EntityHandle id out of range");
+        if (entity.id >= _entities.size()) {
+            return false; // release: no crash
+        }
+        const Entity& e = _entities[entity.id];
+        return e.isActive && e.generation == entity.generation; // stale handle → false
+    }
+
+    void ImpalaScene::SetComponentBitInternal(impala::EntityHandle entity, uint32_t typeId) {
+        if (!IsAlive(entity)) {
+            return; // normal "no entity"
+        }
+        if (typeId >= _componentPools.size()) {
+            return; // no such pool
+        }
+        _entities[entity.id].componentMask.set(typeId);
+    }
+
+    impala::detail::IComponentPool* ImpalaScene::GetPoolInternal(uint32_t typeId) {
+        if (typeId >= _componentPools.size()) {
+            return nullptr;
+        }
+        return _componentPools[typeId].get();
+    }
+
+    impala::detail::IComponentPool* ImpalaScene::AddPoolInternal(
+        uint32_t typeId, std::unique_ptr<impala::detail::IComponentPool,
+                                         std::default_delete<impala::detail::IComponentPool>>
+                             pool) {
+        assert(typeId < 64 && "typeId out of range");
+        if (typeId >= _componentPools.size()) {
+            _componentPools.resize(typeId + 1);
+        }
+        _componentPools[typeId] = std::move(pool);
+        return _componentPools[typeId].get();
     }
 
 } // namespace impala
