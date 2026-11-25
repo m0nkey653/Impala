@@ -196,17 +196,21 @@ namespace impala {
         if (!IsAlive(entity)) {
             return; // normal "no entity"
         }
-        _destroyedEntities.push_back(entity);
+        if (!_entities[entity.id].isBeingDestroyed) {
+            _destroyedEntities.push_back(entity);
+            _entities[entity.id].isBeingDestroyed = true;
+        }
     }
 
     void ImpalaScene::FlushDestroyedEntities() {
-
-        // link all children of destroyed entities to be destroyed as well
+        if (!_destroyedEntities.empty()) {
+            _entitiesDirty = true;
+        }
+        // traverse all children of destroyed entities to be destroyed as well
         for (size_t i = 0; i < _destroyedEntities.size(); ++i) {
-            _entities[_destroyedEntities[i].id].isBeingDestroyed = true;
             auto p = GetComponent<Parent>(_destroyedEntities[i]);
             if (p) {
-                if (p->childCount == 0) {
+                if (p->firstChild == EntityHandle::Invalid()) {
                     continue;
                 }
                 auto child = p->firstChild;
@@ -222,6 +226,11 @@ namespace impala {
                         _entities[child.id].isBeingDestroyed = true;
                     }
                     c = GetComponent<Child>(child);
+                }
+                if (!c) {
+                    impala::log::Error(impala::log::LogCategory::Scene,
+                                       "Child component missing for entity child={}", child);
+                    assert(false && "Child component missing for entity");
                 }
             }
         }
