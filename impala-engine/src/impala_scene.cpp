@@ -200,20 +200,58 @@ namespace impala {
     }
 
     void ImpalaScene::FlushDestroyedEntities() {
+
+        // link all children of destroyed entities to be destroyed as well
+        for (size_t i = 0; i < _destroyedEntities.size(); ++i) {
+            _entities[_destroyedEntities[i].id].isBeingDestroyed = true;
+            auto p = GetComponent<Parent>(_destroyedEntities[i]);
+            if (p) {
+                if (p->childCount == 0) {
+                    continue;
+                }
+                auto child = p->firstChild;
+                if (!_entities[child.id].isBeingDestroyed) {
+                    _destroyedEntities.push_back(child);
+                    _entities[child.id].isBeingDestroyed = true;
+                }
+                auto c = GetComponent<Child>(child);
+                while (c && c->nextSibling != EntityHandle::Invalid()) {
+                    child = c->nextSibling;
+                    if (!_entities[child.id].isBeingDestroyed) {
+                        _destroyedEntities.push_back(child);
+                        _entities[child.id].isBeingDestroyed = true;
+                    }
+                    c = GetComponent<Child>(child);
+                }
+            }
+        }
+
+        // pass through all the roots and unlink them from their surviving parents
+        for (auto& entity : _destroyedEntities) {
+            auto c = GetComponent<Child>(entity);
+            if (c && c->parent != EntityHandle::Invalid() &&
+                !_entities[c->parent.id].isBeingDestroyed) {
+                UnlinkEntity(entity);
+            }
+        }
+
+        // reset each entity in the list, they've been unlinked from survivors
+        // and children have all been marked for destruction
         for (auto entity : _destroyedEntities) {
             auto e = &_entities[entity.id];
             if (e->generation != entity.generation || !e->isActive)
                 continue;
+
             e->isActive = false;
             e->generation++;
+            e->isBeingDestroyed = false;
 
             for (uint32_t i = 0; i < 64; ++i) {
                 if (e->componentMask.test(i)) {
-                    // uint32_t key = (entity.id << 16) | i;
                     _componentPools[i]->Remove(entity);
                 }
             }
-            // todo - unlink from parent - remove descendants
+
             e->componentMask.reset();
         }
         _destroyedEntities.clear();

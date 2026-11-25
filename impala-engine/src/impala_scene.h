@@ -9,22 +9,23 @@
 namespace impala {
 
     struct Entity {
-        uint32_t id;
-        uint32_t generation;
-        bool isActive;
-        std::bitset<64> componentMask;
+        uint32_t id = 0;
+        uint32_t generation = 0;
+        bool isActive = false;
+        bool isBeingDestroyed = false;
+        std::bitset<64> componentMask = {};
     };
 
     struct Parent {
-        EntityHandle firstChild;
-        EntityHandle lastChild;
-        uint32_t childCount;
+        EntityHandle firstChild = EntityHandle::Invalid();
+        EntityHandle lastChild = EntityHandle::Invalid();
+        uint32_t childCount = 0;
     };
 
     struct Child {
-        EntityHandle parent;
-        EntityHandle nextSibling;
-        EntityHandle prevSibling;
+        EntityHandle parent = EntityHandle::Invalid();
+        EntityHandle nextSibling = EntityHandle::Invalid();
+        EntityHandle prevSibling = EntityHandle::Invalid();
     };
 
     class ImpalaScene : public IScene {
