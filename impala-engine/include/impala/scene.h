@@ -131,10 +131,6 @@ namespace impala {
 
     } // namespace detail
 
-    struct ParentEntity {
-        EntityHandle parent;
-    };
-
     class IScene {
     public:
         virtual ~IScene() = default;
@@ -143,6 +139,18 @@ namespace impala {
             assert(IsAlive(entity) && "AddComponent on a dead or invalid entity");
             auto& pool = GetOrCreatePool<T>();
             assert(!pool.Contains(entity) && "entity already has this component");
+            T& added = pool.Add(entity, std::move(component));
+            SetComponentBitInternal(entity, detail::ComponentTypeId<T>());
+            OnComponentAddedInternal(entity, detail::ComponentTypeId<T>());
+            return added;
+        }
+
+        template <Component T> T& GetOrAddComponent(EntityHandle entity, T component) {
+            assert(IsAlive(entity) && "AddComponent on a dead or invalid entity");
+            auto& pool = GetOrCreatePool<T>();
+            if (pool.Contains(entity)) {
+                return *pool.Get(entity);
+            }
             T& added = pool.Add(entity, std::move(component));
             SetComponentBitInternal(entity, detail::ComponentTypeId<T>());
             OnComponentAddedInternal(entity, detail::ComponentTypeId<T>());
@@ -177,6 +185,9 @@ namespace impala {
         virtual void DestroyEntity(EntityHandle entity) = 0;
         virtual const Transform2d* GetWorldTransform(EntityHandle entity) = 0;
         virtual bool IsAlive(EntityHandle entity) const = 0;
+
+        virtual void LinkEntity(EntityHandle parent, EntityHandle child) = 0;
+        virtual void UnlinkEntity(EntityHandle child) = 0;
 
     protected:
         virtual void OnComponentAddedInternal(EntityHandle entity, uint32_t typeId) = 0;

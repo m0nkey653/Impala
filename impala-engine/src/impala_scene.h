@@ -15,6 +15,18 @@ namespace impala {
         std::bitset<64> componentMask;
     };
 
+    struct Parent {
+        EntityHandle firstChild;
+        EntityHandle lastChild;
+        uint32_t childCount;
+    };
+
+    struct Child {
+        EntityHandle parent;
+        EntityHandle nextSibling;
+        EntityHandle prevSibling;
+    };
+
     class ImpalaScene : public IScene {
     public:
         ImpalaScene() = default;
@@ -40,6 +52,8 @@ namespace impala {
         void ComputeWorldTransforms();
         void SavePreviousTransforms(impala::ImpalaScene* scene);
         bool IsAlive(EntityHandle entity) const override;
+        void LinkEntity(EntityHandle parent, EntityHandle child) override;
+        void UnlinkEntity(EntityHandle child) override;
 
     protected:
         void GetEntitiesWithMaskInternal(std::bitset<64> required,
@@ -49,6 +63,7 @@ namespace impala {
         void OnComponentAddedInternal(EntityHandle entity, uint32_t typeId) override;
 
     private:
+        bool _entitiesDirty = false;
         std::vector<Entity> _entities;
         std::vector<EntityHandle> _destroyedEntities;
         std::vector<std::unique_ptr<detail::IComponentPool>> _componentPools;

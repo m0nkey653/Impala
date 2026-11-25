@@ -1,4 +1,5 @@
 #include "impala_scene.h"
+#include "impala/log.h"
 #include "impala/transform.h"
 #include "physics_system.h"
 #include <cassert>
@@ -52,9 +53,143 @@ namespace impala {
         auto handle = CreateEntity(name);
         // Transform2d automatically adds Previous and World transform components
         auto& t = AddComponent<Transform2d>(handle);
-        AddComponent<ParentEntity>(handle, ParentEntity{parent});
+        if (parent != EntityHandle::Invalid()) {
+            LinkEntity(parent, handle);
+        }
         TeleportEntity(handle, position, rotation);
         return handle;
+    }
+
+    void ImpalaScene::LinkEntity(EntityHandle parent, EntityHandle child) {
+        if (!IsAlive(parent) || !IsAlive(child)) {
+            impala::log::Debug(
+                impala::log::LogCategory::Scene,
+                "Cannot link entities: one or both are not alive or invalid - child={} - parent={}",
+                child, parent);
+            return; // normal "no entity"
+        }
+        if (parent == child) {
+            impala::log::Error(impala::log::LogCategory::Scene,
+                               "Cannot link entity to itself - entity={}", parent);
+            return;
+        }
+
+        // walk the entity hierarchy to ensure no cycles are created
+        auto current = parent;
+        while (current != EntityHandle::Invalid()) {
+            if (current == child) {
+                impala::log::Error(
+                    impala::log::LogCategory::Scene,
+                    "Cannot link entities: would create a cycle - child={} - parent={}", child,
+                    parent);
+                return;
+            }
+            auto* currentChild = GetComponent<Child>(current);
+            if (!currentChild) {
+                break;
+            }
+            current = currentChild->parent;
+        }
+
+        // don't initialize with a value here - test if existing has this parent
+        auto& c = GetOrAddComponent<Child>(child, {});
+        if (c.parent == parent) {
+            return; // already a child
+        }
+
+        auto& p = GetOrAddComponent<Parent>(parent, {});
+        auto lastChild = GetComponent<Child>(p.lastChild);
+        if (p.firstChild != EntityHandle::Invalid() && !lastChild) {
+            impala::log::Error(impala::log::LogCategory::Scene,
+                               "Last child component missing - parent={}", parent);
+            assert(false && "Last child must exist");
+            return; // cannot proceed without last child component
+        }
+
+        if (c.parent != EntityHandle::Invalid()) {
+            UnlinkEntity(child);
+        }
+        c.parent = parent;
+        if (p.firstChild == EntityHandle::Invalid()) {
+            p.firstChild = child;
+            p.lastChild = child;
+        } else {
+            lastChild->nextSibling = child;
+            c.prevSibling = p.lastChild;
+            p.lastChild = child;
+        }
+        p.childCount++;
+        _entitiesDirty = true;
+    }
+
+    void ImpalaScene::UnlinkEntity(EntityHandle child) {
+        if (!IsAlive(child)) {
+            impala::log::Debug(impala::log::LogCategory::Scene,
+                               "Cannot unlink entity: not alive - child={}", child);
+            return; // normal "no entity"
+        }
+        auto* c = GetComponent<Child>(child);
+        if (!c) {
+            impala::log::Debug(impala::log::LogCategory::Scene,
+                               "Cannot unlink entity: not a child - child={}", child);
+            return; // no child component to unlink
+        }
+        if (c->parent == EntityHandle::Invalid()) {
+            impala::log::Debug(impala::log::LogCategory::Scene,
+                               "Cannot unlink entity: child has no parent - child={}", child);
+            return; // no parent to unlink from
+        }
+        auto* p = GetComponent<Parent>(c->parent);
+        if (!p) {
+            // log error here because child was added, but parent wasn't properly linked
+            impala::log::Error(impala::log::LogCategory::Scene,
+                               "Cannot unlink entity: parent component missing - child={}", child);
+            assert(false && "Parent component must exist for the child entity");
+            return;
+        }
+
+        if (p->firstChild == child) {
+            p->firstChild = c->nextSibling;
+            if (p->firstChild == EntityHandle::Invalid()) {
+                p->lastChild = EntityHandle::Invalid();
+            }
+            auto sibling = GetComponent<Child>(c->nextSibling);
+            if (sibling) {
+                sibling->prevSibling = EntityHandle::Invalid();
+            }
+        } else {
+            auto prev = c->prevSibling;
+            auto next = c->nextSibling;
+
+            if (prev != EntityHandle::Invalid()) {
+                auto* prevComponent = GetComponent<Child>(prev);
+                if (prevComponent) {
+                    prevComponent->nextSibling = next;
+                }
+            }
+            if (next != EntityHandle::Invalid()) {
+                auto* nextComponent = GetComponent<Child>(next);
+                if (nextComponent) {
+                    nextComponent->prevSibling = prev;
+                }
+            }
+            if (p->lastChild == child) {
+                p->lastChild = c->prevSibling;
+            }
+        }
+        if (p->childCount == 0) {
+            impala::log::Error(impala::log::LogCategory::Scene,
+                               "Parent child count was zero when it had children - parent={}",
+                               c->parent);
+            assert(false && "Parent child count was zero when it had children");
+        } else {
+            p->childCount--;
+        }
+
+        c->parent = EntityHandle::Invalid();
+        c->prevSibling = EntityHandle::Invalid();
+        c->nextSibling = EntityHandle::Invalid();
+        _entitiesDirty = true;
     }
 
     void ImpalaScene::DestroyEntity(EntityHandle entity) {
@@ -78,6 +213,7 @@ namespace impala {
                     _componentPools[i]->Remove(entity);
                 }
             }
+            // todo - unlink from parent - remove descendants
             e->componentMask.reset();
         }
         _destroyedEntities.clear();
